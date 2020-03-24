@@ -1,8 +1,4 @@
-package ingsw2020.group8.santorini.player;
-
-import ingsw2020.group8.santorini.Action;
-import ingsw2020.group8.santorini.Board;
-import ingsw2020.group8.santorini.Pawn;
+package ingsw2020.group8.santorini.model.player;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,15 +7,17 @@ public abstract class Player {
     private List<OnWinListener> onWinListeners = new ArrayList<OnWinListener>();
     private List<OnLossListener> onLossListeners = new ArrayList<OnLossListener>();
 
-    private List<Action>  lastActions;
+    private String username;
     private Pawn[] pawns;
-    private boolean isTurnFinished;
+    private God god;
 
-    public abstract List<Action> getActions(Board b);
-    public abstract boolean isTurnFinished();
+    public String getUsername() {
+        return username;
+    }
 
-    public abstract void startTurn();
-    public abstract void endTurn();
+    public God getGod() {
+        return god;
+    }
 
     public void addOnWinListener(OnWinListener listener) {
         onWinListeners.add(listener);
