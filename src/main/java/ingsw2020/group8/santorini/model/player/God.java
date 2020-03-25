@@ -12,7 +12,7 @@ public class God {
     private TurnSequence turnSequence;
 
     public Pawn createPawn() {
-        return new Pawn();
+        throw new NotImplementedException();
     }
 
     public TurnSequence getTurnSequence() {throw new NotImplementedException();}

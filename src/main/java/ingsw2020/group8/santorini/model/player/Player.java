@@ -3,12 +3,12 @@ package ingsw2020.group8.santorini.model.player;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class Player {
-    private List<OnWinListener> onWinListeners = new ArrayList<OnWinListener>();
-    private List<OnLossListener> onLossListeners = new ArrayList<OnLossListener>();
+public class Player {
+    private List<OnWinListener> onWinListeners = new ArrayList<>();
+    private List<OnLossListener> onLossListeners = new ArrayList<>();
 
     private String username;
-    private Pawn[] pawns;
+    private Pawn[] pawns = new Pawn[2];
     private God god;
 
     public String getUsername() {
@@ -24,5 +24,14 @@ public abstract class Player {
     }
     public void addOnLossListener(OnLossListener listener){
         onLossListeners.add(listener);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof Player && username.equals(((Player) obj).username);
+    }
+
+    public Player(String username) {
+        this.username = username;
     }
 }

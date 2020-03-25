@@ -45,12 +45,6 @@ class BuildingTest {
         }
         assertEquals(BuildingLevel.LEVEL3, b.getLevel());
 
-        try {
-            b.buildDome();
-        } catch (InvalidBuildException e) {
-            fail(); //Shouldn't throw
-        }
-
         assertThrows(InvalidBuildException.class, b::buildBlock);
     }
 }
