@@ -14,6 +14,24 @@ public class Building {
         return dome;
     }
 
-    public void buildDome() throws InvalidBuildException {throw new NotImplementedException();}
-    public void buildBlock() throws InvalidBuildException {throw new NotImplementedException();}
+    public void buildDome() throws InvalidBuildException {
+        if (!dome) {
+            dome = true;
+        } else {
+            throw new InvalidBuildException;
+        }
+    }
+    public void buildBlock() throws InvalidBuildException {
+        switch (level){
+            case BuildingLevel.LEVEL1:
+                level = BuildingLevel.LEVEL2;
+                break;
+            case BuildingLevel.LEVEL2:
+                level = BuildingLevel.LEVEL3;
+                break;
+            case BuildingLevel.LEVEL3:
+                throw new InvalidBuildException;
+                break;
+        }
+    }
 }
