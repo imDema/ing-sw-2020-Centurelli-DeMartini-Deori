@@ -2,7 +2,6 @@ package ingsw2020.group8.santorini.model.board;
 
 import ingsw2020.group8.santorini.model.player.Pawn;
 import ingsw2020.group8.santorini.model.player.Player;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -17,7 +16,7 @@ class BoardTest {
     Pawn pawn2;
 
     @BeforeAll
-    void prepareBoard() {
+    void prepareBoard() throws InvalidMoveException {
         board = new Board();
         pawn1 = new Pawn(new Player("test_1"), 1);
         pawn2 = new Pawn(new Player("test_2"), 1);
@@ -26,7 +25,7 @@ class BoardTest {
     }
 
     @Test
-    void testMovePawn() {
+    void testMovePawn() throws InvalidMoveException {
         Coordinate p0 = board.getPawnPosition(pawn1);
         Coordinate p1 = new Coordinate(3,0);
         board.movePawn(pawn1, p1);
@@ -74,7 +73,7 @@ class BoardTest {
     }
 
     @Test
-    void testPutPawn() {
+    void testPutPawn() throws InvalidMoveException {
         Coordinate c1 = new Coordinate(1, 3);
         Coordinate c2 = new Coordinate(4,0);
 
@@ -93,7 +92,7 @@ class BoardTest {
     }
 
     @Test
-    void testRemovePawn() {
+    void testRemovePawn() throws InvalidMoveException {
         Pawn p = new Pawn(new Player("test_delete"), 1);
         Coordinate c = new Coordinate(4,4);
 

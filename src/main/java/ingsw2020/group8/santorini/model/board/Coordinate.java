@@ -1,6 +1,7 @@
 package ingsw2020.group8.santorini.model.board;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+import java.lang.UnsupportedOperationException;
+
 
 public class Coordinate {
     int x, y;
@@ -14,7 +15,7 @@ public class Coordinate {
     }
 
     public boolean isNeighbour(Coordinate c2) {
-        throw new NotImplementedException();
+        throw new UnsupportedOperationException();
     }
 
     public Coordinate (int x, int y) {
