@@ -37,9 +37,9 @@ public class Board {
 
     public void swapPawn(Pawn pawn1, Pawn pawn2) {
         Coordinate t = pawns.get(pawn1);
-        Cell tc = cells[pawns.get(pawn1).getX()][pawns.get(pawn1).getY()] ;
-        cells[pawns.get(pawn1).getX()][pawns.get(pawn1).getY()] = cells[pawns.get(pawn2).getX()][pawns.get(pawn2).getY()];
-        cells[pawns.get(pawn2).getX()][pawns.get(pawn2).getY()] = tc;
+        Optional<Pawn> tc = cells[pawns.get(pawn1).getX()][pawns.get(pawn1).getY()].pawn ;
+        cells[pawns.get(pawn1).getX()][pawns.get(pawn1).getY()].pawn = cells[pawns.get(pawn2).getX()][pawns.get(pawn2).getY()].pawn;
+        cells[pawns.get(pawn2).getX()][pawns.get(pawn2).getY()].pawn = tc;
         pawns.remove(pawn1);
         pawns.put(pawn1, pawns.get(pawn2));
         pawns.remove(pawn2);
