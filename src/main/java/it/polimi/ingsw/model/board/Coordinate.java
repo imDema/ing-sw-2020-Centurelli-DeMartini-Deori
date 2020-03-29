@@ -1,8 +1,5 @@
 package it.polimi.ingsw.model.board;
 
-import java.lang.UnsupportedOperationException;
-
-
 public class Coordinate {
     int x, y;
 
@@ -15,10 +12,11 @@ public class Coordinate {
     }
 
     public boolean isNeighbour(Coordinate c2) {
-        throw new UnsupportedOperationException();
+        return !(x > c2.getX() + 1 || x < c2.getX() - 1 || y > c2.getY() + 1 || y < c2.getY() - 1)
+                && !(x == c2.getX() && y == c2.getY());
     }
 
-    public Coordinate (int x, int y) {
+    public Coordinate(int x, int y) {
         this.x = x;
         this.y = y;
     }

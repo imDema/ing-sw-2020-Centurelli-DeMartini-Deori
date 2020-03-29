@@ -18,7 +18,7 @@ public class BoardTest {
     public void testMovePawn() throws InvalidMoveException {
         setupTestPawns();
         Coordinate p0 = board.getPawnPosition(pawn1);
-        Coordinate p1 = new Coordinate(3,0);
+        Coordinate p1 = new Coordinate(0,3);
         board.movePawn(pawn1, p1);
 
         assertEquals(p1, board.getPawnPosition(pawn1));
@@ -82,6 +82,7 @@ public class BoardTest {
     @Test
     public void testPutPawn() throws InvalidMoveException {
         Coordinate c1 = new Coordinate(0, 2);
+        pawn1 = new Pawn(new Player ("test_put"), 2);
 
         assertFalse(board.getPawnAt(c1).isPresent());
 

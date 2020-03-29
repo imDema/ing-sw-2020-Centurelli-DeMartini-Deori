@@ -15,7 +15,7 @@ public class Board {
     private Map<Pawn, Coordinate> pawns = new HashMap<>();
 
     public Optional<Pawn> getPawnAt(Coordinate c) {
-        throw new UnsupportedOperationException();
+        return cells[c.getX()][c.getY()].pawn;
     }
 
     public Coordinate getPawnPosition(Pawn pawn) {
@@ -27,9 +27,11 @@ public class Board {
     }
 
     public void movePawn(Pawn pawn, Coordinate c) throws InvalidMoveException {
-        if(getPawnAt(c) == null) {
+        if(!getPawnAt(c).isPresent() && c.isNeighbour(pawns.get(pawn))) {
+            cells[pawns.get(pawn).getX()][pawns.get(pawn).getY()].pawn = Optional.empty();
             pawns.remove(pawn);
             pawns.put(pawn, c);
+            cells[c.getX()][c.getY()].pawn = Optional.of(pawn);
         }
         else
             throw new InvalidMoveException();
@@ -48,13 +50,16 @@ public class Board {
     }
 
     public void putPawn(Pawn pawn, Coordinate c) throws InvalidMoveException {
-        if (getPawnAt(c) == null)
+        if (!getPawnAt(c).isPresent()) {
             pawns.put(pawn, c);
-        else
+            cells[c.getX()][c.getY()].pawn = Optional.of(pawn);
+        } else
             throw new InvalidMoveException();
     }
 
+
     public void removePawn(Pawn pawn) {
+        cells[pawns.get(pawn).getX()][pawns.get(pawn).getY()].pawn = Optional.empty();
         pawns.remove(pawn);
     }
 
