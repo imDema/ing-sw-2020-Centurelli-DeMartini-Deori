@@ -56,7 +56,7 @@ public class BoardTest {
     }
 
     @Test
-    public void testBuildBlock() {
+    public void testBuildBlock() throws InvalidBuildException{
         Coordinate c = new Coordinate(1,2);
         assertEquals(Optional.empty(), board.getBuildingAt(c));
 
@@ -67,7 +67,7 @@ public class BoardTest {
     }
 
     @Test
-    public void testBuildDome() {
+    public void testBuildDome() throws InvalidBuildException{
         Coordinate c = new Coordinate(2,2);
         assertEquals(Optional.empty(), board.getBuildingAt(c));
 
