@@ -9,4 +9,12 @@ public class Game {
     private List<Player> players;
     private Board board;
     private int turn;
+
+    public void nextTurn() {
+        throw  new UnsupportedOperationException();
+    }
+
+    public Player getCurrentPlayer() {
+        throw  new UnsupportedOperationException();
+    }
 }

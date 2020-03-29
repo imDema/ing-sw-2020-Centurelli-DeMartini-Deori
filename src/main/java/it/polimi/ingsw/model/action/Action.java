@@ -7,7 +7,7 @@ import it.polimi.ingsw.model.player.Pawn;
 import java.lang.UnsupportedOperationException;
 
 
-public abstract class Action {
+public class Action {
     private Effect effect;
     private CheckAllowed checkAllowed;
 
@@ -19,6 +19,7 @@ public abstract class Action {
         return checkAllowed.isAllowed(board, pawn, coordinate);
     }
 
+    //Create default action
     public Action(ActionKind actionKind) {
         switch (actionKind) {
             case MOVE:
@@ -44,11 +45,9 @@ public abstract class Action {
         }
     }
 
-    public void setEffect(Effect effect) {
+    //Custom action
+    public Action(Effect effect, CheckAllowed checkAllowed) {
         this.effect = effect;
-    }
-
-    public void setCheckAllowed(CheckAllowed checkAllowed) {
         this.checkAllowed = checkAllowed;
     }
 }
