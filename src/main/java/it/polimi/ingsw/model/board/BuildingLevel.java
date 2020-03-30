@@ -1,7 +1,14 @@
 package it.polimi.ingsw.model.board;
 
 public enum BuildingLevel {
-    LEVEL1,
-    LEVEL2,
-    LEVEL3
+    LEVEL0(0),
+    LEVEL1(1),
+    LEVEL2(2),
+    LEVEL3(3);
+
+    public final int height;
+
+    BuildingLevel(int h) {
+        this.height = h;
+    }
 }

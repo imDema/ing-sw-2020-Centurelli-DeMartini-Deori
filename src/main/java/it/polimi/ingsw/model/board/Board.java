@@ -13,69 +13,70 @@ public class Board {
     private Map<Pawn, Coordinate> pawns = new HashMap<>();
 
     public Optional<Pawn> getPawnAt(Coordinate c) {
-        return cells[c.getX()][c.getY()].pawn;
+        return cellAt(c).getPawn();
     }
 
     public Coordinate getPawnPosition(Pawn pawn) {
         return pawns.get(pawn);
     }
 
-    public Optional<Building> getBuildingAt(Coordinate c) {
-        return cells[c.getX()][c.getY()].building;
+    public Building getBuildingAt(Coordinate c) {
+        return cellAt(c).getBuilding();
     }
 
     public void movePawn(Pawn pawn, Coordinate c) throws InvalidMoveException {
         if(!getPawnAt(c).isPresent()) {
-            cells[pawns.get(pawn).getX()][pawns.get(pawn).getY()].pawn = Optional.empty();
-            pawns.remove(pawn);
-            pawns.put(pawn, c);
-            cells[c.getX()][c.getY()].pawn = Optional.of(pawn);
+            Coordinate oldC = getPawnPosition(pawn);
+
+            cellAt(oldC).removePawn();
+            cellAt(c).putPawn(pawn);
+
+            pawns.replace(pawn, c);
         }
         else
             throw new InvalidMoveException();
     }
 
     public void swapPawn(Pawn pawn1, Pawn pawn2) {
-        Coordinate t = pawns.get(pawn1);
-        Optional<Pawn> tc = cells[pawns.get(pawn1).getX()][pawns.get(pawn1).getY()].pawn ;
-        cells[pawns.get(pawn1).getX()][pawns.get(pawn1).getY()].pawn = cells[pawns.get(pawn2).getX()][pawns.get(pawn2).getY()].pawn;
-        cells[pawns.get(pawn2).getX()][pawns.get(pawn2).getY()].pawn = tc;
-        pawns.remove(pawn1);
-        pawns.put(pawn1, pawns.get(pawn2));
-        pawns.remove(pawn2);
-        pawns.put(pawn2, t);
+        Coordinate c1 = getPawnPosition(pawn1);
+        Coordinate c2 = getPawnPosition(pawn2);
+
+        cellAt(c1).putPawn(pawn2);
+        cellAt(c2).putPawn(pawn1);
+
+        pawns.replace(pawn1, c2);
+        pawns.replace(pawn2, c1);
     }
 
     public void buildBlock(Coordinate c) throws InvalidBuildException{
-        Optional<Building> ob = cells[c.getX()][c.getY()].building;
-        if (ob.isPresent()) {
-            ob.get().buildBlock();
-        } else {
-            cells[c.getX()][c.getY()].building = Optional.of(new Building());
-        }
+         cellAt(c)
+                 .getBuilding()
+                 .buildBlock();
     }
 
     public void buildDome(Coordinate c)  throws InvalidBuildException{
-        Optional<Building> ob = cells[c.getX()][c.getY()].building;
-        if (ob.isPresent()) {
-            ob.get().buildDome();
-        } else {
-            throw new InvalidBuildException();
-        }
+        cellAt(c)
+                .getBuilding()
+                .buildDome();
     }
 
     public void putPawn(Pawn pawn, Coordinate c) throws InvalidMoveException {
         if (!getPawnAt(c).isPresent()) {
+            cellAt(c).putPawn(pawn);
             pawns.put(pawn, c);
-            cells[c.getX()][c.getY()].pawn = Optional.of(pawn);
         } else
             throw new InvalidMoveException();
     }
 
 
     public void removePawn(Pawn pawn) {
-        cells[pawns.get(pawn).getX()][pawns.get(pawn).getY()].pawn = Optional.empty();
+        Coordinate c = getPawnPosition(pawn);
+        cellAt(c).removePawn();
         pawns.remove(pawn);
+    }
+
+    private Cell cellAt(Coordinate c) {
+        return cells[c.getX()][c.getY()];
     }
 
     public Board() {

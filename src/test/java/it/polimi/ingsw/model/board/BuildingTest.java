@@ -24,25 +24,17 @@ public class BuildingTest {
     }
 
     @Test
-    public void testBuildBlock() {
+    public void testBuildBlock() throws InvalidBuildException {
         Building b = new Building();
+        assertEquals(BuildingLevel.LEVEL0, b.getLevel());
 
+        b.buildBlock();
         assertEquals(BuildingLevel.LEVEL1, b.getLevel());
 
-        try {
-            b.buildBlock();
-        } catch (InvalidBuildException e) {
-            e.printStackTrace();
-            fail();
-        }
+        b.buildBlock();
         assertEquals(BuildingLevel.LEVEL2, b.getLevel());
 
-        try {
-            b.buildBlock();
-        } catch (InvalidBuildException e) {
-            e.printStackTrace();
-            fail();
-        }
+        b.buildBlock();
         assertEquals(BuildingLevel.LEVEL3, b.getLevel());
 
         assertThrows(InvalidBuildException.class, b::buildBlock);

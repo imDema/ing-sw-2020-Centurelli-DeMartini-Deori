@@ -64,12 +64,11 @@ public class BoardTest {
         Board board = new Board();
 
         Coordinate c = new Coordinate(1,2);
-        assertEquals(Optional.empty(), board.getBuildingAt(c));
+        assertEquals(BuildingLevel.LEVEL0, board.getBuildingAt(c).getLevel());
 
         board.buildBlock(c);
 
-        assertTrue(board.getBuildingAt(c).isPresent());
-        assertEquals(BuildingLevel.LEVEL1, board.getBuildingAt(c).get().getLevel());
+        assertEquals(BuildingLevel.LEVEL1, board.getBuildingAt(c).getLevel());
     }
 
     @Test
@@ -77,14 +76,12 @@ public class BoardTest {
         Board board = new Board();
 
         Coordinate c = new Coordinate(2,2);
-        assertEquals(Optional.empty(), board.getBuildingAt(c));
 
-        board.buildBlock(c);
+        assertFalse(board.getBuildingAt(c).hasDome());
 
-        assertFalse(board.getBuildingAt(c).get().hasDome());
         board.buildDome(c);
 
-        assertTrue(board.getBuildingAt(c).get().hasDome());
+        assertTrue(board.getBuildingAt(c).hasDome());
     }
 
     @Test

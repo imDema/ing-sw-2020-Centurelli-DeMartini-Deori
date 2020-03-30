@@ -58,21 +58,22 @@ public class Action {
         return false;
     }
     private static boolean defaultCheckMove(Board b, Pawn p, Coordinate c) {
-        return (!b.getPawnAt(c).isPresent() &&
+        return !b.getPawnAt(c).isPresent() &&
                 c.isNeighbour(b.getPawnPosition(p)) &&
-                Building.getLevelDifference(b.getBuildingAt(b.getPawnPosition(p)).get(), b.getBuildingAt(c).get()) >= 0);
+                b.getBuildingAt(b.getPawnPosition(p))
+                        .getLevelDifference(b.getBuildingAt(c)) >= 0;
     }
 
     // MOVE_UP
     private static boolean defaultMoveUp(Board b, Pawn p, Coordinate c) throws InvalidMoveException {
         b.movePawn(p,c);
-        if (b.getBuildingAt(c).get().getLevel() == BuildingLevel.LEVEL3) {return true;}
+        if (b.getBuildingAt(c).getLevel() == BuildingLevel.LEVEL3) {return true;}
         else {return false;}
     }
     private static boolean defaultCheckMoveUp(Board b, Pawn p, Coordinate c) {
         return (!b.getPawnAt(c).isPresent() &&
             c.isNeighbour(b.getPawnPosition(p)) &&
-            Building.getLevelDifference(b.getBuildingAt(b.getPawnPosition(p)).get(), b.getBuildingAt(c).get()) == -1);
+            b.getBuildingAt(b.getPawnPosition(p)).getLevelDifference(b.getBuildingAt(c)) == -1);
     }
 
     // BUILD_BLOCK
@@ -83,8 +84,8 @@ public class Action {
     private static boolean defaultCheckBuildBlock(Board b, Pawn p, Coordinate c) {
         return (!b.getPawnAt(c).isPresent() &&
             c.isNeighbour(b.getPawnPosition(p)) &&
-            b.getBuildingAt(c).get().getLevel() != BuildingLevel.LEVEL3 &&
-            !b.getBuildingAt(c).get().hasDome());
+            b.getBuildingAt(c).getLevel() != BuildingLevel.LEVEL3 &&
+            !b.getBuildingAt(c).hasDome());
 
     }
 
@@ -96,8 +97,8 @@ public class Action {
     private static boolean defaultCheckBuildDome(Board b, Pawn p, Coordinate c) {
         return (!b.getPawnAt(c).isPresent() &&
             c.isNeighbour(b.getPawnPosition(p)) &&
-            b.getBuildingAt(c).get().getLevel() == BuildingLevel.LEVEL3 &&
-            !b.getBuildingAt(c).get().hasDome());
+            b.getBuildingAt(c).getLevel() == BuildingLevel.LEVEL3 &&
+            !b.getBuildingAt(c).hasDome());
 
     }
 

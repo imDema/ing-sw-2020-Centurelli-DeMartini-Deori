@@ -1,7 +1,7 @@
 package it.polimi.ingsw.model.board;
 
 public class Building {
-    private BuildingLevel level = BuildingLevel.LEVEL1;
+    private BuildingLevel level = BuildingLevel.LEVEL0;
     private boolean dome = false;
 
     public BuildingLevel getLevel() {
@@ -19,8 +19,12 @@ public class Building {
             throw new InvalidBuildException();
         }
     }
+
     public void buildBlock() throws InvalidBuildException {
         switch (level){
+            case LEVEL0:
+                level = BuildingLevel.LEVEL1;
+                break;
             case LEVEL1:
                 level = BuildingLevel.LEVEL2;
                 break;
@@ -32,39 +36,8 @@ public class Building {
         }
     }
 
-    // return the difference between building1 and building2 in the following way:
-    // difference = building1.level - building2.level
-    public static int getLevelDifference(Building building1, Building building2) {
-        switch (building1.level){
-            case LEVEL1:
-                switch (building2.level){
-                    case LEVEL1:
-                        return 0;
-                    case LEVEL2:
-                        return -1;
-                    case LEVEL3:
-                        return -2;
-                }
-            case LEVEL2:
-                switch (building2.level){
-                    case LEVEL1:
-                        return 1;
-                    case LEVEL2:
-                        return 0;
-                    case LEVEL3:
-                        return -1;
-                }
-            case LEVEL3:
-                switch (building2.level){
-                    case LEVEL1:
-                        return 2;
-                    case LEVEL2:
-                        return 1;
-                    case LEVEL3:
-                        return 0;
-                }
-            default:
-                return -3;
-        }
+    // returns the level difference of b relative to this
+    public int getLevelDifference(Building b) {
+        return b.level.height - this.level.height;
     }
 }
