@@ -2,6 +2,7 @@ package it.polimi.ingsw.model.player;
 
 import it.polimi.ingsw.model.action.Action;
 import it.polimi.ingsw.model.action.ActionKind;
+import it.polimi.ingsw.model.board.InvalidMoveException;
 
 import java.lang.UnsupportedOperationException;
 
@@ -30,7 +31,7 @@ public class God {
         return name;
     }
 
-    public God(String name) {
+    public God(String name) throws InvalidMoveException {
         this.name = name;
 
         // Load default actions
