@@ -12,15 +12,15 @@ public class Building {
         return dome;
     }
 
-    public void buildDome() throws InvalidBuildException {
+    public void buildDome() throws InvalidActionException {
         if (!dome) {
             dome = true;
         } else {
-            throw new InvalidBuildException();
+            throw new InvalidActionException();
         }
     }
 
-    public void buildBlock() throws InvalidBuildException {
+    public void buildBlock() throws InvalidActionException {
         switch (level){
             case LEVEL0:
                 level = BuildingLevel.LEVEL1;
@@ -32,7 +32,7 @@ public class Building {
                 level = BuildingLevel.LEVEL3;
                 break;
             case LEVEL3:
-                throw new InvalidBuildException();
+                throw new InvalidActionException();
         }
     }
 

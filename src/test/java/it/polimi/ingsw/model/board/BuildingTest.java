@@ -13,18 +13,18 @@ public class BuildingTest {
 
         try {
             b.buildDome();
-        } catch (InvalidBuildException e) {
+        } catch (InvalidActionException e) {
             e.printStackTrace();
             fail(); //Shouldn't throw
         }
 
         assertTrue(b.hasDome());
 
-        assertThrows(InvalidBuildException.class, b::buildDome);
+        assertThrows(InvalidActionException.class, b::buildDome);
     }
 
     @Test
-    public void testBuildBlock() throws InvalidBuildException {
+    public void testBuildBlock() throws InvalidActionException {
         Building b = new Building();
         assertEquals(BuildingLevel.LEVEL0, b.getLevel());
 
@@ -37,6 +37,6 @@ public class BuildingTest {
         b.buildBlock();
         assertEquals(BuildingLevel.LEVEL3, b.getLevel());
 
-        assertThrows(InvalidBuildException.class, b::buildBlock);
+        assertThrows(InvalidActionException.class, b::buildBlock);
     }
 }

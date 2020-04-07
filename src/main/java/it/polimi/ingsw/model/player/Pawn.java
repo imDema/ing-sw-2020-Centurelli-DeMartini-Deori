@@ -1,20 +1,27 @@
 package it.polimi.ingsw.model.player;
 
-import it.polimi.ingsw.model.action.ActionKind;
 import it.polimi.ingsw.model.board.Coordinate;
-
-import java.util.List;
 
 public class Pawn {
     private Player owner;
     private int id;
 
-    public boolean tryAction(ActionKind a, Coordinate c) {
-        throw new UnsupportedOperationException();
+    public Player getOwner() {
+        return owner;
     }
 
-    public boolean execute(ActionKind a, Coordinate c) {
-        throw new UnsupportedOperationException();
+    public int getId() {
+        return id;
+    }
+
+    private Coordinate position;
+
+    public Coordinate getPosition() {
+        return position;
+    }
+
+    public void setPosition(Coordinate position) {
+        this.position = position;
     }
 
     @Override

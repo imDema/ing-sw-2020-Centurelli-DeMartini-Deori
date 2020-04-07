@@ -1,78 +1,101 @@
 package it.polimi.ingsw.model.board;
 
+import it.polimi.ingsw.model.action.Action;
+import it.polimi.ingsw.model.action.CheckAllowed;
 import it.polimi.ingsw.model.player.Pawn;
+import it.polimi.ingsw.model.player.Player;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
 public class Board {
-    private final int BOARD_SIZE = 5;
+    public final int BOARD_SIZE = 5;
 
     private Cell[][] cells;
-    private Map<Pawn, Coordinate> pawns = new HashMap<>();
+    private Map<Player, CheckAllowed> activeCheckEffects = new HashMap<>(); //TEMP
+
 
     public Optional<Pawn> getPawnAt(Coordinate c) {
         return cellAt(c).getPawn();
-    }
-
-    public Coordinate getPawnPosition(Pawn pawn) {
-        return pawns.get(pawn);
     }
 
     public Building getBuildingAt(Coordinate c) {
         return cellAt(c).getBuilding();
     }
 
-    public void movePawn(Pawn pawn, Coordinate c) throws InvalidMoveException {
+    public void movePawn(Pawn pawn, Coordinate c) throws InvalidActionException {
         if(!getPawnAt(c).isPresent()) {
-            Coordinate oldC = getPawnPosition(pawn);
+            Coordinate oldC = pawn.getPosition();
 
             cellAt(oldC).removePawn();
             cellAt(c).putPawn(pawn);
 
-            pawns.replace(pawn, c);
+            pawn.setPosition(c);
         }
         else
-            throw new InvalidMoveException();
+            throw new InvalidActionException();
     }
 
     public void swapPawn(Pawn pawn1, Pawn pawn2) {
-        Coordinate c1 = getPawnPosition(pawn1);
-        Coordinate c2 = getPawnPosition(pawn2);
+        Coordinate c1 = pawn1.getPosition();
+        Coordinate c2 = pawn2.getPosition();
 
         cellAt(c1).putPawn(pawn2);
         cellAt(c2).putPawn(pawn1);
 
-        pawns.replace(pawn1, c2);
-        pawns.replace(pawn2, c1);
+        pawn1.setPosition(c2);
+        pawn2.setPosition(c1);
     }
 
-    public void buildBlock(Coordinate c) throws InvalidBuildException{
+    public void buildBlock(Coordinate c) throws InvalidActionException{
          cellAt(c)
-                 .getBuilding()
-                 .buildBlock();
+             .getBuilding()
+             .buildBlock();
     }
 
-    public void buildDome(Coordinate c)  throws InvalidBuildException{
+    public void buildDome(Coordinate c)  throws InvalidActionException{
         cellAt(c)
-                .getBuilding()
-                .buildDome();
+            .getBuilding()
+            .buildDome();
     }
 
-    public void putPawn(Pawn pawn, Coordinate c) throws InvalidMoveException {
+    public void putPawn(Pawn pawn, Coordinate c) throws InvalidActionException {
         if (!getPawnAt(c).isPresent()) {
             cellAt(c).putPawn(pawn);
-            pawns.put(pawn, c);
+            pawn.setPosition(c);
         } else
-            throw new InvalidMoveException();
+            throw new InvalidActionException();
+    }
+
+    public boolean checkAction(Action action, Pawn pawn, Coordinate c) {
+        boolean flag = true;
+        for (CheckAllowed lambda : activeCheckEffects.values()) {
+            if (!lambda.isAllowed(this, pawn, c))
+            {
+                flag = false;
+                break;
+            }
+        }
+        return flag && action.checkAllowed(this,pawn,c);
+    }
+
+    public void executeAction(Action action, Pawn pawn, Coordinate c) throws InvalidActionException {
+        action.execute(this, pawn, c);
+    }
+
+    public void resetCheckEffect(Player player) {
+        activeCheckEffects.remove(player);
+    }
+
+    public void setCheckEffect(Player player, CheckAllowed checkAllowed) {
+        activeCheckEffects.put(player, checkAllowed);
     }
 
 
     public void removePawn(Pawn pawn) {
-        Coordinate c = getPawnPosition(pawn);
+        Coordinate c = pawn.getPosition();
         cellAt(c).removePawn();
-        pawns.remove(pawn);
     }
 
     private Cell cellAt(Coordinate c) {

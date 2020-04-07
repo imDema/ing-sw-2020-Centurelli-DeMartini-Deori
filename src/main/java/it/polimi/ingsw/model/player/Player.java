@@ -1,6 +1,6 @@
 package it.polimi.ingsw.model.player;
 
-import it.polimi.ingsw.model.action.ActionKind;
+import it.polimi.ingsw.model.action.Action;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,13 +13,13 @@ public class Player {
     private Pawn[] pawns = new Pawn[2];
     private God god;
 
-    // Reset TurnSequence at turn start
-    public void startTurn() {
-        god.getTurnSequence().start();
-    }
+    public List<Action> nextStep(Action action) {
+        if (action.equals(Action.start))
+            god.getTurnSequence().start();
+        else
+            god.getTurnSequence().nextStep(action);
 
-    public List<ActionKind> getAllowedActions() {
-        throw new UnsupportedOperationException();
+        return god.getTurnSequence().getStep();
     }
 
     public String getUsername() {
