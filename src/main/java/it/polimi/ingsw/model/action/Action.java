@@ -65,69 +65,88 @@ public class Action {
     //
 
     // MOVE
-    private static boolean defaultMove(Board b, Pawn p, Coordinate c) throws InvalidActionException {
+    private static boolean move(Board b, Pawn p, Coordinate c) throws InvalidActionException {
         b.movePawn(p,c);
         return false;
     }
-    private static boolean defaultCheckMove(Board b, Pawn p, Coordinate c) {
-        return !b.getPawnAt(c).isPresent() &&
-                c.isNeighbour(p.getPosition()) &&
-                b.getBuildingAt(p.getPosition())
-                        .getLevelDifference(b.getBuildingAt(c)) >= 0;
+    private static boolean canMove(Board b, Pawn p, Coordinate c) {
+        return isOnBoard(c) && !isOccupied(b,c) && c.isNeighbour(p.getPosition()) &&
+                b.getBuildingAt(c).getLevelDifference(b.getBuildingAt(p.getPosition())) <= 0;
     }
 
     // MOVE_UP
-    private static boolean defaultMoveUp(Board b, Pawn p, Coordinate c) throws InvalidActionException {
+    private static boolean moveUp(Board b, Pawn p, Coordinate c) throws InvalidActionException {
         b.movePawn(p,c);
-        if (b.getBuildingAt(c).getLevel() == BuildingLevel.LEVEL3) {return true;}
-        else {return false;}
+        return b.getBuildingAt(c).getLevel() == BuildingLevel.LEVEL3;
     }
-    private static boolean defaultCheckMoveUp(Board b, Pawn p, Coordinate c) {
-        return (!b.getPawnAt(c).isPresent() &&
-            c.isNeighbour(p.getPosition()) &&
-            b.getBuildingAt(p.getPosition()).getLevelDifference(b.getBuildingAt(c)) == -1);
+    private static boolean canMoveUp(Board b, Pawn p, Coordinate c) {
+        return isOnBoard(c) && !isOccupied(b,c) && c.isNeighbour(p.getPosition()) &&
+            b.getBuildingAt(p.getPosition()).getLevelDifference(b.getBuildingAt(c)) == -1;
     }
 
-    // BUILD_BLOCK
-    private static boolean defaultBuildBlock(Board b, Pawn p, Coordinate c) throws InvalidActionException {
+    //BUILD_BLOCK
+    private static boolean buildBlock(Board b, Pawn p, Coordinate c) throws InvalidActionException {
         b.buildBlock(c);
         return false;
     }
-    private static boolean defaultCheckBuildBlock(Board b, Pawn p, Coordinate c) {
-        return (!b.getPawnAt(c).isPresent() &&
+    private static boolean canBuildBlock(Board b, Pawn p, Coordinate c) {
+        return (!isOccupied(b, c) &&
             c.isNeighbour(p.getPosition()) &&
             b.getBuildingAt(c).getLevel() != BuildingLevel.LEVEL3 &&
             !b.getBuildingAt(c).hasDome());
-
     }
 
-    // BUILD_DOME
-    private static boolean defaultBuildDome(Board b, Pawn p, Coordinate c) throws InvalidActionException {
+    //BUILD_DOME
+    private static boolean buildDome(Board b, Pawn p, Coordinate c) throws InvalidActionException {
         b.buildDome(c);
         return false;
     }
-    private static boolean defaultCheckBuildDome(Board b, Pawn p, Coordinate c) {
-        return (!b.getPawnAt(c).isPresent() &&
+    private static boolean canBuildDome(Board b, Pawn p, Coordinate c) {
+        return (!b.getPawnAt(c).isPresent() && isOnBoard(c) &&
             c.isNeighbour(p.getPosition()) &&
             b.getBuildingAt(c).getLevel() == BuildingLevel.LEVEL3 &&
             !b.getBuildingAt(c).hasDome());
+    }
+
+    // PUSH PAWNS
+    private static boolean pushPawn(Board b, Pawn p, Coordinate c) throws InvalidActionException {
+        //push if opposite pawn is present
+        if (b.getPawnAt(c).isPresent()){
+            b.movePawn(b.getPawnAt(c).get(),
+                    new Coordinate(c.getX() - p.getPosition().getX(), c.getY() - p.getPosition().getY()));
+        }
+        b.movePawn(p,c);
+        return false;
+    }
+    private static boolean canPushPawn(Board b, Pawn p, Coordinate c){
+        // destination = coordinate of the pushed pawn
+        Coordinate destination = new Coordinate(c.getX() + (c.getX() - p.getPosition().getX()),
+                c.getY() + (c.getY() - p.getPosition().getY()));
+        return c.isNeighbour(p.getPosition()) && isOnBoard(c) && isOnBoard(destination) &&
+                !isOccupied(b,destination) && !b.getBuildingAt(destination).hasDome() &&
+                b.getBuildingAt(p.getPosition()).getLevelDifference(b.getBuildingAt(c)) <= 1;
 
     }
 
-    // END_TURN
-    // Commented because not definitive
-    //private static boolean defaultEndTurn(Game g, Board b, Pawn p, Coordinate c) {
-    //   g.nextTurn();
-    //    return false;
-    //}
-    //private static boolean defaultCheckEndTurn(Board b, Pawn p, Coordinate c) {
-    //    return false;
-    //}
+    //SWAP PAWNS
+    //p1 is the pawn of the player who wants to swap, p2 is the pawn of the enemy
+    private static boolean swapPawn(Board b, Pawn p1, Pawn p2) throws InvalidActionException {
+        //swap if opposite pawn is present
+        Coordinate tempCoordinate = p1.getPosition();
+        b.movePawn(p1, p2.getPosition());
+        b.movePawn(p2, tempCoordinate);
+        return false;
+    }
+    private static boolean canSwapPawn(Board b, Pawn p1, Pawn p2){
+        return p1.getPosition().isNeighbour(p2.getPosition()) &&
+                b.getBuildingAt(p1.getPosition()).getLevelDifference(b.getBuildingAt(p2.getPosition())) <= 1;
+    }
 
 
-//    //Custom action
-//    public Action(Effect effect, CheckAllowed checkAllowed) {
-//        this.effect = effect;
-//        this.checkAllowed = checkAllowed;
-//    }
+    private static boolean isOnBoard(Coordinate c){
+        return ((c.getX() >= 0) && (c.getX() < 5)) && ((c.getY() >= 0) && (c.getY() < 5));
+    }
+    private static boolean isOccupied(Board b, Coordinate c){
+        return b.getPawnAt(c).isPresent();
+    }
 }
