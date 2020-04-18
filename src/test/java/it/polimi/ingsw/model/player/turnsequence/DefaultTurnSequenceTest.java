@@ -1,15 +1,11 @@
 package it.polimi.ingsw.model.player.turnsequence;
 
-import it.polimi.ingsw.model.action.Action;
-import it.polimi.ingsw.model.action.CheckAllowed;
-import it.polimi.ingsw.model.action.Effect;
+import it.polimi.ingsw.model.action.*;
 import it.polimi.ingsw.model.board.Board;
 import it.polimi.ingsw.model.board.Coordinate;
 import it.polimi.ingsw.model.player.Pawn;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
-
-import java.util.List;
 
 import static java.util.Collections.singletonList;
 
@@ -21,11 +17,21 @@ class DefaultTurnSequenceTest {
 
     @Test
     public void testSequence() {
-        List<Effect> noEff = singletonList(this::noEffect);
-        List<CheckAllowed> noCheck = singletonList(this::noEffect);
+        final Action first = new Action("Move",
+                new Effect[] {Effects.move},
+                new Check[] {
+                        Checks.neighbour,
+                        Checks.maxOneLevelAbove,
+                        Checks.notOccupied,
+                        Checks.noDome});
 
-        Action first = new Action("Fist action", noEff, noCheck);
-        Action second = new Action("Fist action", noEff, noCheck);
+        final Action second = new Action("BuildBlock",
+                new Effect[] {Effects.buildBlock},
+                new Check[] {
+                        Checks.neighbour,
+                        Checks.noDome,
+                        Checks.notOccupied,
+                        Checks.notMaxLevel});
 
         TurnSequence t = new DefaultTurnSequence(first, second);
         assertArrayEquals(t.getStep().toArray(), singletonList(first).toArray());

@@ -21,7 +21,7 @@ public class Building {
     }
 
     public void buildBlock() throws InvalidActionException {
-        switch (level){
+        switch (level) {
             case LEVEL0:
                 level = BuildingLevel.LEVEL1;
                 break;

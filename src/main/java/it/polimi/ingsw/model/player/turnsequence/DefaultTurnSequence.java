@@ -2,6 +2,8 @@ package it.polimi.ingsw.model.player.turnsequence;
 
 import it.polimi.ingsw.model.action.Action;
 
+import java.lang.reflect.Array;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -58,6 +60,21 @@ public class DefaultTurnSequence implements TurnSequence {
     @Override
     public void start() {
         state = State.FIRST;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof DefaultTurnSequence) {
+            DefaultTurnSequence o = (DefaultTurnSequence) obj;
+            return state.equals(o.state) &&
+                Arrays.equals(actions, o.actions);
+        }
+        return false;
+    }
+
+    @Override
+    public String toString() {
+        return "DefaultTurnSequence{state:" + state.toString() + ", actions:" + Arrays.toString(actions) + "}";
     }
 
     public DefaultTurnSequence(Action firstAction, Action secondAction) {

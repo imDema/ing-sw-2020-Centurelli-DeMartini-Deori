@@ -1,0 +1,72 @@
+[
+  {
+    "name": "Apollo",
+    "turnSequence": {
+      "Class": "it.polimi.ingsw.model.player.turnsequence.DefaultTurnSequence",
+      "Content": {
+        "actions": [
+          {
+            "description": "Move",
+            "effects": [
+              "SWAP_PAWNS"
+            ],
+            "checks": [
+              "NEIGHBOUR",
+              "MAX_ONE_LEVEL_ABOVE",
+              "NO_DOME"
+            ]
+          },
+          {
+            "description": "BuildBlock",
+            "effects": [
+              "BUILD_BLOCK"
+            ],
+            "checks": [
+              "NEIGHBOUR",
+              "NO_DOME",
+              "NOT_OCCUPIED",
+              "NOT_MAX_LEVEL"
+            ]
+          }
+        ],
+        "state": "FIRST"
+      }
+    }
+  },
+  {
+    "name": "Minotaur",
+    "turnSequence": {
+      "Class": "it.polimi.ingsw.model.player.turnsequence.DefaultTurnSequence",
+      "Content": {
+        "actions": [
+          {
+            "description": "Move",
+            "effects": [
+              "PUSH_PAWN",
+              "MOVE"
+            ],
+            "checks": [
+              "NEIGHBOUR",
+              "MAX_ONE_LEVEL_ABOVE",
+              "NO_DOME",
+              "CAN_PUSH"
+            ]
+          },
+          {
+            "description": "BuildBlock",
+            "effects": [
+              "BUILD_BLOCK"
+            ],
+            "checks": [
+              "NEIGHBOUR",
+              "NO_DOME",
+              "NOT_OCCUPIED",
+              "NOT_MAX_LEVEL"
+            ]
+          }
+        ],
+        "state": "FIRST"
+      }
+    }
+  }
+]

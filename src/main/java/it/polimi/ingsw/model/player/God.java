@@ -16,7 +16,18 @@ public class God {
 
     @Override
     public String toString() {
-        return name;
+        return "God{name:" + name +
+                ", turnSequence:" + turnSequence.toString() + "}";
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof God) {
+            God g = (God) obj;
+            return name.equals(g.name) &&
+                turnSequence.equals(g.turnSequence);
+        }
+        return  false;
     }
 
     public God(String name, TurnSequence turnSequence) {

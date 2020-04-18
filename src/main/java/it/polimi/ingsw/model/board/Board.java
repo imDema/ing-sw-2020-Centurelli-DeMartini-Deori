@@ -1,7 +1,7 @@
 package it.polimi.ingsw.model.board;
 
 import it.polimi.ingsw.model.action.Action;
-import it.polimi.ingsw.model.action.CheckAllowed;
+import it.polimi.ingsw.model.action.Check;
 import it.polimi.ingsw.model.player.Pawn;
 import it.polimi.ingsw.model.player.Player;
 
@@ -13,7 +13,7 @@ public class Board {
     public final int BOARD_SIZE = 5;
 
     private Cell[][] cells;
-    private Map<Player, CheckAllowed> activeCheckEffects = new HashMap<>(); //TEMP
+    private Map<Player, Check> activeCheckEffects = new HashMap<>(); //TEMP
 
 
     public Optional<Pawn> getPawnAt(Coordinate c) {
@@ -69,8 +69,11 @@ public class Board {
     }
 
     public boolean checkAction(Action action, Pawn pawn, Coordinate c) {
+        if (!isOnBoard(c))
+            return false;
+
         boolean flag = true;
-        for (CheckAllowed lambda : activeCheckEffects.values()) {
+        for (Check lambda : activeCheckEffects.values()) {
             if (!lambda.isAllowed(this, pawn, c))
             {
                 flag = false;
@@ -88,8 +91,8 @@ public class Board {
         activeCheckEffects.remove(player);
     }
 
-    public void setCheckEffect(Player player, CheckAllowed checkAllowed) {
-        activeCheckEffects.put(player, checkAllowed);
+    public void setCheckEffect(Player player, Check check) {
+        activeCheckEffects.put(player, check);
     }
 
 
@@ -100,6 +103,10 @@ public class Board {
 
     private Cell cellAt(Coordinate c) {
         return cells[c.getX()][c.getY()];
+    }
+
+    public boolean isOnBoard(Coordinate c){
+        return ((c.getX() >= 0) && (c.getX() < BOARD_SIZE)) && ((c.getY() >= 0) && (c.getY() < BOARD_SIZE));
     }
 
     public Board() {

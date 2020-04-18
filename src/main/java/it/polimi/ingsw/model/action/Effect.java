@@ -5,6 +5,7 @@ import it.polimi.ingsw.model.board.Coordinate;
 import it.polimi.ingsw.model.board.InvalidActionException;
 import it.polimi.ingsw.model.player.Pawn;
 
+@FunctionalInterface
 public interface Effect {
     boolean execute(Board board, Pawn pawn, Coordinate coordinate) throws InvalidActionException;
 }

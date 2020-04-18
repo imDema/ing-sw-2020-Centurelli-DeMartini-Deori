@@ -1,7 +1,6 @@
 package it.polimi.ingsw.model.player.turnsequence;
 
 import it.polimi.ingsw.model.action.Action;
-import it.polimi.ingsw.model.action.ActionKind;
 
 import java.util.List;
 
