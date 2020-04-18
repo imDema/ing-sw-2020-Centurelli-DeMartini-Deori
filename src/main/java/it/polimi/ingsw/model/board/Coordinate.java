@@ -1,7 +1,7 @@
 package it.polimi.ingsw.model.board;
 
 public class Coordinate {
-    int x, y;
+    private final int x, y;
 
     public int getX() {
         return x;
@@ -19,5 +19,19 @@ public class Coordinate {
     public Coordinate(int x, int y) {
         this.x = x;
         this.y = y;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Coordinate) {
+            Coordinate c = (Coordinate) obj;
+            return c.x == x && c.y == y;
+        }
+        return false;
+    }
+
+    @Override
+    public String toString() {
+        return "(" + x + ", " + y + ")";
     }
 }

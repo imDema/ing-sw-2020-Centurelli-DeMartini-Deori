@@ -1,6 +1,6 @@
 package it.polimi.ingsw.model.action;
 
-public enum ActionKind {
+public enum ActionFamily {
     MOVE,
     BUILD,
     NONE

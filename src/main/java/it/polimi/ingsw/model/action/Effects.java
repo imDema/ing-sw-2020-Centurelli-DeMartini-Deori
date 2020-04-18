@@ -51,4 +51,27 @@ public abstract class Effects {
         //Check win condition
         return oldLevel != BuildingLevel.LEVEL3 && newLevel == BuildingLevel.LEVEL3;
     };
+
+    public static final Effect forbidMoveUp = (board, pawn, coordinate) -> {
+        CheckEffect checkEffect = (b, p, c, a) ->
+                !(a.getFamily() == ActionFamily.MOVE &&
+                        b.getBuildingAt(p.getPosition()).getLevelDifference(b.getBuildingAt(c)) > 0);
+
+        board.addCheckEffect(3, checkEffect); // TODO: Duration is hardcoded, should take account of player number instead
+        return false;
+    };
+
+    public static final Effect forbidCurrentCoordinate = (board, pawn, coordinate) -> {
+        final Coordinate playerPosition = pawn.getPosition();
+        CheckEffect checkEffect = (b, p, c, a) -> !c.equals(playerPosition);
+        board.addCheckEffect(1, checkEffect);
+        return false;
+    };
+
+    public static final Effect forbidTargetCoordinate = (board, pawn, coordinate) -> {
+        final Coordinate position = coordinate;
+        CheckEffect checkEffect = (b, p, c, a) -> !c.equals(position);
+        board.addCheckEffect(1, checkEffect);
+        return false;
+    };
 }

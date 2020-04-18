@@ -17,7 +17,7 @@ class DefaultTurnSequenceTest {
 
     @Test
     public void testSequence() {
-        final Action first = new Action("Move",
+        final Action first = new Action("Move", ActionFamily.MOVE,
                 new Effect[] {Effects.move},
                 new Check[] {
                         Checks.neighbour,
@@ -25,7 +25,7 @@ class DefaultTurnSequenceTest {
                         Checks.notOccupied,
                         Checks.noDome});
 
-        final Action second = new Action("BuildBlock",
+        final Action second = new Action("BuildBlock", ActionFamily.BUILD,
                 new Effect[] {Effects.buildBlock},
                 new Check[] {
                         Checks.neighbour,

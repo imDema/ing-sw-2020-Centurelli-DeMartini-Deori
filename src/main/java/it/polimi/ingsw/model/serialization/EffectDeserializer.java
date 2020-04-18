@@ -13,7 +13,10 @@ class EffectDeserializer implements JsonDeserializer<Effect> {
         BUILD_BLOCK,
         BUILD_DOME,
         SWAP_PAWNS,
-        PUSH_PAWN
+        PUSH_PAWN,
+        FORBID_MOVE_UP,
+        FORBID_CURRENT_COORDINATE,
+        FORBID_TARGET_COORDINATE
     }
 
     private Effect getEffectFromId(EffectId id) {
@@ -28,6 +31,12 @@ class EffectDeserializer implements JsonDeserializer<Effect> {
                 return Effects.swapPawns;
             case PUSH_PAWN:
                 return Effects.pushPawn;
+            case FORBID_MOVE_UP:
+                return Effects.forbidMoveUp;
+            case FORBID_CURRENT_COORDINATE:
+                return Effects.forbidCurrentCoordinate;
+            case FORBID_TARGET_COORDINATE:
+                return Effects.forbidTargetCoordinate;
         }
         System.err.println(id);
         throw new IllegalStateException();

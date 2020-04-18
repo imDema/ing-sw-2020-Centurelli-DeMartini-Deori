@@ -5,6 +5,6 @@ import it.polimi.ingsw.model.board.Coordinate;
 import it.polimi.ingsw.model.player.Pawn;
 
 @FunctionalInterface
-public interface Check {
-    boolean isAllowed(Board board, Pawn pawn, Coordinate coordinate);
+public interface CheckEffect {
+    boolean isAllowed(Board board, Pawn pawn, Coordinate coordinate, Action action);
 }

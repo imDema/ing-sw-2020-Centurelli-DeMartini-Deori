@@ -1,20 +1,19 @@
 package it.polimi.ingsw.model.board;
 
 import it.polimi.ingsw.model.action.Action;
-import it.polimi.ingsw.model.action.Check;
+import it.polimi.ingsw.model.action.CheckEffect;
 import it.polimi.ingsw.model.player.Pawn;
 import it.polimi.ingsw.model.player.Player;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class Board {
     public final int BOARD_SIZE = 5;
 
     private Cell[][] cells;
-    private Map<Player, Check> activeCheckEffects = new HashMap<>(); //TEMP
-
+    // Turn duration
+    private List<ActiveEffect> activeCheckEffects = new ArrayList<>();
 
     public Optional<Pawn> getPawnAt(Coordinate c) {
         return cellAt(c).getPawn();
@@ -72,14 +71,10 @@ public class Board {
         if (!isOnBoard(c))
             return false;
 
-        boolean flag = true;
-        for (Check lambda : activeCheckEffects.values()) {
-            if (!lambda.isAllowed(this, pawn, c))
-            {
-                flag = false;
-                break;
-            }
-        }
+        boolean flag = activeCheckEffects.stream()
+                .map(ActiveEffect::getEffect)
+                .allMatch(eff -> eff.isAllowed(this, pawn, c, action));
+
         return flag && action.checkAllowed(this,pawn,c);
     }
 
@@ -87,12 +82,16 @@ public class Board {
         action.execute(this, pawn, c);
     }
 
-    public void resetCheckEffect(Player player) {
-        activeCheckEffects.remove(player);
+    // Ticks down one turn from all active check effects
+    protected void tickCheckEffect() {
+        activeCheckEffects = activeCheckEffects.stream()
+                .peek(ActiveEffect::tickTurn)
+                .filter(a -> a.getDuration() > 0)
+                .collect(Collectors.toList());
     }
 
-    public void setCheckEffect(Player player, Check check) {
-        activeCheckEffects.put(player, check);
+    public void addCheckEffect(int duration, CheckEffect check) {
+        activeCheckEffects.add(new ActiveEffect(duration, check));
     }
 
 

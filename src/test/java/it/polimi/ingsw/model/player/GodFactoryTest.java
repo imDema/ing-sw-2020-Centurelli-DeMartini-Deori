@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class GodFactoryTest {
     @Test
     public void testDeserializeGod() throws IOException {
-        final Action move = new Action("Move",
+        final Action move = new Action("Move", ActionFamily.MOVE,
                 new Effect[] {Effects.move},
                 new Check[] {
                         Checks.neighbour,
@@ -27,7 +27,7 @@ public class GodFactoryTest {
                         Checks.notOccupied,
                         Checks.noDome});
 
-        final Action build = new Action("BuildBlock",
+        final Action build = new Action("BuildBlock", ActionFamily.BUILD,
                 new Effect[] {Effects.buildBlock},
                 new Check[] {
                         Checks.neighbour,
@@ -56,8 +56,6 @@ public class GodFactoryTest {
         assertTrue(gods.length > 0);
 
         Arrays.stream(gods)
-                .peek(Assertions::assertNotNull)
-                .map(God::toString)
-                .forEach(System.out::println);
+                .forEach(Assertions::assertNotNull);
     }
 }
