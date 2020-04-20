@@ -6,8 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Player {
-    private List<OnWinListener> onWinListeners = new ArrayList<>();
-    private List<OnLossListener> onLossListeners = new ArrayList<>();
 
     private String username;
     private Pawn[] pawns = new Pawn[2];
@@ -36,13 +34,6 @@ public class Player {
 
     public God getGod() {
         return god;
-    }
-
-    public void addOnWinListener(OnWinListener listener) {
-        onWinListeners.add(listener);
-    }
-    public void addOnLossListener(OnLossListener listener){
-        onLossListeners.add(listener);
     }
 
     @Override

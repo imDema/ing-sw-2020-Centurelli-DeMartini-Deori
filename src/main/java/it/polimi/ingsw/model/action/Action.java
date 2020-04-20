@@ -28,11 +28,16 @@ public class Action {
         return description;
     }
 
-    public void execute(Board board, Pawn pawn, Coordinate coordinate) throws InvalidActionException {
+    public boolean execute(Board board, Pawn pawn, Coordinate coordinate) throws InvalidActionException {
+        boolean win = false;
         for (Effect effect : effects) {
-            effect.execute(board, pawn, coordinate);
+            if (effect.execute(board, pawn, coordinate)){
+                win = true;
+            }
         }
+        return win;
     }
+
 
     /// Checks if all conditions are verified
     public boolean checkAllowed(Board board, Pawn pawn, Coordinate coordinate) {

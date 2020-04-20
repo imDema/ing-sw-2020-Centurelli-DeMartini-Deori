@@ -78,8 +78,9 @@ public class Board {
         return flag && action.checkAllowed(this,pawn,c);
     }
 
-    public void executeAction(Action action, Pawn pawn, Coordinate c) throws InvalidActionException {
-        action.execute(this, pawn, c);
+    // returns true if winning action
+    public boolean executeAction(Action action, Pawn pawn, Coordinate c) throws InvalidActionException {
+        return action.execute(this, pawn, c);
     }
 
     // Ticks down one turn from all active check effects
