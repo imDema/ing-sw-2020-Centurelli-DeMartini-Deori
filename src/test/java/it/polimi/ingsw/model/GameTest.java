@@ -11,7 +11,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 
-class GameTest {
+class
+GameTest {
 
     @Test
     public void testElimination() throws InvalidStateException {
