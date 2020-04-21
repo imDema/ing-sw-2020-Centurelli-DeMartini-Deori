@@ -14,8 +14,8 @@ public class ActionTest {
     @Test
     public void testCheckAllowed() throws InvalidActionException {
         Board board = new Board();
-        Player player1 = new Player("p1");
-        Player player2 = new Player("p2");
+        Player player1 = new Player("p1", null);
+        Player player2 = new Player("p2", null);
         Pawn pawn1player1 = player1.getPawn(0);
         Pawn pawn1player2 = player2.getPawn(0);
         board.putPawn(pawn1player1, new Coordinate(2,1));
@@ -76,10 +76,10 @@ public class ActionTest {
     @Test
     public void testWinCondition() throws InvalidActionException {
         Board board = new Board();
-        Player player1 = new Player("player1");
+        Player player1 = new Player("player1", null);
         Pawn pawn1player1 = player1.getPawn(0);
         Pawn pawn2player1 = player1.getPawn(1);
-        Player player2 = new Player("player2");
+        Player player2 = new Player("player2", null);
         Pawn pawn1player2 = player2.getPawn(0);
         board.putPawn(pawn1player1, new Coordinate(2,1));
         board.putPawn(pawn2player1, new Coordinate(4,3));

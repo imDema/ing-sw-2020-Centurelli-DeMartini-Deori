@@ -1,21 +1,18 @@
 package it.polimi.ingsw.model;
 
 import it.polimi.ingsw.model.board.Board;
-import it.polimi.ingsw.model.player.God;
 import it.polimi.ingsw.model.player.Player;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class Game {
-    private List<Player> players = new ArrayList<>();
+    private List<Player> players;
     private Board board;
     private int turn = 0;
     private int eliminationTurn = turn;
-    private List<String> usernameList = new ArrayList<>();
 
-    public void addUsername(String username) {
-        usernameList.add(username);
+    public Game(List<Player> players) {
+        this.players = players;
     }
 
     public int getPlayerNumber() {
@@ -27,28 +24,17 @@ public class Game {
     }
 
     public int getTurn() {
-        return turn + 1;
+        return turn;
     }
 
-    public void elimination(Player player) throws InvalidStateException {
+    public void elimination(Player player) throws IllegalStateException {
         if (players.size() > 0) {
             players.remove(player);
             eliminationTurn = turn;
             } else {
-                throw new InvalidStateException();
+                throw new IllegalStateException();
             }
         }
-
-
-    public void setPlayer(God god) throws InvalidStateException {
-        if (players.size() < 3) {
-            Player player = new Player(usernameList.get(players.size()));
-            player.setGod(god);
-            players.add(player);
-        } else {
-            throw new InvalidStateException();
-        }
-    }
 
     public void nextTurn() {
         turn++;

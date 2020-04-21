@@ -2,7 +2,6 @@ package it.polimi.ingsw.model.player;
 
 import it.polimi.ingsw.model.action.Action;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class Player {
@@ -28,10 +27,6 @@ public class Player {
         return pawns[id];
     }
 
-    public void setGod(God god) {
-        this.god = god;
-    }
-
     public God getGod() {
         return god;
     }
@@ -41,9 +36,10 @@ public class Player {
         return obj instanceof Player && username.equals(((Player) obj).username);
     }
 
-    public Player(String username) {
+    public Player(String username, God god) {
         this.username = username;
         this.pawns[0] = new Pawn(this, 0);
         this.pawns[1] = new Pawn(this, 1);
+        this.god = god;
     }
 }

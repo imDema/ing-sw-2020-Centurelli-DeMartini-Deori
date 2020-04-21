@@ -44,8 +44,8 @@ public class BoardTest {
 
     private Pawn[] setupTestPawns(Board board) {
         Pawn[] pawns = new Pawn[2];
-        pawns[0] = new Pawn(new Player("test_1"), 0);
-        pawns[1] = new Pawn(new Player("test_2"), 1);
+        pawns[0] = new Pawn(new Player("test_1", null), 0);
+        pawns[1] = new Pawn(new Player("test_2", null), 1);
 
         Coordinate c1 = new Coordinate(1, 3);
         Coordinate c2 = new Coordinate(4,0);
@@ -90,7 +90,7 @@ public class BoardTest {
         Board board = new Board();
 
         Coordinate c1 = new Coordinate(0, 2);
-        Pawn pawn = new Pawn(new Player ("test_put"), 2);
+        Pawn pawn = new Pawn(new Player ("test_put", null), 2);
 
         assertFalse(board.getPawnAt(c1).isPresent());
 
@@ -104,7 +104,7 @@ public class BoardTest {
     public void testRemovePawn() throws InvalidActionException {
         Board board = new Board();
 
-        Pawn p = new Pawn(new Player("test_delete"), 1);
+        Pawn p = new Pawn(new Player("test_delete", null), 1);
         Coordinate c = new Coordinate(4,4);
 
         board.putPawn(p, c);
@@ -121,7 +121,7 @@ public class BoardTest {
         final Coordinate c0 = new Coordinate(1, 1);
         final Coordinate c1 = new Coordinate(0, 1);
         final Coordinate c2 = new Coordinate(2, 1);
-        Pawn pawn = new Pawn(new Player("test_1"), 0);
+        Pawn pawn = new Pawn(new Player("test_1", null), 0);
         board.putPawn(pawn, c0);
         board.buildBlock(c1);
         board.buildBlock(c2);
