@@ -65,6 +65,6 @@ public class Action {
 
     @Override
     public String toString() {
-        return description;
+        return family + ":" + description;
     }
 }

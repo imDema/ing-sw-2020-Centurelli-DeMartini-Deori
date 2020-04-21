@@ -1,72 +1,256 @@
 [
   {
     "name": "Apollo",
+    "description": "Your Move: Your Worker may move into an opponent Worker’s space by forcing their Worker to the space yours just vacated",
     "turnSequence": {
-      "Class": "it.polimi.ingsw.model.player.turnsequence.DefaultTurnSequence",
-      "Content": {
-        "actions": [
-          {
-            "description": "Move",
-            "effects": [
-              "SWAP_PAWNS"
-            ],
-            "checks": [
-              "NEIGHBOUR",
-              "MAX_ONE_LEVEL_ABOVE",
-              "NO_DOME"
+      "type": "LINEAR",
+      "content": {
+        "sequence": {
+          "steps": [
+            [
+              {
+                "description": "Move",
+                "family": "MOVE",
+                "effects": ["SWAP_PAWNS"],
+                "checks": ["NEIGHBOUR", "MAX_ONE_LEVEL_ABOVE", "NO_DOME"]
+              }
+            ], [
+              {
+                "description": "Build Block",
+                "family": "BUILD",
+                "effects": ["BUILD_BLOCK"],
+                "checks": ["NEIGHBOUR", "NO_DOME", "NOT_OCCUPIED", "NOT_MAX_LEVEL"]
+              }, {
+                "description": "Build Dome",
+                "family": "BUILD",
+                "effects": ["BUILD_DOME"],
+                "checks": ["NEIGHBOUR", "NO_DOME", "NOT_OCCUPIED", "MAX_LEVEL"]
+              }
             ]
-          },
-          {
-            "description": "BuildBlock",
-            "effects": [
-              "BUILD_BLOCK"
-            ],
-            "checks": [
-              "NEIGHBOUR",
-              "NO_DOME",
-              "NOT_OCCUPIED",
-              "NOT_MAX_LEVEL"
-            ]
-          }
-        ],
-        "state": "FIRST"
+          ]
+        }
       }
     }
-  },
-  {
-    "name": "Minotaur",
-    "turnSequence": {
-      "Class": "it.polimi.ingsw.model.player.turnsequence.DefaultTurnSequence",
-      "Content": {
-        "actions": [
-          {
-            "description": "Move",
-            "effects": [
-              "PUSH_PAWN",
-              "MOVE"
-            ],
-            "checks": [
-              "NEIGHBOUR",
-              "MAX_ONE_LEVEL_ABOVE",
-              "NO_DOME",
-              "CAN_PUSH"
-            ]
-          },
-          {
-            "description": "BuildBlock",
-            "effects": [
-              "BUILD_BLOCK"
-            ],
-            "checks": [
-              "NEIGHBOUR",
-              "NO_DOME",
-              "NOT_OCCUPIED",
-              "NOT_MAX_LEVEL"
-            ]
-          }
-        ],
-        "state": "FIRST"
+  }, {
+  "name": "Minotaur",
+  "description": "Your Move: Your Worker may move into an opponent Worker’s space, if their Worker can be forced one space straight backwards to an unoccupied space at any level.",
+  "turnSequence": {
+    "type": "LINEAR",
+    "content": {
+      "sequence": {
+        "steps": [
+          [
+            {
+              "description": "Move",
+              "family": "MOVE",
+              "effects": ["PUSH_PAWN", "MOVE"],
+              "checks": ["NEIGHBOUR", "MAX_ONE_LEVEL_ABOVE", "NO_DOME", "CAN_PUSH"]
+            }
+          ], [
+            {
+              "description": "Build Block",
+              "family": "BUILD",
+              "effects": ["BUILD_BLOCK"],
+              "checks": ["NEIGHBOUR", "NO_DOME", "NOT_OCCUPIED", "NOT_MAX_LEVEL"]
+            }, {
+              "description": "Build Dome",
+              "family": "BUILD",
+              "effects": ["BUILD_DOME"],
+              "checks": ["NEIGHBOUR", "NO_DOME", "NOT_OCCUPIED", "MAX_LEVEL"]
+            }
+          ]
+        ]
       }
     }
   }
+}, {
+  "name": "Atlas",
+  "description": "Your Build: Your Worker may build a dome at any level.",
+  "turnSequence": {
+    "type": "LINEAR",
+    "content": {
+      "sequence": {
+        "steps": [
+          [
+            {
+              "description": "Move",
+              "family": "MOVE",
+              "effects": ["MOVE"],
+              "checks": ["NEIGHBOUR", "MAX_ONE_LEVEL_ABOVE", "NOT_OCCUPIED", "NO_DOME"]
+            }
+          ], [
+            {
+              "description": "Build Block",
+              "family": "BUILD",
+              "effects": ["BUILD_BLOCK"],
+              "checks": ["NEIGHBOUR", "NO_DOME", "NOT_OCCUPIED", "NOT_MAX_LEVEL"]
+            }, {
+              "description": "Build Dome",
+              "family": "BUILD",
+              "effects": ["BUILD_DOME"],
+              "checks": ["NEIGHBOUR", "NO_DOME", "NOT_OCCUPIED", "MIN_LEVEL_ONE"]
+            }
+          ]
+        ]
+      }
+    }
+  }
+}, {
+  "name": "Athena",
+  "description": "Opponent’s Turn: If one of your Workers moved up on your last turn, opponent Workers cannot move up this turn.",
+  "turnSequence": {
+    "type": "LINEAR",
+    "content": {
+      "sequence": {
+        "steps": [
+          [
+            {
+              "description": "Move",
+              "family": "MOVE",
+              "effects": ["FORBID_MOVE_UP", "MOVE"],
+              "checks": ["NEIGHBOUR", "MAX_ONE_LEVEL_ABOVE", "NOT_OCCUPIED", "NO_DOME"]
+            }
+          ], [
+            {
+              "description": "Build Block",
+              "family": "BUILD",
+              "effects": ["BUILD_BLOCK"],
+              "checks": ["NEIGHBOUR", "NO_DOME", "NOT_OCCUPIED", "NOT_MAX_LEVEL"]
+            }, {
+              "description": "Build Dome",
+              "family": "BUILD",
+              "effects": ["BUILD_DOME"],
+              "checks": ["NEIGHBOUR", "NO_DOME", "NOT_OCCUPIED", "MAX_LEVEL"]
+            }
+          ]
+        ]
+      }
+    }
+  }
+}, {
+  "name": "Hephaestus",
+  "description": "Your Build: Your Worker may build one additional block (not dome) on top of your first block.",
+  "turnSequence": {
+    "type": "LINEAR",
+    "content": {
+      "sequence": {
+        "steps": [
+          [
+            {
+              "description": "Move",
+              "family": "MOVE",
+              "effects": ["FORBID_MOVE_UP", "MOVE"],
+              "checks": ["NEIGHBOUR", "MAX_ONE_LEVEL_ABOVE", "NOT_OCCUPIED", "NO_DOME"]
+            }
+          ], [
+            {
+              "description": "Build Block",
+              "family": "BUILD",
+              "effects": ["BUILD_BLOCK", "FORBID_OTHER_COORDINATES"],
+              "checks": ["NEIGHBOUR", "NO_DOME", "NOT_OCCUPIED", "NOT_MAX_LEVEL"]
+            }, {
+              "description": "Build Dome",
+              "family": "BUILD",
+              "effects": ["BUILD_DOME", "FORBID_OTHER_COORDINATES"],
+              "checks": ["NEIGHBOUR", "NO_DOME", "NOT_OCCUPIED", "MAX_LEVEL"]
+            }
+          ], [
+            {
+              "description": "Build Block",
+              "family": "BUILD",
+              "effects": ["BUILD_BLOCK"],
+              "checks": ["NEIGHBOUR", "NO_DOME", "NOT_OCCUPIED", "NOT_MAX_LEVEL"]
+            }, {
+              "description": "Pass turn",
+              "family": "NONE",
+              "effects": [],
+              "checks": []
+            }
+          ]
+        ]
+      }
+    }
+  }
+}, {
+  "name": "Demeter",
+  "description": "Your Build: Your Worker may build one additional time, but not on the same space.",
+  "turnSequence": {
+    "type": "LINEAR",
+    "content": {
+      "sequence": {
+        "steps": [
+          [
+            {
+              "description": "Move",
+              "family": "MOVE",
+              "effects": ["FORBID_MOVE_UP", "MOVE"],
+              "checks": ["NEIGHBOUR", "MAX_ONE_LEVEL_ABOVE", "NOT_OCCUPIED", "NO_DOME"]
+            }
+          ], [
+            {
+              "description": "Build Block",
+              "family": "BUILD",
+              "effects": ["BUILD_BLOCK", "FORBID_COORDINATE"],
+              "checks": ["NEIGHBOUR", "NO_DOME", "NOT_OCCUPIED", "NOT_MAX_LEVEL"]
+            }, {
+              "description": "Build Dome",
+              "family": "BUILD",
+              "effects": ["BUILD_DOME", "FORBID_COORDINATE"],
+              "checks": ["NEIGHBOUR", "NO_DOME", "NOT_OCCUPIED", "MAX_LEVEL"]
+            }
+          ], [
+            {
+              "description": "Build Block",
+              "family": "BUILD",
+              "effects": ["BUILD_BLOCK"],
+              "checks": ["NEIGHBOUR", "NO_DOME", "NOT_OCCUPIED", "NOT_MAX_LEVEL"]
+            }, {
+              "description": "Build Dome",
+              "family": "BUILD",
+              "effects": ["BUILD_DOME"],
+              "checks": ["NEIGHBOUR", "NO_DOME", "NOT_OCCUPIED", "MAX_LEVEL"]
+            }, {
+              "description": "Pass turn",
+              "family": "NONE",
+              "effects": [],
+              "checks": []
+            }
+          ]
+        ]
+      }
+    }
+  }
+},{
+  "name": "Pan",
+  "description": "Win Condition: You also win if your Worker moves down two or more levels.",
+  "turnSequence": {
+    "type": "LINEAR",
+    "content": {
+      "sequence": {
+        "steps": [
+          [
+            {
+              "description": "Move",
+              "family": "MOVE",
+              "effects": ["WIN_ON_JUMP_DOWN", "MOVE"],
+              "checks": ["NEIGHBOUR", "MAX_ONE_LEVEL_ABOVE", "NO_DOME", "NOT_OCCUPIED"]
+            }
+          ], [
+            {
+              "description": "Build Block",
+              "family": "BUILD",
+              "effects": ["BUILD_BLOCK"],
+              "checks": ["NEIGHBOUR", "NO_DOME", "NOT_OCCUPIED", "NOT_MAX_LEVEL"]
+            }, {
+              "description": "Build Dome",
+              "family": "BUILD",
+              "effects": ["BUILD_DOME"],
+              "checks": ["NEIGHBOUR", "NO_DOME", "NOT_OCCUPIED", "MAX_LEVEL"]
+            }
+          ]
+        ]
+      }
+    }
+  }
+}
 ]

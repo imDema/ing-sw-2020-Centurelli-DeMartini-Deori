@@ -24,6 +24,8 @@ public abstract class Checks {
 
     public static final Check notMaxLevel = (b, p, c) -> b.getBuildingAt(c).getLevel() != BuildingLevel.LEVEL3;
 
+    public static final Check minLevelOne = (b, p, c) -> b.getBuildingAt(c).getLevel() != BuildingLevel.LEVEL0;
+
     public static final Check canPush = (b, p, c) -> b.getPawnAt(c).map(p2 -> {
         //Push destination
         int x1 = c.getX() + (c.getX() - p.getPosition().getX());

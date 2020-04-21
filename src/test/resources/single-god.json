@@ -1,35 +1,26 @@
 {
   "name": "Simple",
+  "description": "Description...",
   "turnSequence": {
-    "Class": "it.polimi.ingsw.model.player.turnsequence.DefaultTurnSequence",
-    "Content": {
-      "actions": [
-        {
-          "description": "Move",
-          "effects": [
-            "MOVE"
-          ],
-          "checks": [
-            "NEIGHBOUR",
-            "MAX_ONE_LEVEL_ABOVE",
-            "NOT_OCCUPIED",
-            "NO_DOME"
+    "type": "LINEAR",
+    "content": {
+      "sequence": {
+        "steps": [
+          [
+            {
+              "description": "Move",
+              "effects": ["MOVE"],
+              "checks": ["NEIGHBOUR", "MAX_ONE_LEVEL_ABOVE", "NOT_OCCUPIED", "NO_DOME"]
+            }
+          ], [
+            {
+              "description": "BuildBlock",
+              "effects": ["BUILD_BLOCK"],
+              "checks": ["NEIGHBOUR", "NO_DOME", "NOT_OCCUPIED", "NOT_MAX_LEVEL"]
+            }
           ]
-        },
-        {
-          "description": "BuildBlock",
-          "effects": [
-            "BUILD_BLOCK"
-          ],
-          "checks": [
-            "NEIGHBOUR",
-            "NO_DOME",
-            "NOT_OCCUPIED",
-            "NOT_MAX_LEVEL"
-          ]
-        }
-      ],
-      "state": "FIRST"
+        ]
+      }
     }
   }
 }

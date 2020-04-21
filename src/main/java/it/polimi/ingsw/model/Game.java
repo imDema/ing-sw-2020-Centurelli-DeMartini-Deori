@@ -7,12 +7,15 @@ import java.util.List;
 
 public class Game {
     private List<Player> players;
-    private Board board;
+    private Board board = new Board();
     private int turn = 0;
     private int eliminationTurn = turn;
-
     public Game(List<Player> players) {
         this.players = players;
+    }
+
+    public Board getBoard() {
+        return board;
     }
 
     public int getPlayerNumber() {

@@ -8,15 +8,17 @@ import java.lang.reflect.Type;
 
 class EffectDeserializer implements JsonDeserializer<Effect> {
 
-    public enum EffectId {
+    enum EffectId {
         MOVE,
         BUILD_BLOCK,
         BUILD_DOME,
         SWAP_PAWNS,
         PUSH_PAWN,
         FORBID_MOVE_UP,
-        FORBID_CURRENT_COORDINATE,
-        FORBID_TARGET_COORDINATE
+        FORBID_CURRENT_POSITION,
+        FORBID_COORDINATE,
+        FORBID_OTHER_COORDINATES,
+        WIN_ON_JUMP_DOWN
     }
 
     private Effect getEffectFromId(EffectId id) {
@@ -33,10 +35,14 @@ class EffectDeserializer implements JsonDeserializer<Effect> {
                 return Effects.pushPawn;
             case FORBID_MOVE_UP:
                 return Effects.forbidMoveUp;
-            case FORBID_CURRENT_COORDINATE:
-                return Effects.forbidCurrentCoordinate;
-            case FORBID_TARGET_COORDINATE:
-                return Effects.forbidTargetCoordinate;
+            case FORBID_CURRENT_POSITION:
+                return Effects.forbidCurrentPosition;
+            case FORBID_COORDINATE:
+                return Effects.forbidCoordinate;
+            case FORBID_OTHER_COORDINATES:
+                return Effects.forbidOtherCoordinates;
+            case WIN_ON_JUMP_DOWN:
+                return Effects.winOnJumpDown;
         }
         System.err.println(id);
         throw new IllegalStateException();

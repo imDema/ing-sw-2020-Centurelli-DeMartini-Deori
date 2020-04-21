@@ -10,7 +10,7 @@ public class Player {
     private Pawn[] pawns = new Pawn[2];
     private God god;
 
-    public List<Action> nextStep(Action action) {
+    public Action[] nextStep(Action action) {
         if (action.equals(Action.start))
             god.getTurnSequence().start();
         else

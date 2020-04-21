@@ -1,15 +1,15 @@
 package it.polimi.ingsw.model.player;
 
 import it.polimi.ingsw.model.action.*;
-import it.polimi.ingsw.model.player.turnsequence.DefaultTurnSequence;
+import it.polimi.ingsw.model.player.turnsequence.LinearTurnSequence;
+import it.polimi.ingsw.model.player.turnsequence.StepSequence;
+import it.polimi.ingsw.model.player.turnsequence.StepSequenceBuilder;
 import it.polimi.ingsw.model.player.turnsequence.TurnSequence;
 import it.polimi.ingsw.model.serialization.Serializer;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.io.Console;
 import java.util.Arrays;
-import java.util.stream.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -35,9 +35,13 @@ public class GodFactoryTest {
                         Checks.notOccupied,
                         Checks.notMaxLevel});
 
-        TurnSequence ts = new DefaultTurnSequence(move, build);
-        God expected = new God("Simple", ts);
+        StepSequence seq = new StepSequenceBuilder()
+                .addStep(new Action[] {move})
+                .addStep(new Action[] {build})
+                .build();
 
+        TurnSequence ts = new LinearTurnSequence(seq);
+        God expected = new God("Simple", "Description...", ts);
 
 
         // Load test resource into string
@@ -56,6 +60,7 @@ public class GodFactoryTest {
         assertTrue(gods.length > 0);
 
         Arrays.stream(gods)
+                //.peek(System.out::println)
                 .forEach(Assertions::assertNotNull);
     }
 }

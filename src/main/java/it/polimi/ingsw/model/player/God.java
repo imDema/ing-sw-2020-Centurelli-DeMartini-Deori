@@ -3,8 +3,18 @@ package it.polimi.ingsw.model.player;
 import it.polimi.ingsw.model.player.turnsequence.TurnSequence;
 
 public class God {
-    private String name;
-    private TurnSequence turnSequence;
+    final private String name;
+    final private String description;
+    final private TurnSequence turnSequence;
+    public God(String name, String description, TurnSequence turnSequence) {
+        this.name = name;
+        this.description = description;
+        this.turnSequence = turnSequence;
+    }
+
+    public String getDescription() {
+        return description;
+    }
 
     protected TurnSequence getTurnSequence() {
         return turnSequence;
@@ -16,8 +26,9 @@ public class God {
 
     @Override
     public String toString() {
-        return "God{name:" + name +
-                ", turnSequence:" + turnSequence.toString() + "}";
+        return "God{name:\"" + name +
+                "\", description:\"" + description +
+                "\", turnSequence:" + turnSequence.toString() + "}";
     }
 
     @Override
@@ -25,13 +36,9 @@ public class God {
         if (obj instanceof God) {
             God g = (God) obj;
             return name.equals(g.name) &&
+                    description.equals(g.description) &&
                 turnSequence.equals(g.turnSequence);
         }
         return  false;
-    }
-
-    public God(String name, TurnSequence turnSequence) {
-        this.name = name;
-        this.turnSequence = turnSequence;
     }
 }

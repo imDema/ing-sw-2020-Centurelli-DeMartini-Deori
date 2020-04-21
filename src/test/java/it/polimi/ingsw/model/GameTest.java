@@ -1,11 +1,6 @@
 package it.polimi.ingsw.model;
 
-import it.polimi.ingsw.model.action.Action;
-import it.polimi.ingsw.model.action.ActionFamily;
-import it.polimi.ingsw.model.action.Check;
-import it.polimi.ingsw.model.action.Effect;
 import it.polimi.ingsw.model.player.Player;
-import it.polimi.ingsw.model.player.turnsequence.DefaultTurnSequence;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -18,12 +13,6 @@ public class GameTest {
 
     @Test
     public void testElimination() throws IllegalStateException {
-
-        Effect[] effect = new Effect[0];
-        Check[] check = new Check[0];
-        Action action = new Action("Prov", ActionFamily.MOVE, effect, check);
-        DefaultTurnSequence turnSequence = new DefaultTurnSequence(action, action);
-
         String username1 = "Name1";
         String username2 = "Name2";
         String username3 = "Name3";

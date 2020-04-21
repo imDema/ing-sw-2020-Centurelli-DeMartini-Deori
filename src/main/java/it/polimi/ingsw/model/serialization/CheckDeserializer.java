@@ -16,6 +16,7 @@ class CheckDeserializer implements JsonDeserializer<Check> {
         NO_DOME,
         MAX_LEVEL,
         NOT_MAX_LEVEL,
+        MIN_LEVEL_ONE,
         CAN_PUSH
     }
 
@@ -35,6 +36,8 @@ class CheckDeserializer implements JsonDeserializer<Check> {
                 return Checks.maxLevel;
             case NOT_MAX_LEVEL:
                 return Checks.notMaxLevel;
+            case MIN_LEVEL_ONE:
+                return Checks.minLevelOne;
             case CAN_PUSH:
                 return Checks.canPush;
         }

@@ -3,8 +3,6 @@ package it.polimi.ingsw.model.action;
 import it.polimi.ingsw.model.board.*;
 import it.polimi.ingsw.model.player.Pawn;
 
-import java.util.Optional;
-
 public abstract class Effects {
     public static final Effect move = (b, p, c) -> {
         BuildingLevel oldLevel = b.getBuildingAt(p.getPosition()).getLevel();
@@ -13,6 +11,13 @@ public abstract class Effects {
         b.movePawn(p,c);
         //Check win condition
         return oldLevel != BuildingLevel.LEVEL3 && newLevel == BuildingLevel.LEVEL3;
+    };
+
+    public static final Effect winOnJumpDown = (b,p,c) -> {
+        Building oldB = b.getBuildingAt(p.getPosition());
+        Building newB = b.getBuildingAt(c);
+
+        return oldB.getLevelDifference(newB) <= -2;
     };
 
     public static final Effect buildBlock = (b, p, c) -> {
@@ -53,24 +58,36 @@ public abstract class Effects {
     };
 
     public static final Effect forbidMoveUp = (board, pawn, coordinate) -> {
-        CheckEffect checkEffect = (b, p, c, a) ->
-                !(a.getFamily() == ActionFamily.MOVE &&
-                        b.getBuildingAt(p.getPosition()).getLevelDifference(b.getBuildingAt(c)) > 0);
+        int levelDifference = board.getBuildingAt(coordinate).getLevelDifference(board.getBuildingAt(pawn.getPosition()));
 
-        board.addCheckEffect(3, checkEffect); // TODO: Duration is hardcoded, should take account of player number instead
+        if (levelDifference == 1){
+            CheckEffect checkEffect = (b, p, c, a) ->
+                    !(a.getFamily() == ActionFamily.MOVE &&
+                            b.getBuildingAt(p.getPosition()).getLevelDifference(b.getBuildingAt(c)) > 0);
+
+            board.addCheckEffect(3, checkEffect); // TODO: Duration is hardcoded, should take account of player number instead
+        }
+
         return false;
     };
 
-    public static final Effect forbidCurrentCoordinate = (board, pawn, coordinate) -> {
+    public static final Effect forbidCurrentPosition = (board, pawn, coordinate) -> {
         final Coordinate playerPosition = pawn.getPosition();
         CheckEffect checkEffect = (b, p, c, a) -> !c.equals(playerPosition);
         board.addCheckEffect(1, checkEffect);
         return false;
     };
 
-    public static final Effect forbidTargetCoordinate = (board, pawn, coordinate) -> {
+    public static final Effect forbidCoordinate = (board, pawn, coordinate) -> {
         final Coordinate position = coordinate;
         CheckEffect checkEffect = (b, p, c, a) -> !c.equals(position);
+        board.addCheckEffect(1, checkEffect);
+        return false;
+    };
+
+    public static final Effect forbidOtherCoordinates = (board, pawn, coordinate) -> {
+        final Coordinate position = coordinate;
+        CheckEffect checkEffect = (b, p, c, a) -> c.equals(position);
         board.addCheckEffect(1, checkEffect);
         return false;
     };

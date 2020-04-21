@@ -35,7 +35,7 @@ public class Serializer {
 
     private static Gson buildGson() {
         return new GsonBuilder()
-                .registerTypeAdapter(TurnSequence.class, new InterfaceSerializer<>())
+                .registerTypeAdapter(TurnSequence.class, new TurnSequenceDeserializer())
                 .registerTypeAdapter(Effect.class, new EffectDeserializer())
                 .registerTypeAdapter(Check.class, new CheckDeserializer())
                 // .setPrettyPrinting() // For testing
