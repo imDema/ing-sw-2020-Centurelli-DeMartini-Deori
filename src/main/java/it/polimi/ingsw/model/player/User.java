@@ -7,10 +7,6 @@ public class User {
         this.username = username;
     }
 
-    public Player createPlayer( God god) {
-        return new Player(username, god);
-    }
-
     public String getUsername() {
         return username;
     }

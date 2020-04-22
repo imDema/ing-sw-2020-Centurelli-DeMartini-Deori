@@ -27,12 +27,9 @@ public class IntegrationTest {
         }
 
         // Init players
-        Player p1 = new User("user_1")
-                .createPlayer(gods[0]);
-        Player p2 = new User("user_2")
-                .createPlayer(gods[1]);
-        Player p3 = new User("user_3")
-                .createPlayer(gods[2]);
+        Player p1 = new Player(new User("user_1"), gods[0]);
+        Player p2 = new Player(new User("user_2"), gods[1]);
+        Player p3 = new Player(new User("user_3"), gods[2]);
 
         // Add players to lobby
         lobby.addPlayer(p1);

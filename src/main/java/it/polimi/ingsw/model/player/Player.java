@@ -2,8 +2,6 @@ package it.polimi.ingsw.model.player;
 
 import it.polimi.ingsw.model.action.Action;
 
-import java.util.List;
-
 public class Player {
 
     private String username;
@@ -41,5 +39,8 @@ public class Player {
         this.pawns[0] = new Pawn(this, 0);
         this.pawns[1] = new Pawn(this, 1);
         this.god = god;
+    }
+    public Player(User user, God god){
+        this(user.getUsername(), god);
     }
 }
