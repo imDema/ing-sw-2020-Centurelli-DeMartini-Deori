@@ -19,14 +19,16 @@ public class LobbyTest {
         Player player3 = new Player(username3, null);
         Player player4 = new Player(username4, null);
 
-        lobby.addPlayer(player1);
-        lobby.addPlayer(player2);
-        lobby.addPlayer(player3);
+        assertTrue(lobby.addPlayer(player1));
+        assertFalse(lobby.addPlayer(player1));
+        assertTrue(lobby.addPlayer(player2));
+        assertTrue(lobby.addPlayer(player3));
+        assertFalse(lobby.addPlayer(player3));
 
         assertEquals(lobby.getSize(), 3);
 
         Game game = lobby.createGame();
         assertEquals(game.getPlayerNumber(), lobby.getSize());
-        assertThrows(IllegalStateException.class, () -> lobby.addPlayer(player4));
+        assertFalse(lobby.addPlayer(player4));
     }
 }

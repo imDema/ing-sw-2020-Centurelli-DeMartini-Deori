@@ -1,5 +1,6 @@
 package it.polimi.ingsw.model;
 
+import it.polimi.ingsw.controller.messages.User;
 import it.polimi.ingsw.model.action.Action;
 import it.polimi.ingsw.model.board.Board;
 import it.polimi.ingsw.model.board.BuildingLevel;

@@ -1,4 +1,6 @@
-package it.polimi.ingsw.model.player;
+package it.polimi.ingsw.controller.messages;
+
+import it.polimi.ingsw.model.player.Player;
 
 public class User {
     private final String username;
@@ -19,5 +21,10 @@ public class User {
         return username.equals(u.username);
     }
 
-
+    public boolean matches(Player player) {
+        return username.equals(player.getUsername());
+    }
+    public User(Player player) {
+        this.username = player.getUsername();
+    }
 }

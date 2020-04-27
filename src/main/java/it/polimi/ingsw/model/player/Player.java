@@ -1,5 +1,6 @@
 package it.polimi.ingsw.model.player;
 
+import it.polimi.ingsw.controller.messages.User;
 import it.polimi.ingsw.model.action.Action;
 
 public class Player {
