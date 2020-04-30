@@ -44,7 +44,7 @@ public class Board {
     }
 
     public void movePawn(Pawn pawn, Coordinate c) throws InvalidActionException {
-        if (!getPawnAt(c).isPresent()) {
+        if (getPawnAt(c).isEmpty()) {
             Coordinate oldC = pawn.getPosition();
 
             cellAt(oldC).removePawn();
@@ -85,7 +85,7 @@ public class Board {
     }
 
     public void putPawn(Pawn pawn, Coordinate c) throws InvalidActionException {
-        if (!getPawnAt(c).isPresent()) {
+        if (getPawnAt(c).isEmpty()) {
             cellAt(c).putPawn(pawn);
             pawn.setPosition(c);
         } else

@@ -25,7 +25,10 @@ public class GameTest {
         playersInGame.add(player1);
         playersInGame.add(player2);
         playersInGame.add(player3);
-        Game game = new Game(playersInGame);
+        Game game = new Game();
+        game.addPlayer(player1);
+        game.addPlayer(player2);
+        game.addPlayer(player3);
 
         assertEquals(3, game.getPlayerNumber());
         assertEquals(game.getCurrentPlayer(), player1);
@@ -34,7 +37,7 @@ public class GameTest {
         assertEquals(1, game.getTurn());
         assertEquals(game.getCurrentPlayer(), player2);
 
-        game.elimination(game.getPlayer(1));
+        game.elimination(game.getPlayers().get(1));
         assertEquals(2, game.getPlayerNumber());
 
         game.elimination(game.getCurrentPlayer());

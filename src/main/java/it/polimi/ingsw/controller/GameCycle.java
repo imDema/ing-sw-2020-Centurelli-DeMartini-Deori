@@ -91,7 +91,7 @@ public class GameCycle implements OnExecuteActionListener, OnChoosePawnListener 
         return false;
     }
 
-    private void startTurn() {
+    void startTurn() {
         Player currentPlayer = game.getCurrentPlayer();
         actions = currentPlayer.nextStep(Action.start);
         onActionsReady(currentPlayer, actions);

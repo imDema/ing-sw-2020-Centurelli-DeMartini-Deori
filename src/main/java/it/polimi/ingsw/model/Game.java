@@ -3,15 +3,17 @@ package it.polimi.ingsw.model;
 import it.polimi.ingsw.model.board.Board;
 import it.polimi.ingsw.model.player.Player;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Game {
-    private List<Player> players;
+    private List<Player> players = new ArrayList<>();
     private Board board = new Board();
     private int turn = 0;
     private int eliminationTurn = turn;
-    public Game(List<Player> players) {
-        this.players = players;
+
+    public void addPlayer(Player player) {
+        players.add(player);
     }
 
     public Board getBoard() {
@@ -22,8 +24,8 @@ public class Game {
         return players.size() ;
     }
 
-    public Player getPlayer ( int i){
-        return players.get(i);
+    public List<Player> getPlayers (){
+        return List.copyOf(players); // Returns copy to prevent external mutations
     }
 
     public int getTurn() {

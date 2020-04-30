@@ -2,10 +2,15 @@ package it.polimi.ingsw.model.serialization;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import it.polimi.ingsw.model.action.Check;
 import it.polimi.ingsw.model.action.Effect;
 import it.polimi.ingsw.model.player.God;
 import it.polimi.ingsw.model.player.turnsequence.TurnSequence;
+
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Serializer {
     private static Gson gson = null;
@@ -20,9 +25,11 @@ public class Serializer {
         return gson.fromJson(s, God.class);
     }
 
-    public static God[] getGodArray(String s) {
+    public static List<God> getGodArray(String s) {
         Gson gson = getGson();
-        return gson.fromJson(s, God[].class);
+        Type godListType = new TypeToken<List<God>>() {}.getType();
+
+        return gson.fromJson(s, godListType);
     }
 
     // Lazy load

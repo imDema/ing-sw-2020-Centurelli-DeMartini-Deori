@@ -9,10 +9,10 @@ import it.polimi.ingsw.model.serialization.Serializer;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -56,10 +56,10 @@ public class GodFactoryTest {
     @Test
     public void testLoadGodsFromResource() {
         GodFactory factory = new GodFactory();
-        God[] gods = assertDoesNotThrow(factory::getGods);
-        assertTrue(gods.length > 0);
+        List<God> gods = assertDoesNotThrow(factory::getGods);
+        assertTrue(gods.size() > 0);
 
-        Arrays.stream(gods)
+        gods.stream()
                 //.peek(System.out::println)
                 .forEach(Assertions::assertNotNull);
     }

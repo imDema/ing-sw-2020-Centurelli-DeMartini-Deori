@@ -5,12 +5,13 @@ import it.polimi.ingsw.model.serialization.Serializer;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.stream.Stream;
 
 public class GodFactory {
     private final String PATH_GODS = "src/main/resources/gods.json";
 
-    public God[] getGods() throws IOException {
+    public List<God> getGods() throws IOException {
         String resource = readConfig();
         return Serializer.getGodArray(resource);
     }

@@ -10,6 +10,7 @@ import it.polimi.ingsw.model.player.*;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -18,9 +19,8 @@ public class IntegrationTest {
     public void testBasicGameSequence() throws InvalidActionException {
         // Init lobby
         Lobby lobby = new Lobby(3);
-        God[] gods;
         try {
-            gods = lobby.getAvailableGods();
+            lobby.loadGods();
         } catch (IOException ex) {
             ex.printStackTrace();
             fail();
@@ -28,28 +28,38 @@ public class IntegrationTest {
         }
 
         // Init players
-        Player p1 = new Player(new User("user_1"), gods[0]);
-        Player p2 = new Player(new User("user_2"), gods[1]);
-        Player p3 = new Player(new User("user_3"), gods[2]);
+        User u1 = new User("user_1");
+        User u2 = new User("user_2");
+        User u3 = new User("user_3");
 
-        // Add players to lobby
-        lobby.addPlayer(p1);
-        lobby.addPlayer(p2);
-        lobby.addPlayer(p3);
+        lobby.addUser(u1);
+        lobby.addUser(u2);
+        lobby.addUser(u3);
 
-        // Instantiate board
-        Game game = lobby.createGame();
-        Board board = game.getBoard();
+        List<God> gods = lobby.getAvailableGods();
+        lobby.chooseGod(u1, gods.get(0));
+
+        gods = lobby.getAvailableGods();
+        lobby.chooseGod(u2, gods.get(1));
+
+        gods = lobby.getAvailableGods();
+        lobby.chooseGod(u3, gods.get(2));
+
 
         // Place pawns at starting positions
-        board.putPawn(p1.getPawn(0), new Coordinate(0,0));
-        board.putPawn(p1.getPawn(1), new Coordinate(1,0));
+        assertTrue(lobby.getUserToSetUp().isPresent());
+        lobby.setUpUserPawns(lobby.getUserToSetUp().get(), new Coordinate(0,0), new Coordinate(1,0));
 
-        board.putPawn(p2.getPawn(0), new Coordinate(2,0));
-        board.putPawn(p2.getPawn(1), new Coordinate(3,0));
+        assertTrue(lobby.getUserToSetUp().isPresent());
+        lobby.setUpUserPawns(lobby.getUserToSetUp().get(), new Coordinate(2,0), new Coordinate(3,0));
 
-        board.putPawn(p3.getPawn(0), new Coordinate(4,0));
-        board.putPawn(p3.getPawn(1), new Coordinate(0,1));
+        assertTrue(lobby.getUserToSetUp().isPresent());
+        lobby.setUpUserPawns(lobby.getUserToSetUp().get(), new Coordinate(4,0), new Coordinate(0,1));
+
+        assertTrue(lobby.isGameReady());
+
+        Game game = lobby.getGame();
+        Board board = game.getBoard();
 
         // Start game cycle
         Player player = game.getCurrentPlayer();
@@ -61,7 +71,7 @@ public class IntegrationTest {
         // Check and execute action
         assertTrue(board.checkAction(chosenAction, pawn, coordinate));
         board.executeAction(chosenAction, pawn, coordinate);
-        assertEquals(p1.getPawn(0).getPosition(), coordinate);
+        assertEquals(game.getPlayers().get(0).getPawn(0).getPosition(), coordinate);
 
         // Advance turn sequence and go on executing actions
         actions = player.nextStep(chosenAction);
