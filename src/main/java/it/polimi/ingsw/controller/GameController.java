@@ -24,6 +24,9 @@ public class GameController implements OnAddUserListener, OnChooseGodListener, O
     private OnRequestPlacePawnsListener requestPlacePawnsListener;
     private GameCycle gameCycle = new GameCycle(lobby.getGame());
 
+    public GameCycle getGameCycle() {
+        return gameCycle;
+    }
 
     public void setServerErrorListener(OnServerErrorListener serverErrorListener) {
         this.serverErrorListener = serverErrorListener;
@@ -80,7 +83,7 @@ public class GameController implements OnAddUserListener, OnChooseGodListener, O
                 .findFirst();
         if (g.isPresent() && lobby.chooseGod(user, g.get())) {
             if (lobby.isGameFull()) {
-                onRequestPlacement(lobby.getUserToSetUp().get());
+                onRequestPlacement(lobby.getUserToSetUp().orElseThrow());
             } else {
                 onGodsAvailable(lobby.getAvailableGods());
             }

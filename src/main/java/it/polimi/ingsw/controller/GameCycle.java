@@ -1,8 +1,6 @@
 package it.polimi.ingsw.controller;
 
-import it.polimi.ingsw.controller.events.OnActionsReadyListener;
-import it.polimi.ingsw.controller.events.OnServerErrorListener;
-import it.polimi.ingsw.controller.events.OnWinListener;
+import it.polimi.ingsw.controller.events.*;
 import it.polimi.ingsw.controller.messages.ActionIdentifier;
 import it.polimi.ingsw.model.Game;
 import it.polimi.ingsw.model.action.Action;
@@ -27,10 +25,20 @@ public class GameCycle implements OnExecuteActionListener, OnChoosePawnListener 
     private State state = State.CHOOSE_PAWN;
     private OnActionsReadyListener actionsReadyListener;
     private OnServerErrorListener serverErrorListener;
+    private OnEliminationListener eliminationListener;
+    private OnTurnChangeListener turnChangeListener;
     private OnWinListener winListener;
 
     public GameCycle(Game game) {
         this.game = game;
+    }
+
+    public void setEliminationListener(OnEliminationListener eliminationListener) {
+        this.eliminationListener = eliminationListener;
+    }
+
+    public void setTurnChangeListener(OnTurnChangeListener turnChangeListener) {
+        this.turnChangeListener = turnChangeListener;
     }
 
     public void setWinListener(OnWinListener winListener) {
