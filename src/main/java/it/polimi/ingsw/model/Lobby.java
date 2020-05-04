@@ -36,6 +36,12 @@ public class Lobby {
         return users.size();
     }
 
+    public Optional<User> getUser(Player player) {
+        return users.stream()
+                .filter(u -> u.matches(player))
+                .findFirst();
+    }
+
     public boolean addUser(User user) {
         if (!users.contains(user) && users.size() < size) {
             users.add(user);

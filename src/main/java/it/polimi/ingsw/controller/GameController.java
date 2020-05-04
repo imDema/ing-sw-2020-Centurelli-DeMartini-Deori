@@ -21,8 +21,9 @@ public class GameController implements OnAddUserListener, OnChooseGodListener, O
     private Lobby lobby = new Lobby(SIZE);
     private OnGodsAvailableListener godsAvailableListener;
     private OnServerErrorListener serverErrorListener;
+    private OnAddUserListener addUserListener;
     private OnRequestPlacePawnsListener requestPlacePawnsListener;
-    private GameCycle gameCycle = new GameCycle(lobby.getGame());
+    private GameCycle gameCycle = new GameCycle(lobby);
 
     public GameCycle getGameCycle() {
         return gameCycle;
@@ -30,6 +31,10 @@ public class GameController implements OnAddUserListener, OnChooseGodListener, O
 
     public void setServerErrorListener(OnServerErrorListener serverErrorListener) {
         this.serverErrorListener = serverErrorListener;
+    }
+
+    public void setAddUserListener(OnAddUserListener addUserListener) {
+        this.addUserListener = addUserListener;
     }
 
     public void setRequestPlacePawnsListener(OnRequestPlacePawnsListener requestPlacePawnsListener) {
@@ -114,6 +119,7 @@ public class GameController implements OnAddUserListener, OnChooseGodListener, O
     public void onChoosePawn(User user, int id) {
         if (lobby.isGameReady())
             gameCycle.onChoosePawn(user, id);
+
     }
 
     @Override
