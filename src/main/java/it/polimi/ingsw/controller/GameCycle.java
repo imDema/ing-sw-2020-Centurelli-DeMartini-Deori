@@ -22,7 +22,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class GameCycle implements OnExecuteActionListener, OnChoosePawnListener {
-    private Lobby lobby;
+    private final Lobby lobby;
     private Game game;
     private Pawn currentPawn;
     private Action[] actions;
@@ -78,37 +78,39 @@ public class GameCycle implements OnExecuteActionListener, OnChoosePawnListener 
 
     @Override
     public boolean onExecuteAction(ActionIdentifier actionIdentifier, Coordinate coordinate) {
-        if (state == State.CHOOSE_PAWN)
-            return false;
-        Player player = game.getCurrentPlayer();
-        Board board = game.getBoard();
-        Optional<Action> chosenAction = Arrays.stream(actions)
-                .filter(actionIdentifier::matches)
-                .findFirst();
-        if (chosenAction.isPresent()) {
-            Action a = chosenAction.get();
-            // The chosen Action has to be checked
-            if (board.checkAction(a, currentPawn, coordinate)) {
-                try {
-                    // The chosen Action is executed
-                    if (board.executeAction(a, currentPawn, coordinate) && winListener != null) {
-                        winListener.onWin(new User(player));
+        synchronized (lobby) {
+            if (state == State.CHOOSE_PAWN)
+                return false;
+            Player player = game.getCurrentPlayer();
+            Board board = game.getBoard();
+            Optional<Action> chosenAction = Arrays.stream(actions)
+                    .filter(actionIdentifier::matches)
+                    .findFirst();
+            if (chosenAction.isPresent()) {
+                Action a = chosenAction.get();
+                // The chosen Action has to be checked
+                if (board.checkAction(a, currentPawn, coordinate)) {
+                    try {
+                        // The chosen Action is executed
+                        if (board.executeAction(a, currentPawn, coordinate) && winListener != null) {
+                            winListener.onWin(new User(player));
+                        }
+                        actions = player.nextStep(a);
+                        // If the turn is ended the next player has to choose the pawn
+                        if (Arrays.equals(actions, new Action[]{Action.endTurn})) {
+                            game.nextTurn();
+                            state = State.CHOOSE_PAWN;
+                            startTurn();
+                        } else {
+                            onActionsReady(player, actions);
+                        }
+                        return true;
+                    } catch (InvalidActionException e) {
+                        if (serverErrorListener != null)
+                            serverErrorListener.onServerError("Invalid board action", "An error occurred while executing the action");
+                        e.printStackTrace();
+                        return false;
                     }
-                    actions = player.nextStep(a);
-                    // If the turn is ended the next player has to choose the pawn
-                    if (Arrays.equals(actions, new Action[] {Action.endTurn})) {
-                        game.nextTurn();
-                        state = State.CHOOSE_PAWN;
-                        startTurn();
-                    } else {
-                        onActionsReady(player, actions);
-                    }
-                    return true;
-                } catch (InvalidActionException e) {
-                    if (serverErrorListener != null)
-                        serverErrorListener.onServerError("Invalid board action", "An error occurred while executing the action");
-                    e.printStackTrace();
-                    return false;
                 }
             }
         }
@@ -130,10 +132,12 @@ public class GameCycle implements OnExecuteActionListener, OnChoosePawnListener 
 
     @Override
     public void onChoosePawn(User user, int id) {
-        Player currentPlayer = game.getCurrentPlayer();
-        if (user.matches(currentPlayer) && state == State.CHOOSE_PAWN) {
-            currentPawn = currentPlayer.getPawn(id);
-            state = State.ACTION;
+        synchronized (lobby) {
+            Player currentPlayer = game.getCurrentPlayer();
+            if (user.matches(currentPlayer) && state == State.CHOOSE_PAWN) {
+                currentPawn = currentPlayer.getPawn(id);
+                state = State.ACTION;
+            }
         }
     }
 

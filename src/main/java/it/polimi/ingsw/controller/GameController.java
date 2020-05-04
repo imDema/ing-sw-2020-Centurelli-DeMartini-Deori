@@ -18,12 +18,12 @@ import java.util.stream.Collectors;
 public class GameController implements OnAddUserListener, OnChooseGodListener, OnPlacePawnsListener, OnChoosePawnListener, OnExecuteActionListener {
 
     private final int SIZE = 3;
-    private Lobby lobby = new Lobby(SIZE);
+    private final Lobby lobby = new Lobby(SIZE);
     private OnGodsAvailableListener godsAvailableListener;
     private OnServerErrorListener serverErrorListener;
     private OnAddUserListener addUserListener;
     private OnRequestPlacePawnsListener requestPlacePawnsListener;
-    private GameCycle gameCycle = new GameCycle(lobby);
+    private final GameCycle gameCycle = new GameCycle(lobby);
 
     public GameCycle getGameCycle() {
         return gameCycle;
@@ -71,61 +71,70 @@ public class GameController implements OnAddUserListener, OnChooseGodListener, O
 
     @Override
     public Optional<User> onAddUser(String username) {
-        User user = new User(username);
-        if (lobby.addUser(user)) {
-            return Optional.of(user);
-        } else {
-            return Optional.empty();
+        synchronized (lobby) {
+            User user = new User(username);
+            if (lobby.addUser(user)) {
+                return Optional.of(user);
+            } else {
+                return Optional.empty();
+            }
         }
     }
 
     @Override
     public boolean onChooseGod(User user, GodIdentifier god) {
-        if (lobby.isGameFull()) return false;
+        synchronized (lobby) {
+            if (lobby.isGameFull()) return false;
 
-        Optional<God> g = lobby.getAvailableGods().stream()
-                .filter(god::matches)
-                .findFirst();
-        if (g.isPresent() && lobby.chooseGod(user, g.get())) {
-            if (lobby.isGameFull()) {
-                onRequestPlacement(lobby.getUserToSetUp().orElseThrow());
-            } else {
-                onGodsAvailable(lobby.getAvailableGods());
+            Optional<God> g = lobby.getAvailableGods().stream()
+                    .filter(god::matches)
+                    .findFirst();
+            if (g.isPresent() && lobby.chooseGod(user, g.get())) {
+                if (lobby.isGameFull()) {
+                    onRequestPlacement(lobby.getUserToSetUp().orElseThrow());
+                } else {
+                    onGodsAvailable(lobby.getAvailableGods());
+                }
+                return true;
             }
-            return true;
+            return false;
         }
-        return false;
     }
 
     @Override
     public boolean onPlacePawns(User user, Coordinate c1, Coordinate c2) {
-        Optional<User> u = lobby.getUserToSetUp();
-        if (!lobby.isGameFull() || !(u.isPresent() && u.get().equals(user)))
-            return false;
+        synchronized (lobby) {
+            Optional<User> u = lobby.getUserToSetUp();
+            if (!lobby.isGameFull() || !(u.isPresent() && u.get().equals(user)))
+                return false;
 
-        if (lobby.setUpUserPawns(user, c1, c2)){
-            Optional<User> nextUser = lobby.getUserToSetUp();
-            if (nextUser.isPresent()) {
-                onRequestPlacement(nextUser.get());
-            } else {
-                gameCycle.startTurn();
+            if (lobby.setUpUserPawns(user, c1, c2)) {
+                Optional<User> nextUser = lobby.getUserToSetUp();
+                if (nextUser.isPresent()) {
+                    onRequestPlacement(nextUser.get());
+                } else {
+                    gameCycle.startTurn();
+                }
+                return true;
             }
-            return true;
+            return false;
         }
-        return false;
     }
 
     @Override
     public void onChoosePawn(User user, int id) {
-        if (lobby.isGameReady())
-            gameCycle.onChoosePawn(user, id);
-
+        synchronized (lobby) {
+            if (lobby.isGameReady())
+                gameCycle.onChoosePawn(user, id);
+        }
     }
 
     @Override
     public boolean onExecuteAction(ActionIdentifier actionIdentifier, Coordinate coordinate) {
-        if (lobby.isGameReady())
-            return gameCycle.onExecuteAction(actionIdentifier, coordinate);
+        synchronized (lobby) {
+            if (lobby.isGameReady())
+                return gameCycle.onExecuteAction(actionIdentifier, coordinate);
+        }
         return false;
     }
 }
