@@ -5,6 +5,8 @@ import it.polimi.ingsw.model.action.Checks;
 import it.polimi.ingsw.model.action.Check;
 
 import java.lang.reflect.Type;
+import java.util.AbstractMap.SimpleImmutableEntry;
+import java.util.Map;
 
 class CheckDeserializer implements JsonDeserializer<Check> {
 
@@ -20,27 +22,22 @@ class CheckDeserializer implements JsonDeserializer<Check> {
         CAN_PUSH
     }
 
+    private final Map<CheckId, Check> map = Map.ofEntries(
+            new SimpleImmutableEntry<>(CheckId.NOT_OCCUPIED, Checks.notOccupied),
+            new SimpleImmutableEntry<>(CheckId.NEIGHBOUR, Checks.neighbour),
+            new SimpleImmutableEntry<>(CheckId.MAX_ONE_LEVEL_ABOVE, Checks.maxOneLevelAbove),
+            new SimpleImmutableEntry<>(CheckId.MAX_SAME_LEVEL, Checks.maxSameLevel),
+            new SimpleImmutableEntry<>(CheckId.NO_DOME, Checks.noDome),
+            new SimpleImmutableEntry<>(CheckId.MAX_LEVEL, Checks.maxLevel),
+            new SimpleImmutableEntry<>(CheckId.NOT_MAX_LEVEL, Checks.notMaxLevel),
+            new SimpleImmutableEntry<>(CheckId.MIN_LEVEL_ONE, Checks.minLevelOne),
+            new SimpleImmutableEntry<>(CheckId.CAN_PUSH, Checks.canPush)
+    );
+
     private Check getCheckAllowedFromId(CheckId id) {
-        switch (id){
-            case NOT_OCCUPIED:
-                return Checks.notOccupied;
-            case NEIGHBOUR:
-                return Checks.neighbour;
-            case MAX_ONE_LEVEL_ABOVE:
-                return Checks.maxOneLevelAbove;
-            case MAX_SAME_LEVEL:
-                return Checks.maxSameLevel;
-            case NO_DOME:
-                return Checks.noDome;
-            case MAX_LEVEL:
-                return Checks.maxLevel;
-            case NOT_MAX_LEVEL:
-                return Checks.notMaxLevel;
-            case MIN_LEVEL_ONE:
-                return Checks.minLevelOne;
-            case CAN_PUSH:
-                return Checks.canPush;
-        }
+        Check check = map.get(id);
+        if (check != null)
+            return check;
 
         throw new IllegalStateException();
     }

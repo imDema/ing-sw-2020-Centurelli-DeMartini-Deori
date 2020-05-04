@@ -5,6 +5,8 @@ import it.polimi.ingsw.model.action.Effects;
 import it.polimi.ingsw.model.action.Effect;
 
 import java.lang.reflect.Type;
+import java.util.AbstractMap.SimpleImmutableEntry;
+import java.util.Map;
 
 class EffectDeserializer implements JsonDeserializer<Effect> {
 
@@ -15,36 +17,30 @@ class EffectDeserializer implements JsonDeserializer<Effect> {
         SWAP_PAWNS,
         PUSH_PAWN,
         FORBID_MOVE_UP,
-        FORBID_CURRENT_POSITION,
+        FORBID_MOVE_BACK,
         FORBID_COORDINATE,
         FORBID_OTHER_COORDINATES,
         WIN_ON_JUMP_DOWN
     }
 
+    private final Map<EffectId, Effect> map = Map.ofEntries(
+        new SimpleImmutableEntry<>(EffectId.MOVE, Effects.move),
+        new SimpleImmutableEntry<>(EffectId.BUILD_BLOCK, Effects.buildBlock),
+        new SimpleImmutableEntry<>(EffectId.BUILD_DOME, Effects.buildDome),
+        new SimpleImmutableEntry<>(EffectId.SWAP_PAWNS, Effects.swapPawns),
+        new SimpleImmutableEntry<>(EffectId.PUSH_PAWN, Effects.pushPawn),
+        new SimpleImmutableEntry<>(EffectId.FORBID_MOVE_UP, Effects.forbidMoveUp),
+        new SimpleImmutableEntry<>(EffectId.FORBID_MOVE_BACK, Effects.forbidMoveBack),
+        new SimpleImmutableEntry<>(EffectId.FORBID_COORDINATE, Effects.forbidCoordinate),
+        new SimpleImmutableEntry<>(EffectId.FORBID_OTHER_COORDINATES, Effects.forbidOtherCoordinates),
+        new SimpleImmutableEntry<>(EffectId.WIN_ON_JUMP_DOWN, Effects.winOnJumpDown)
+    );
+
     private Effect getEffectFromId(EffectId id) {
-        switch (id){
-            case MOVE:
-                return Effects.move;
-            case BUILD_BLOCK:
-                return Effects.buildBlock;
-            case BUILD_DOME:
-                return Effects.buildDome;
-            case SWAP_PAWNS:
-                return Effects.swapPawns;
-            case PUSH_PAWN:
-                return Effects.pushPawn;
-            case FORBID_MOVE_UP:
-                return Effects.forbidMoveUp;
-            case FORBID_CURRENT_POSITION:
-                return Effects.forbidCurrentPosition;
-            case FORBID_COORDINATE:
-                return Effects.forbidCoordinate;
-            case FORBID_OTHER_COORDINATES:
-                return Effects.forbidOtherCoordinates;
-            case WIN_ON_JUMP_DOWN:
-                return Effects.winOnJumpDown;
-        }
-        System.err.println(id);
+        Effect effect = map.get(id);
+        if (effect != null)
+            return effect;
+
         throw new IllegalStateException();
     }
 

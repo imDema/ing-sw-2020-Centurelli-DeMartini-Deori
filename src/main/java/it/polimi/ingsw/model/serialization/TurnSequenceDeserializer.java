@@ -13,7 +13,7 @@ class TurnSequenceDeserializer implements JsonDeserializer<TurnSequence>{
 
     enum TurnSequenceId {
         LINEAR,
-        BRANCH_ON_SECOND,
+        BRANCHING,
     }
 
     @Override
@@ -22,14 +22,10 @@ class TurnSequenceDeserializer implements JsonDeserializer<TurnSequence>{
 
         JsonObject jsonObject = jsonElement.getAsJsonObject();
         TurnSequenceId id = jsonDeserializationContext.deserialize(jsonObject.get(TYPE), TurnSequenceId.class);
-        switch (id) {
-            case LINEAR:
-                return jsonDeserializationContext.deserialize(jsonObject.get(CONTENT), LinearTurnSequence.class);
-            case BRANCH_ON_SECOND:
-                return jsonDeserializationContext.deserialize(jsonObject.get(CONTENT), BranchingTurnSequence.class);
-
-            default:
-                throw new JsonParseException(new IllegalStateException());
-        }
+        return switch (id) {
+            case LINEAR -> jsonDeserializationContext.deserialize(jsonObject.get(CONTENT), LinearTurnSequence.class);
+            case BRANCHING -> jsonDeserializationContext.deserialize(jsonObject.get(CONTENT), BranchingTurnSequence.class);
+            default -> throw new JsonParseException(new IllegalStateException());
+        };
     }
 }

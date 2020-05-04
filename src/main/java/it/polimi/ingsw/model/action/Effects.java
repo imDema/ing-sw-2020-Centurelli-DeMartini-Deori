@@ -71,9 +71,9 @@ public abstract class Effects {
         return false;
     };
 
-    public static final Effect forbidCurrentPosition = (board, pawn, coordinate) -> {
+    public static final Effect forbidMoveBack = (board, pawn, coordinate) -> {
         final Coordinate playerPosition = pawn.getPosition();
-        CheckEffect checkEffect = (b, p, c, a) -> !c.equals(playerPosition);
+        CheckEffect checkEffect = (b, p, c, a) -> !(c.equals(playerPosition) && a.getFamily() == ActionFamily.MOVE);
         board.addCheckEffect(1, checkEffect);
         return false;
     };

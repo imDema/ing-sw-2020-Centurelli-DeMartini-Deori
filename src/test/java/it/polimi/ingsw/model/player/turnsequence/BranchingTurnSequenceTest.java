@@ -34,7 +34,7 @@ public class BranchingTurnSequenceTest {
                     Checks.maxLevel});
 
     @Test
-    private void testSequence() { //TODO
+    public void testSequence() {
         Supplier<StepSequence> common = () -> new StepSequenceBuilder()
                 .addStep(new Action[] { move }).build();
         Supplier<StepSequence> branchOne = () -> new StepSequenceBuilder()
@@ -45,29 +45,38 @@ public class BranchingTurnSequenceTest {
                 .addStep(new Action[] {buildBlock, buildDome})
                 .addStep(new Action[] {Action.endTurn}).build();
 
+        StepSequence testCommon = common.get();
+        StepSequence testBranchOne = branchOne.get();
+        StepSequence testBranchTwo = branchTwo.get();
+
         TurnSequence t = new BranchingTurnSequence(common.get(), branchOne.get(), branchTwo.get());
         t.start();
-        StepSequence comm = common.get();
-        assertArrayEquals(comm.next().get(), t.getStep());
-//
-//        t.nextStep(common[0]);
-//
-//        Action[] step = t.getStep();
-//        // Assert second step contains combination of the two branches
-//        for(Action a : branchOne[0]) {
-//            assertTrue(Arrays.asList(step).contains(a));
-//        }
-//        for(Action a : branchTwo[0]) {
-//            assertTrue(Arrays.asList(step).contains(a));
-//        }
-//
-//        t.nextStep(branchTwo[0][0]);
-//        assertArrayEquals(branchTwo[1], t.getStep());
-//
-//        t.start();
-//        t.nextStep(common[0]);
-//        t.nextStep(branchOne[0][0]);
-//        assertArrayEquals(branchOne[1], t.getStep());
+        Action[] step = testCommon.next().orElseThrow();
+        assertArrayEquals(step, t.getStep());
 
+        t.nextStep(step[0]);
+
+        step = t.getStep();
+        // Assert second step contains combination of the two branches
+        for(Action a : testBranchOne.peek().orElseThrow()) {
+            assertTrue(Arrays.asList(step).contains(a));
+        }
+        for(Action a : testBranchTwo.peek().orElseThrow()) {
+            assertTrue(Arrays.asList(step).contains(a));
+        }
+
+        t.nextStep(testBranchTwo.next().orElseThrow()[1]);
+        assertArrayEquals(testBranchTwo.next().orElseThrow(), t.getStep());
+
+        t.start();
+        testCommon.start();
+        testBranchOne.start();
+        testBranchTwo.start();
+
+        t.nextStep(testCommon.next().orElseThrow()[0]);
+        t.nextStep(testBranchOne.next().orElseThrow()[0]);
+        assertArrayEquals(testBranchOne.peek().orElseThrow(), t.getStep());
+        t.nextStep(testBranchOne.next().orElseThrow()[0]);
+        assertArrayEquals(new Action[] {Action.endTurn}, t.getStep());
     }
 }

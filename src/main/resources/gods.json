@@ -252,5 +252,141 @@
       }
     }
   }
+},{
+  "name": "Artemis",
+  "description": "Your Move: Your Worker may move one additional time, but not back to its initial space.",
+  "turnSequence": {
+    "type": "BRANCHING",
+    "content": {
+      "commonSteps": {
+        "steps": [
+          [
+            {
+              "description": "Move",
+              "family": "MOVE",
+              "effects": ["MOVE", "FORBID_MOVE_BACK"],
+              "checks": ["NEIGHBOUR", "MAX_ONE_LEVEL_ABOVE", "NO_DOME", "NOT_OCCUPIED"]
+            }
+          ]
+        ]
+      },
+      "branches": [
+        {
+          "steps": [
+            [
+              {
+                "description": "Move",
+                "family": "MOVE",
+                "effects": ["MOVE"],
+                "checks": ["NEIGHBOUR", "MAX_ONE_LEVEL_ABOVE", "NO_DOME", "NOT_OCCUPIED"]
+              }
+            ], [
+              {
+                "description": "Build Block",
+                "family": "BUILD",
+                "effects": ["BUILD_BLOCK"],
+                "checks": ["NEIGHBOUR", "NO_DOME", "NOT_OCCUPIED", "NOT_MAX_LEVEL"]
+              }, {
+                "description": "Build Dome",
+                "family": "BUILD",
+                "effects": ["BUILD_DOME"],
+                "checks": ["NEIGHBOUR", "NO_DOME", "NOT_OCCUPIED", "MAX_LEVEL"]
+              }
+            ]
+          ]
+        },
+        {
+          "steps": [
+            [
+              {
+                "description": "Build Block",
+                "family": "BUILD",
+                "effects": ["BUILD_BLOCK"],
+                "checks": ["NEIGHBOUR", "NO_DOME", "NOT_OCCUPIED", "NOT_MAX_LEVEL"]
+              }, {
+                "description": "Build Dome",
+                "family": "BUILD",
+                "effects": ["BUILD_DOME"],
+                "checks": ["NEIGHBOUR", "NO_DOME", "NOT_OCCUPIED", "MAX_LEVEL"]
+              }
+            ]
+          ]
+        }
+      ]
+    }
+  }
+},{
+  "name": "Prometheus",
+  "description": "Your Turn: If your Worker does not move up, it may build both before and after moving.",
+  "turnSequence": {
+    "type": "BRANCHING",
+    "content": {
+      "commonSteps": {
+        "steps": []
+      },
+      "branches": [
+        {
+          "steps": [
+            [
+              {
+                "description": "Move",
+                "family": "MOVE",
+                "effects": ["MOVE"],
+                "checks": ["NEIGHBOUR", "MAX_ONE_LEVEL_ABOVE", "NO_DOME", "NOT_OCCUPIED"]
+              }
+            ], [
+              {
+                "description": "Build Block",
+                "family": "BUILD",
+                "effects": ["BUILD_BLOCK"],
+                "checks": ["NEIGHBOUR", "NO_DOME", "NOT_OCCUPIED", "NOT_MAX_LEVEL"]
+              }, {
+                "description": "Build Dome",
+                "family": "BUILD",
+                "effects": ["BUILD_DOME"],
+                "checks": ["NEIGHBOUR", "NO_DOME", "NOT_OCCUPIED", "MAX_LEVEL"]
+              }
+            ]
+          ]
+        },
+        {
+          "steps": [
+            [
+              {
+                "description": "Build Block",
+                "family": "BUILD",
+                "effects": ["BUILD_BLOCK"],
+                "checks": ["NEIGHBOUR", "NO_DOME", "NOT_OCCUPIED", "NOT_MAX_LEVEL"]
+              }, {
+                "description": "Build Dome",
+                "family": "BUILD",
+                "effects": ["BUILD_DOME"],
+                "checks": ["NEIGHBOUR", "NO_DOME", "NOT_OCCUPIED", "MAX_LEVEL"]
+              }
+            ], [
+              {
+                "description": "Move",
+                "family": "MOVE",
+                "effects": ["MOVE"],
+                "checks": ["NEIGHBOUR", "MAX_SAME_LEVEL", "NO_DOME", "NOT_OCCUPIED"]
+              }
+            ], [
+              {
+                "description": "Build Block",
+                "family": "BUILD",
+                "effects": ["BUILD_BLOCK"],
+                "checks": ["NEIGHBOUR", "NO_DOME", "NOT_OCCUPIED", "NOT_MAX_LEVEL"]
+              }, {
+                "description": "Build Dome",
+                "family": "BUILD",
+                "effects": ["BUILD_DOME"],
+                "checks": ["NEIGHBOUR", "NO_DOME", "NOT_OCCUPIED", "MAX_LEVEL"]
+              }
+            ]
+          ]
+        }
+      ]
+    }
+  }
 }
 ]

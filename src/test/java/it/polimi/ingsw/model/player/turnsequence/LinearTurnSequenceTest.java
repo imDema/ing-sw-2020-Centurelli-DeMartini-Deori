@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class LinearTurnSequenceTest {
+public class LinearTurnSequenceTest {
     @Test
     public void testSequence() {
         final Action[] first = new Action[] { new Action("Move", ActionFamily.MOVE,

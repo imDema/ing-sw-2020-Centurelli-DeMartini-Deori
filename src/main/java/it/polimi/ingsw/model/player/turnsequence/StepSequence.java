@@ -18,6 +18,14 @@ public class StepSequence {
         }
     }
 
+    public Optional<Action[]> peek() {
+        if (state < steps.length) {
+            return Optional.of(steps[state]);
+        } else {
+            return Optional.empty();
+        }
+    }
+
     public void start() {
         state = 0;
     }
