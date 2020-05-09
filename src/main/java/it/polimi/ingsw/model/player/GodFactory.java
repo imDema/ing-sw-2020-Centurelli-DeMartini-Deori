@@ -1,6 +1,6 @@
 package it.polimi.ingsw.model.player;
 
-import it.polimi.ingsw.model.serialization.Serializer;
+import it.polimi.ingsw.serialization.Serializer;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -13,7 +13,7 @@ public class GodFactory {
 
     public List<God> getGods() throws IOException {
         String resource = readConfig();
-        return Serializer.getGodArray(resource);
+        return Serializer.deserializeGodList(resource);
     }
 
     private String readConfig() throws IOException {

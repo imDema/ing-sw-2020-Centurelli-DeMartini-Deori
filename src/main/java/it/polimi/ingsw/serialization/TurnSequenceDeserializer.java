@@ -1,4 +1,4 @@
-package it.polimi.ingsw.model.serialization;
+package it.polimi.ingsw.serialization;
 
 import com.google.gson.*;
 import it.polimi.ingsw.model.player.turnsequence.BranchingTurnSequence;
@@ -25,7 +25,6 @@ class TurnSequenceDeserializer implements JsonDeserializer<TurnSequence>{
         return switch (id) {
             case LINEAR -> jsonDeserializationContext.deserialize(jsonObject.get(CONTENT), LinearTurnSequence.class);
             case BRANCHING -> jsonDeserializationContext.deserialize(jsonObject.get(CONTENT), BranchingTurnSequence.class);
-            default -> throw new JsonParseException(new IllegalStateException());
         };
     }
 }

@@ -5,7 +5,7 @@ import it.polimi.ingsw.model.player.turnsequence.LinearTurnSequence;
 import it.polimi.ingsw.model.player.turnsequence.StepSequence;
 import it.polimi.ingsw.model.player.turnsequence.StepSequenceBuilder;
 import it.polimi.ingsw.model.player.turnsequence.TurnSequence;
-import it.polimi.ingsw.model.serialization.Serializer;
+import it.polimi.ingsw.serialization.Serializer;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -48,7 +48,7 @@ public class GodFactoryTest {
         String testDeserialize = Files.lines(Paths.get("src/test/resources/single-god.json"))
                     .reduce("", (str, sub) -> str + sub);
 
-        God actual = Serializer.getGod(testDeserialize);
+        God actual = Serializer.deserializeGod(testDeserialize);
 
         assertEquals(expected, actual);
     }
