@@ -2,18 +2,16 @@ package it.polimi.ingsw.view;
 
 import it.polimi.ingsw.controller.GameController;
 
-import java.io.*;
+import java.io.IOException;
+import java.net.Socket;
 
 public class ClientHandler implements Runnable {
-    private final InputStream strin;
-    private final OutputStream strout;
+    private final Socket socket;
     private final GameController controller;
 
 
-    public ClientHandler(InputStream strin, OutputStream strout, GameController controller) {
-        // TODO: Use buffered readers
-        this.strin = strin;
-        this.strout = strout;
+    public ClientHandler(Socket socket, GameController controller) {
+        this.socket = socket;
         this.controller = controller;
     }
 
@@ -31,7 +29,7 @@ public class ClientHandler implements Runnable {
     @Override
     public void run() {
         try {
-            strout.write("Allo!".getBytes());
+            socket.getOutputStream().write("Allo!".getBytes());
         } catch (IOException e) {
             // TODO: IMPORTANT, Handle connection error
             e.printStackTrace();

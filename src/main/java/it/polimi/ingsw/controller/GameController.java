@@ -137,4 +137,8 @@ public class GameController implements OnAddUserListener, OnChooseGodListener, O
         }
         return false;
     }
+
+    public boolean isGameReady (){
+        return lobby.isGameReady();
+    }
 }
