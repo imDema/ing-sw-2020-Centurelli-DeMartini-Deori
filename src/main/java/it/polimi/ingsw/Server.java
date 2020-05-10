@@ -6,12 +6,16 @@ import java.io.IOException;
 
 
 public class Server {
-    public static void main(String[] args) throws IOException {
-        //TODO, TEMP
-        String ip = args[1];
-        int port = Integer.parseInt(args[2]);
+    private String ip;
+    private int port;
 
+    public void start() throws IOException {
         ProxyView proxyView = new ProxyView(ip, port);
         proxyView.start();
+    }
+
+    public Server(String ip, int port) {
+        this.ip = ip;
+        this.port = port;
     }
 }

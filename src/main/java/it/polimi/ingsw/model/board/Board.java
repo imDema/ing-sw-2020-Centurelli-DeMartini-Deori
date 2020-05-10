@@ -53,8 +53,9 @@ public class Board {
             pawn.setPosition(c);
             if(onMoveListener != null)
                 onMoveListener.onMove(oldC, c);
-        } else
+        } else if (!pawn.getPosition().equals(c)) {
             throw new InvalidActionException();
+        }
     }
 
     public void swapPawn(Pawn pawn1, Pawn pawn2) {
