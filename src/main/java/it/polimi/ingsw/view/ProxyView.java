@@ -3,8 +3,10 @@ package it.polimi.ingsw.view;
 import it.polimi.ingsw.controller.GameController;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -33,10 +35,12 @@ public class ProxyView {
         while (true) {
             try {
                 Socket s = server.accept();
+                Scanner socketIn = new Scanner(s.getInputStream());
+                PrintWriter socketOut = new PrintWriter(s.getOutputStream());
                 executor.submit(new ClientHandler(s, controller));
 
                 if(controller.isGameReady()){
-                    System.out.println("Lobby if full");
+                    socketOut.println("Lobby if full");
                     s.close();
                 }
             } catch (IOException e){

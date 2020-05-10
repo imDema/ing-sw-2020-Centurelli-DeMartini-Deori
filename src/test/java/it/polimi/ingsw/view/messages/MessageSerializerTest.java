@@ -8,10 +8,10 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class MessageSerializerTest {
+public class MessageSerializerTest {
 
     @Test
-    void serialize() {
+    public void serialize() {
         final String name1 = "user 1";
         final AddUserMessage msg1 = new AddUserMessage(name1);
 
