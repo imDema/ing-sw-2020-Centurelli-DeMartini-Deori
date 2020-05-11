@@ -1,12 +1,12 @@
 package it.polimi.ingsw;
 
+import it.polimi.ingsw.view.client.cli.CLIClient;
 import it.polimi.ingsw.view.server.Server;
 
 import java.util.Arrays;
 import java.util.Iterator;
 
 public class Program {
-    private boolean clientCLI = true;
     private boolean clientGUI = false;
     private boolean serverMode = false;
     private String ip = null;
@@ -37,14 +37,8 @@ public class Program {
             argument = arguments.next();
 
             switch (argument) {
-                case "-s", "--server" -> {
-                    serverMode = true;
-                    clientCLI = false;
-                }
-                case "-g", "--gui" -> {
-                    clientGUI = true;
-                    clientCLI = false;
-                }
+                case "-s", "--server" -> serverMode = true;
+                case "-g", "--gui" -> clientGUI = true;
                 case "-h", "--help" -> {
                     return false;
                 }
@@ -79,15 +73,15 @@ public class Program {
 
     // This method is executed only if the arguments match a valid configuration
     private void startConfig() {
-        if (clientCLI) {
-            // TODO: start CLI
-        }
-        if (clientGUI) {
-            // TODO: start GUI
-        }
         if (serverMode) {
             Server server = new Server(ip, port);
             server.start();
+        }
+        else if (clientGUI) {
+            throw new UnsupportedOperationException();
+        } else {
+            CLIClient cliClient = new CLIClient(ip, port);
+            cliClient.startClient();
         }
     }
 }

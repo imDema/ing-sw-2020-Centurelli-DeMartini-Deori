@@ -2,6 +2,7 @@ package it.polimi.ingsw.view.client;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.util.Scanner;
 
@@ -15,7 +16,8 @@ public class ProxyController {
     }
 
     public ServerHandler start() throws IOException {
-        Socket socket = new Socket(ip, port);
+        InetAddress address = InetAddress.getByName(ip);
+        Socket socket = new Socket(address, port);
         Scanner socketIn = new Scanner(socket.getInputStream());
         PrintWriter socketOut = new PrintWriter(socket.getOutputStream());
         ServerHandler serverHandler = new ServerHandler(socketIn, socketOut, socket);
