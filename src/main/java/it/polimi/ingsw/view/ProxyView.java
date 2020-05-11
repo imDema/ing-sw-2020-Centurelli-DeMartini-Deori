@@ -48,7 +48,7 @@ public class ProxyView {
                 PrintWriter socketOut = new PrintWriter(s.getOutputStream());
 
                 if(!controller.isGameReady()){
-                    executor.submit(new ClientHandler(s, controller));
+                    executor.submit(new ClientHandler(socketIn, socketOut, controller, s));
                     System.out.println("INFO: Started ClientHandler");
                 } else {
                     socketOut.println("Lobby is full, closing connection");
