@@ -28,11 +28,17 @@ public class GameControllerTest {
         GameController gameController = new GameController();
         gameController.setGodsAvailableListener(g -> gods = g);
         gameController.initLobby();
-        User u1 = gameController.onAddUser("User1").orElseThrow();
-        User u2 = gameController.onAddUser("user2").orElseThrow();
-        assertTrue(gameController.onAddUser("User1").isEmpty());
-        User u3 = gameController.onAddUser("user3").orElseThrow();
-        assertTrue(gameController.onAddUser("User4").isEmpty());
+        User u1 = new User("User1");
+        User u2 = new User("User2");
+        User u3 = new User("User3");
+        User u4 = new User("User4");
+
+
+        assertTrue(gameController.onAddUser(u1));
+        assertTrue(gameController.onAddUser(u2));
+        assertFalse(gameController.onAddUser(u2));
+        assertTrue(gameController.onAddUser(u3));
+        assertFalse(gameController.onAddUser(u4));
 
         assertTrue(gameController.onChooseGod(u1, gods.get(0)));
         assertFalse(gameController.onChooseGod(u1, gods.get(0)));

@@ -4,8 +4,10 @@ import it.polimi.ingsw.controller.GameController;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -27,8 +29,13 @@ public class ProxyView {
         // Set up Tcp socket and spawn threads for connections
         ServerSocket server;
         try {
-            server = new ServerSocket(port);
-        } catch (IOException e){
+            InetAddress address = InetAddress.getByName(ip);
+            server = new ServerSocket(port, 8, address);
+        } catch (UnknownHostException e) {
+            System.err.println("Invalid address: " + ip);
+            return;
+        }
+        catch (IOException e){
             System.err.println("Port " + port + " is already in use");
             return;
         }

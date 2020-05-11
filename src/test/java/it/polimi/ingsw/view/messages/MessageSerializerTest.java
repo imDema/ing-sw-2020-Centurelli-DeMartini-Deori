@@ -37,7 +37,7 @@ public class MessageSerializerTest {
         AddUserMessage cast1 = (AddUserMessage) des1;
         ChooseGodMessage cast2 = (ChooseGodMessage) des2;
 
-        assertEquals(msg1.getName(), cast1.getName());
+        assertEquals(msg1.getUser(), cast1.getUser());
         assertEquals(msg2.getUser(), cast2.getUser());
         assertEquals(msg2.getGod().getName(), cast2.getGod().getName());
     }

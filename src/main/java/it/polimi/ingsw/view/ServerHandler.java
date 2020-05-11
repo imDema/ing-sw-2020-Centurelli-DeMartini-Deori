@@ -14,7 +14,6 @@ import java.net.Socket;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.Scanner;
 import java.util.function.Function;
 
@@ -109,29 +108,53 @@ public class ServerHandler implements Runnable, ClientEventsListener {
         }
     }
 
-    // Serialize, synchronize, send
     @Override
-    public Optional<User> onAddUser(String username) {
-        return Optional.empty();
+    public boolean onAddUser(User user) {
+        AddUserMessage message = new AddUserMessage(user);
+        String s = Serializer.serializeMessage(message);
+        synchronized (socketOut){
+            socketOut.println(s);
+        }
+        return true;
     }
 
     @Override
     public boolean onChooseGod(User user, GodIdentifier god) {
-        return false;
+        ChooseGodMessage message = new ChooseGodMessage(user, god);
+        String s = Serializer.serializeMessage(message);
+        synchronized (socketOut){
+            socketOut.println(s);
+        }
+        return true;
     }
 
     @Override
     public boolean onPlacePawns(User user, Coordinate c1, Coordinate c2) {
-        return false;
+        PlacePawnsMessage message = new PlacePawnsMessage(user, c1, c2);
+        String s = Serializer.serializeMessage(message);
+        synchronized (socketOut){
+            socketOut.println(s);
+        }
+        return true;
     }
 
     @Override
     public boolean onCheckAction(User user, int pawnId, ActionIdentifier actionIdentifier, Coordinate coordinate) {
-        return false;
+        CheckActionMessage message = new CheckActionMessage(user, pawnId, actionIdentifier, coordinate);
+        String s = Serializer.serializeMessage(message);
+        synchronized (socketOut){
+            socketOut.println(s);
+        }
+        return true;
     }
 
     @Override
     public boolean onExecuteAction(User user, int pawnId, ActionIdentifier actionIdentifier, Coordinate coordinate) {
-        return false;
+        ExecuteActionMessage message = new ExecuteActionMessage(user, pawnId, actionIdentifier, coordinate);
+        String s = Serializer.serializeMessage(message);
+        synchronized (socketOut){
+            socketOut.println(s);
+        }
+        return true;
     }
 }

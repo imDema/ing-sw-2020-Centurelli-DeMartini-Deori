@@ -82,16 +82,15 @@ public class GameController implements ClientEventsListener {
     }
 
     @Override
-    public Optional<User> onAddUser(String username) {
+    public boolean onAddUser(User user) {
         synchronized (lobby) {
-            User user = new User(username);
             if (lobby.addUser(user)) {
                 if (userJoinedListener != null) {
                     userJoinedListener.onUserJoined(user);
                 }
-                return Optional.of(user);
+                return true;
             } else {
-                return Optional.empty();
+                return false;
             }
         }
     }

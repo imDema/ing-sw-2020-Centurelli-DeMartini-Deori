@@ -21,10 +21,6 @@ public class ProxyController {
         ServerHandler serverHandler = new ServerHandler(socketIn, socketOut, socket);
         serverHandler.run();
         return serverHandler;
-
-
-
-
     }
 
 }
