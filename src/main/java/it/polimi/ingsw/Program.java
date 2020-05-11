@@ -1,10 +1,9 @@
 package it.polimi.ingsw;
 
-import java.io.IOException;
-import java.util.ArrayList;
+import it.polimi.ingsw.view.server.Server;
+
 import java.util.Arrays;
 import java.util.Iterator;
-import java.util.List;
 
 public class Program {
     private boolean clientCLI = true;

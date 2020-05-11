@@ -17,52 +17,32 @@ public class GameController implements ClientEventsListener {
 
     private final int SIZE = 3;
     private final Lobby lobby = new Lobby(SIZE);
-    private OnGodsAvailableListener godsAvailableListener;
-    private OnGodChosenListener godChosenListener;
-    private OnServerErrorListener serverErrorListener;
-    private OnUserJoinedListener userJoinedListener;
-    private OnRequestPlacePawnsListener requestPlacePawnsListener;
+    private final List<ServerEventsListener> serverEventsListeners = new ArrayList<>();
     private final GameCycle gameCycle = new GameCycle(lobby);
 
     public GameCycle getGameCycle() {
         return gameCycle;
     }
 
-    public void setServerEventsListener(ServerEventsListener serverEventsListener) {
-        godsAvailableListener = serverEventsListener;
-        godChosenListener = serverEventsListener;
-        serverErrorListener = serverEventsListener;
-        userJoinedListener = serverEventsListener;
-        requestPlacePawnsListener = serverEventsListener;
-        gameCycle.setServerEventListener(serverEventsListener);
+    public boolean isGameReady (){
+        return lobby.isGameReady();
     }
 
-    public void setGodChosenListener(OnGodChosenListener godChosenListener) {
-        this.godChosenListener = godChosenListener;
+    public void addServerEventsListener(ServerEventsListener serverEventsListener) {
+        serverEventsListeners.add(serverEventsListener);
+        gameCycle.addServerEventListener(serverEventsListener);
     }
 
-    public void setServerErrorListener(OnServerErrorListener serverErrorListener) {
-        this.serverErrorListener = serverErrorListener;
-    }
-
-    public void setUserJoinedListener(OnUserJoinedListener userJoinedListener) {
-        this.userJoinedListener = userJoinedListener;
-    }
-
-    public void setRequestPlacePawnsListener(OnRequestPlacePawnsListener requestPlacePawnsListener) {
-        this.requestPlacePawnsListener = requestPlacePawnsListener;
-    }
-
-    public void setGodsAvailableListener(OnGodsAvailableListener godsAvailableListener) {
-        this.godsAvailableListener = godsAvailableListener;
+    public void removeServerEventsListener(ServerEventsListener serverEventsListener) {
+        serverEventsListeners.remove(serverEventsListener);
+        gameCycle.removeServerEventsListener(serverEventsListener);
     }
 
     public void initLobby() {
         try {
             lobby.loadGods();
         } catch (IOException e) {
-            if (serverErrorListener != null)
-                serverErrorListener.onServerError("Input-Output error", "error while loading gods configuration");
+            serverEventsListeners.forEach(l -> l.onServerError("Input-Output error", "error while loading gods configuration"));
         }
         onGodsAvailable(lobby.getAvailableGods());
     }
@@ -72,22 +52,14 @@ public class GameController implements ClientEventsListener {
 
         List<GodIdentifier> godsIds = gods.stream()
                 .map(GodIdentifier::new).collect(Collectors.toList());
-        if (godsAvailableListener != null)
-            godsAvailableListener.onGodsAvailable(godsIds);
-    }
-
-    private void onRequestPlacement(User user) {
-        if (requestPlacePawnsListener != null)
-            requestPlacePawnsListener.onRequestPlacePawns(user);
+        serverEventsListeners.forEach(l -> l.onGodsAvailable(godsIds));
     }
 
     @Override
     public boolean onAddUser(User user) {
         synchronized (lobby) {
             if (lobby.addUser(user)) {
-                if (userJoinedListener != null) {
-                    userJoinedListener.onUserJoined(user);
-                }
+                serverEventsListeners.forEach(l -> l.onUserJoined(user));
                 return true;
             } else {
                 return false;
@@ -104,12 +76,10 @@ public class GameController implements ClientEventsListener {
                     .filter(god::matches)
                     .findFirst();
             if (g.isPresent() && lobby.chooseGod(user, g.get())) {
-                if (godChosenListener != null) {
-                    godChosenListener.onGodChosen(user, god);
-                }
+                serverEventsListeners.forEach(l -> l.onGodChosen(user, god));
 
                 if (lobby.isGameFull()) {
-                    onRequestPlacement(lobby.getUserToSetUp().orElseThrow());
+                    serverEventsListeners.forEach(l -> l.onRequestPlacePawns(lobby.getUserToSetUp().orElseThrow()));
                 } else {
                     onGodsAvailable(lobby.getAvailableGods());
                 }
@@ -129,7 +99,7 @@ public class GameController implements ClientEventsListener {
             if (lobby.setUpUserPawns(user, c1, c2)) {
                 Optional<User> nextUser = lobby.getUserToSetUp();
                 if (nextUser.isPresent()) {
-                    onRequestPlacement(nextUser.get());
+                    serverEventsListeners.forEach(l -> l.onRequestPlacePawns(nextUser.get()));
                 } else {
                     gameCycle.startTurn();
                 }
@@ -137,10 +107,6 @@ public class GameController implements ClientEventsListener {
             }
             return false;
         }
-    }
-
-    public boolean isGameReady (){
-        return lobby.isGameReady();
     }
 
     @Override

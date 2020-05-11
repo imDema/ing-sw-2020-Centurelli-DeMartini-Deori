@@ -1,7 +1,10 @@
 package it.polimi.ingsw.controller;
 
+import it.polimi.ingsw.controller.events.ServerEventsListener;
+import it.polimi.ingsw.controller.messages.ActionIdentifier;
 import it.polimi.ingsw.controller.messages.GodIdentifier;
 import it.polimi.ingsw.controller.messages.User;
+import it.polimi.ingsw.model.board.Building;
 import it.polimi.ingsw.model.board.Coordinate;
 import org.junit.jupiter.api.Test;
 
@@ -12,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class GameControllerTest {
-    List<GodIdentifier> gods = null;
+    List<GodIdentifier> availableGods = null;
     List<Coordinate> coordinateList = new ArrayList<>();
 
     private void initCoordinateList(){
@@ -26,7 +29,39 @@ public class GameControllerTest {
     @Test
     public void testControllerSequence() {
         GameController gameController = new GameController();
-        gameController.setGodsAvailableListener(g -> gods = g);
+        gameController.addServerEventsListener(new ServerEventsListener() {
+            @Override
+            public void onGodsAvailable(List<GodIdentifier> gods) {
+                availableGods = gods;
+            }
+
+            @Override
+            public void onRequestPlacePawns(User user) {
+                Coordinate c1 = coordinateList.remove(0);
+                Coordinate c2 = coordinateList.remove(0);
+                gameController.onPlacePawns(user, c1, c2);
+            }
+
+            @Override
+            public void onActionsReady(User user, List<ActionIdentifier> actions) {}
+            @Override
+            public void onElimination(User user) {}
+            @Override
+            public void onGodChosen(User user, GodIdentifier godIdentifier) {}
+            @Override
+            public void onServerError(String type, String description) {}
+            @Override
+            public void onTurnChange(User currentUser, int turn) {}
+            @Override
+            public void onUserJoined(User user) {}
+            @Override
+            public void onWin(User user) {}
+            @Override
+            public void onBuild(Building building, Coordinate coordinate) {}
+            @Override
+            public void onMove(Coordinate from, Coordinate to) {}
+        });
+
         gameController.initLobby();
         User u1 = new User("User1");
         User u2 = new User("User2");
@@ -40,20 +75,15 @@ public class GameControllerTest {
         assertTrue(gameController.onAddUser(u3));
         assertFalse(gameController.onAddUser(u4));
 
-        assertTrue(gameController.onChooseGod(u1, gods.get(0)));
-        assertFalse(gameController.onChooseGod(u1, gods.get(0)));
+        assertTrue(gameController.onChooseGod(u1, availableGods.get(0)));
+        assertFalse(gameController.onChooseGod(u1, availableGods.get(0)));
 
-        GodIdentifier duplicate = gods.get(0);
+        GodIdentifier duplicate = availableGods.get(0);
         assertTrue(gameController.onChooseGod(u2, duplicate));
         assertFalse(gameController.onChooseGod(u3,duplicate));
 
         initCoordinateList();
-        gameController.setRequestPlacePawnsListener(user1 -> {
-            Coordinate c1 = coordinateList.remove(0);
-            Coordinate c2 = coordinateList.remove(0);
-            gameController.onPlacePawns(user1, c1, c2);
-        });
-        gameController.onChooseGod(u3, gods.get(0));
+        gameController.onChooseGod(u3, availableGods.get(0));
 
     }
 }

@@ -5,6 +5,7 @@ import it.polimi.ingsw.controller.messages.ActionIdentifier;
 import it.polimi.ingsw.model.Game;
 import it.polimi.ingsw.model.Lobby;
 import it.polimi.ingsw.model.action.Action;
+import it.polimi.ingsw.model.board.Building;
 import it.polimi.ingsw.model.board.Coordinate;
 import it.polimi.ingsw.controller.messages.User;
 import it.polimi.ingsw.model.board.InvalidActionException;
@@ -15,74 +16,53 @@ import it.polimi.ingsw.model.player.Player;
 import it.polimi.ingsw.view.events.OnCheckActionListener;
 import it.polimi.ingsw.view.events.OnExecuteActionListener;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class GameCycle implements OnExecuteActionListener, OnCheckActionListener {
+public class GameCycle implements OnExecuteActionListener, OnCheckActionListener, OnMoveListener, OnBuildListener {
     private final Lobby lobby;
     private final Game game;
     private boolean pawnSelected = false;
     private Pawn currentPawn;
     private Action[] actions;
-    private OnActionsReadyListener actionsReadyListener;
-    private OnServerErrorListener serverErrorListener;
-    private OnEliminationListener eliminationListener;
-    private OnTurnChangeListener turnChangeListener;
-    private OnWinListener winListener;
+    private final List<ServerEventsListener> serverEventsListeners = new ArrayList<>();
 
     public GameCycle(Lobby lobby) {
         this.lobby = lobby;
         this.game = lobby.getGame();
+        // Register this as listener for model events to allow forwarding to view
+        game.getBoard().setOnMoveListener(this);
+        game.getBoard().setOnBuildListener(this);
     }
 
-    public void setServerEventListener(ServerEventsListener serverEventsListener) {
-        actionsReadyListener = serverEventsListener;
-        serverErrorListener = serverEventsListener;
-        eliminationListener = serverEventsListener;
-        turnChangeListener = serverEventsListener;
-        winListener = serverEventsListener;
-        game.getBoard().setOnMoveListener(serverEventsListener);
-        game.getBoard().setOnBuildListener(serverEventsListener);
+    public void addServerEventListener(ServerEventsListener serverEventsListener) {
+        serverEventsListeners.add(serverEventsListener);
     }
 
-    public void setEliminationListener(OnEliminationListener eliminationListener) {
-        this.eliminationListener = eliminationListener;
+    public void removeServerEventsListener(ServerEventsListener serverEventsListener) {
+        serverEventsListeners.remove(serverEventsListener);
     }
 
-    public void setTurnChangeListener(OnTurnChangeListener turnChangeListener) {
-        this.turnChangeListener = turnChangeListener;
+    // Forward model events to all listeners
+    @Override
+    public void onBuild(Building building, Coordinate coordinate) {
+        serverEventsListeners.forEach(l -> l.onBuild(building, coordinate));
     }
 
-    public void setWinListener(OnWinListener winListener) {
-        this.winListener = winListener;
-    }
-
-    public void setServerErrorListener(OnServerErrorListener serverErrorListener) {
-        this.serverErrorListener = serverErrorListener;
-    }
-
-    public void setActionsReadyListener(OnActionsReadyListener actionsReadyListener) {
-        this.actionsReadyListener = actionsReadyListener;
-    }
-
-    public void setMoveListener(OnMoveListener moveListener) {
-        game.getBoard().setOnMoveListener(moveListener);
-    }
-
-    public void setBuildListener(OnBuildListener buildListener) {
-        game.getBoard().setOnBuildListener(buildListener);
+    @Override
+    public void onMove(Coordinate from, Coordinate to) {
+        serverEventsListeners.forEach(l -> l.onMove(from, to));
     }
 
     private void onActionsReady(Player player, Action[] actions) {
-        if (actionsReadyListener != null) {
-            User user = lobby.getUser(player).orElse(new User(player));
-            List<ActionIdentifier> actionIds = Arrays.stream(actions)
-                    .map(ActionIdentifier::new)
-                    .collect(Collectors.toList());
-            actionsReadyListener.onActionsReady(user, actionIds);
-        }
+        User user = lobby.getUser(player).orElse(new User(player));
+        List<ActionIdentifier> actionIds = Arrays.stream(actions)
+                .map(ActionIdentifier::new)
+                .collect(Collectors.toList());
+        serverEventsListeners.forEach(l -> l.onActionsReady(user, actionIds));
     }
 
     private Optional<Action> actionFromId(Action[] array, ActionIdentifier actionIdentifier) {
@@ -137,8 +117,8 @@ public class GameCycle implements OnExecuteActionListener, OnCheckActionListener
 
                     try {
                         // Execute the action, call winListener if it was a winning move
-                        if (game.getBoard().executeAction(chosenAction, currentPawn, coordinate) && winListener != null) {
-                            winListener.onWin(new User(player));
+                        if (game.getBoard().executeAction(chosenAction, currentPawn, coordinate)) {
+                            serverEventsListeners.forEach(l -> l.onWin(new User(player)));
                         }
 
                         // Progress through the steps
@@ -153,8 +133,7 @@ public class GameCycle implements OnExecuteActionListener, OnCheckActionListener
                         return true;
                     } catch (InvalidActionException e) {
                         // This should never happen because action is checked before being executed
-                        if (serverErrorListener != null)
-                            serverErrorListener.onServerError("Invalid board action", "An error occurred while executing the action");
+                        serverEventsListeners.forEach(l -> l.onServerError("Invalid board action", "An error occurred while executing the action"));
                         e.printStackTrace();
                         return false;
                     }
@@ -168,11 +147,10 @@ public class GameCycle implements OnExecuteActionListener, OnCheckActionListener
         Player currentPlayer = game.getCurrentPlayer();
         actions = currentPlayer.nextStep(Action.start);
         Optional<User> user = lobby.getUser(currentPlayer);
-        if (turnChangeListener != null) {
-            if (user.isPresent()) {
-                turnChangeListener.onTurnChange(user.get(), game.getTurn());
-            } else if (serverErrorListener != null)
-                serverErrorListener.onServerError("Error retrieving user", "No user matches current player");
+        if (user.isPresent()) {
+            serverEventsListeners.forEach(l -> l.onTurnChange(user.get(), game.getTurn()));
+        } else {
+            serverEventsListeners.forEach(l -> l.onServerError("Error retrieving user", "No user matches current player"));
         }
         pawnSelected = false;
         onActionsReady(currentPlayer, actions);
