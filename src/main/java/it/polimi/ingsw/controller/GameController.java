@@ -1,8 +1,6 @@
 package it.polimi.ingsw.controller;
 
-import it.polimi.ingsw.controller.events.OnGodsAvailableListener;
-import it.polimi.ingsw.controller.events.OnRequestPlacePawnsListener;
-import it.polimi.ingsw.controller.events.OnServerErrorListener;
+import it.polimi.ingsw.controller.events.*;
 import it.polimi.ingsw.controller.messages.ActionIdentifier;
 import it.polimi.ingsw.controller.messages.GodIdentifier;
 import it.polimi.ingsw.model.Lobby;
@@ -15,13 +13,14 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class GameController implements OnAddUserListener, OnChooseGodListener, OnPlacePawnsListener, OnChoosePawnListener, OnExecuteActionListener {
+public class GameController implements ClientEventsListener {
 
     private final int SIZE = 3;
     private final Lobby lobby = new Lobby(SIZE);
     private OnGodsAvailableListener godsAvailableListener;
+    private OnGodChosenListener godChosenListener;
     private OnServerErrorListener serverErrorListener;
-    private OnAddUserListener addUserListener;
+    private OnUserJoinedListener userJoinedListener;
     private OnRequestPlacePawnsListener requestPlacePawnsListener;
     private final GameCycle gameCycle = new GameCycle(lobby);
 
@@ -29,12 +28,25 @@ public class GameController implements OnAddUserListener, OnChooseGodListener, O
         return gameCycle;
     }
 
+    public void setServerEventsListener(ServerEventsListener serverEventsListener) {
+        godsAvailableListener = serverEventsListener;
+        godChosenListener = serverEventsListener;
+        serverErrorListener = serverEventsListener;
+        userJoinedListener = serverEventsListener;
+        requestPlacePawnsListener = serverEventsListener;
+        gameCycle.setServerEventListener(serverEventsListener);
+    }
+
+    public void setGodChosenListener(OnGodChosenListener godChosenListener) {
+        this.godChosenListener = godChosenListener;
+    }
+
     public void setServerErrorListener(OnServerErrorListener serverErrorListener) {
         this.serverErrorListener = serverErrorListener;
     }
 
-    public void setAddUserListener(OnAddUserListener addUserListener) {
-        this.addUserListener = addUserListener;
+    public void setUserJoinedListener(OnUserJoinedListener userJoinedListener) {
+        this.userJoinedListener = userJoinedListener;
     }
 
     public void setRequestPlacePawnsListener(OnRequestPlacePawnsListener requestPlacePawnsListener) {
@@ -74,6 +86,9 @@ public class GameController implements OnAddUserListener, OnChooseGodListener, O
         synchronized (lobby) {
             User user = new User(username);
             if (lobby.addUser(user)) {
+                if (userJoinedListener != null) {
+                    userJoinedListener.onUserJoined(user);
+                }
                 return Optional.of(user);
             } else {
                 return Optional.empty();
@@ -90,6 +105,10 @@ public class GameController implements OnAddUserListener, OnChooseGodListener, O
                     .filter(god::matches)
                     .findFirst();
             if (g.isPresent() && lobby.chooseGod(user, g.get())) {
+                if (godChosenListener != null) {
+                    godChosenListener.onGodChosen(user, god);
+                }
+
                 if (lobby.isGameFull()) {
                     onRequestPlacement(lobby.getUserToSetUp().orElseThrow());
                 } else {
@@ -121,24 +140,25 @@ public class GameController implements OnAddUserListener, OnChooseGodListener, O
         }
     }
 
-    @Override
-    public void onChoosePawn(User user, int id) {
-        synchronized (lobby) {
-            if (lobby.isGameReady())
-                gameCycle.onChoosePawn(user, id);
-        }
-    }
-
-    @Override
-    public boolean onExecuteAction(ActionIdentifier actionIdentifier, Coordinate coordinate) {
-        synchronized (lobby) {
-            if (lobby.isGameReady())
-                return gameCycle.onExecuteAction(actionIdentifier, coordinate);
-        }
-        return false;
-    }
-
     public boolean isGameReady (){
         return lobby.isGameReady();
+    }
+
+    @Override
+    public boolean onCheckAction(User user, int pawnId, ActionIdentifier actionIdentifier, Coordinate coordinate) {
+        if (isGameReady()) {
+            return gameCycle.onCheckAction(user, pawnId, actionIdentifier, coordinate);
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public boolean onExecuteAction(User user, int pawnId, ActionIdentifier actionIdentifier, Coordinate coordinate) {
+        if (isGameReady()) {
+            return gameCycle.onExecuteAction(user, pawnId, actionIdentifier, coordinate);
+        } else {
+            return false;
+        }
     }
 }

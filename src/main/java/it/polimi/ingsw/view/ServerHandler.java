@@ -102,7 +102,7 @@ public class ServerHandler implements Runnable, ClientEventsListener {
         }
     }
 
-    //Serialization and Synchronize
+    // Serialize, synchronize, send
     @Override
     public Optional<User> onAddUser(String username) {
         return Optional.empty();
@@ -114,17 +114,17 @@ public class ServerHandler implements Runnable, ClientEventsListener {
     }
 
     @Override
-    public void onChoosePawn(User user, int id) {
-
-    }
-
-    @Override
-    public boolean onExecuteAction(ActionIdentifier actionIdentifier, Coordinate coordinate) {
+    public boolean onPlacePawns(User user, Coordinate c1, Coordinate c2) {
         return false;
     }
 
     @Override
-    public boolean onPlacePawns(User user, Coordinate c1, Coordinate c2) {
+    public boolean onCheckAction(User user, int pawnId, ActionIdentifier actionIdentifier, Coordinate coordinate) {
+        return false;
+    }
+
+    @Override
+    public boolean onExecuteAction(User user, int pawnId, ActionIdentifier actionIdentifier, Coordinate coordinate) {
         return false;
     }
 }

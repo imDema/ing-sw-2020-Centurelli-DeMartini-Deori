@@ -12,12 +12,14 @@ import java.io.IOException;
 import java.util.*;
 
 public class Lobby {
-    private List<User> users = new ArrayList<>();
-    private Map<User, Player> userPlayerMap = new HashMap<>();
-    private List<God> availableGods = null;
+    public final int PAWN_N = 2;
+
+    private final Game game = new Game();
     private final int size;
+    private final List<User> users = new ArrayList<>();
+    private final Map<User, Player> userPlayerMap = new HashMap<>();
+    private List<God> availableGods = null;
     private int readyUsers = 0;
-    private Game game = new Game();
 
     public Game getGame() {
         return game;
@@ -40,6 +42,10 @@ public class Lobby {
         return users.stream()
                 .filter(u -> u.matches(player))
                 .findFirst();
+    }
+
+    public Optional<Player> getPlayer(User user) {
+        return Optional.ofNullable(userPlayerMap.get(user));
     }
 
     public boolean addUser(User user) {

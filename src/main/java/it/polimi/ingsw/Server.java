@@ -9,7 +9,7 @@ public class Server {
     private String ip;
     private int port;
 
-    public void start() throws IOException {
+    public void start() {
         ProxyView proxyView = new ProxyView(ip, port);
         proxyView.start();
     }

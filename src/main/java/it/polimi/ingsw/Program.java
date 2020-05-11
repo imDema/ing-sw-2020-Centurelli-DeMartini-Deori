@@ -20,16 +20,14 @@ public class Program {
         if (program.loadConfig(arguments)) {
             program.startConfig();
         } else {
-            System.out.println("AM8-1.0-SNAPSHOT.jar\n" +
-                    "Usage:     [-g|—gui]  [-s|—server]  ip_address  port_number\n" +
+            System.out.println(
+                    "Usage: java -jar AM8-1.0-SNAPSHOT.jar [-g|--gui] [-s|--server] ip_address port_number\n" +
                     "\n" +
                     "By default the application is launched  in client mode with a Command Line Interface (CLI)\n" +
                     "\n" +
-                    "-s —server:    Launch the application in server mode using ip_address and port_number as the server’s parameters\n" +
-                    "\n" +
-                    "-g —gui:       Launch the application in client mode with a Graphic User Interface (GUI)\n" +
-                    "\n" +
-                    "-h —help:      Display this help message");
+                    "-s, --server:    Launch the application in server mode using ip_address and port_number as the server’s parameters\n" +
+                    "-g, --gui:       Launch the application in client mode with a Graphic User Interface (GUI)\n" +
+                    "-h, --help:      Display this help message");
         }
     }
 
@@ -84,21 +82,13 @@ public class Program {
     private void startConfig() {
         if (clientCLI) {
             // TODO: start CLI
-            System.out.println("Application starting in client with CLI mode ...");
         }
         if (clientGUI) {
             // TODO: start GUI
-            System.out.println("Application starting in client with GUI mode ...");
         }
         if (serverMode) {
-            System.out.println("Application starting in server mode ...");
             Server server = new Server(ip, port);
-            try {
-                server.start();
-            } catch (IOException e) {
-                System.err.println("Error starting server");
-                e.printStackTrace();
-            }
+            server.start();
         }
     }
 }

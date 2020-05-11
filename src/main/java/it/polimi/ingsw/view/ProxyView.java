@@ -23,7 +23,7 @@ public class ProxyView {
         this.port = port;
     }
 
-    public void start() throws IOException {
+    public void start() {
         // Set up Tcp socket and spawn threads for connections
         ServerSocket server;
         try {
@@ -32,20 +32,29 @@ public class ProxyView {
             System.err.println("Port " + port + " is already in use");
             return;
         }
+        System.out.println("INFO: Listening on " + server.toString());
         while (true) {
             try {
                 Socket s = server.accept();
+                System.out.println("INFO: Client connected: " + s.toString());
                 Scanner socketIn = new Scanner(s.getInputStream());
                 PrintWriter socketOut = new PrintWriter(s.getOutputStream());
-                executor.submit(new ClientHandler(s, controller));
 
-                if(controller.isGameReady()){
-                    socketOut.println("Lobby if full");
+                if(!controller.isGameReady()){
+                    executor.submit(new ClientHandler(s, controller));
+                    System.out.println("INFO: Started ClientHandler");
+                } else {
+                    socketOut.println("Lobby is full, closing connection");
+                    socketIn.close();
+                    socketOut.close();
                     s.close();
+                    System.out.println("INFO: Lobby is full, closing connection");
                 }
             } catch (IOException e){
                 e.printStackTrace();
+                break;
             }
         }
+        executor.shutdown();
     }
 }

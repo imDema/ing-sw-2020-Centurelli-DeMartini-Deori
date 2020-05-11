@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class MessageSerializerTest {
 
     @Test
-    public void serialize() {
+    public void testSerialize() {
         final String name1 = "user 1";
         final AddUserMessage msg1 = new AddUserMessage(name1);
 
@@ -22,8 +22,8 @@ public class MessageSerializerTest {
         String json1 = assertDoesNotThrow(() -> Serializer.serializeMessage(msg1));
         String json2 = assertDoesNotThrow(() -> Serializer.serializeMessage(msg2));
 
-        System.out.println(json1);
-        System.out.println(json2);
+//        System.out.println(json1);
+//        System.out.println(json2);
 
         Message des1 = assertDoesNotThrow(() -> Serializer.deserializeMessage(json1));
         Message des2 = assertDoesNotThrow(() -> Serializer.deserializeMessage(json2));
