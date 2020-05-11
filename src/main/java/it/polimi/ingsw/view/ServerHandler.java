@@ -30,7 +30,8 @@ public class ServerHandler implements Runnable, ClientEventsListener {
             new SimpleImmutableEntry<>(MessageId.REQUEST_PLACE_PAWNS, this::onRequestPlacePawns),
             new SimpleImmutableEntry<>(MessageId.SERVER_ERROR, this::onServerError ),
             new SimpleImmutableEntry<>(MessageId.TURN_CHANGE, this::onTurnChange ),
-            new SimpleImmutableEntry<>(MessageId.WIN, this::onWin ));
+            new SimpleImmutableEntry<>(MessageId.WIN, this::onWin ),
+            new SimpleImmutableEntry<>(MessageId.USER_JOINED, this::onUserJoined ));
 
     public ServerHandler(Scanner socketIn, PrintWriter socketOut, Socket socket) {
         this.socketIn = socketIn;
@@ -76,6 +77,12 @@ public class ServerHandler implements Runnable, ClientEventsListener {
 
     private Boolean onWin(Message message){
         WinMessage msg =(WinMessage) message;
+        serverEventsListener.onWin(msg.getUser());
+        return true;
+    }
+
+    private Boolean onUserJoined(Message message){
+        UserJoinedMessage msg =(UserJoinedMessage) message;
         serverEventsListener.onWin(msg.getUser());
         return true;
     }

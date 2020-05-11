@@ -14,12 +14,13 @@ public class ProxyController {
         this.port = port;
     }
 
-    public void start() throws IOException {
+    public ServerHandler start() throws IOException {
         Socket socket = new Socket(ip, port);
         Scanner socketIn = new Scanner(socket.getInputStream());
         PrintWriter socketOut = new PrintWriter(socket.getOutputStream());
         ServerHandler serverHandler = new ServerHandler(socketIn, socketOut, socket);
         serverHandler.run();
+        return serverHandler;
 
 
 
