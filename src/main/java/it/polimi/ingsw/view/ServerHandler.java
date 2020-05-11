@@ -7,9 +7,7 @@ import it.polimi.ingsw.controller.messages.User;
 import it.polimi.ingsw.model.board.Coordinate;
 import it.polimi.ingsw.serialization.Serializer;
 import it.polimi.ingsw.view.events.ClientEventsListener;
-import it.polimi.ingsw.view.messages.GodsAvailableMessage;
-import it.polimi.ingsw.view.messages.Message;
-import it.polimi.ingsw.view.messages.MessageId;
+import it.polimi.ingsw.view.messages.*;
 
 import java.io.PrintWriter;
 import java.net.Socket;
@@ -24,9 +22,21 @@ public class ServerHandler implements Runnable, ClientEventsListener {
     private final Scanner socketIn;
     private final PrintWriter socketOut;
     private final Socket socket;
-    private final Map<MessageId, Function<Message, Boolean>> map = Map.ofEntries(
-            new SimpleImmutableEntry<>(MessageId.GODS_AVAILABLE, this::onGodsAvailable));
     private ServerEventsListener serverEventsListener = null;
+    private final Map<MessageId, Function<Message, Boolean>> map = Map.ofEntries(
+            new SimpleImmutableEntry<>(MessageId.GODS_AVAILABLE, this::onGodsAvailable),
+            new SimpleImmutableEntry<>(MessageId.ACTION_READY, this::onActionsReady),
+            new SimpleImmutableEntry<>(MessageId.ELIMINATION, this::onElimination),
+            new SimpleImmutableEntry<>(MessageId.REQUEST_PLACE_PAWNS, this::onRequestPlacePawns),
+            new SimpleImmutableEntry<>(MessageId.SERVER_ERROR, this::onServerError ),
+            new SimpleImmutableEntry<>(MessageId.TURN_CHANGE, this::onTurnChange ),
+            new SimpleImmutableEntry<>(MessageId.WIN, this::onWin ));
+
+    public ServerHandler(Scanner socketIn, PrintWriter socketOut, Socket socket) {
+        this.socketIn = socketIn;
+        this.socketOut = socketOut;
+        this.socket = socket;
+    }
 
     private Boolean onGodsAvailable (Message message){
         GodsAvailableMessage msg = (GodsAvailableMessage) message;
@@ -34,14 +44,44 @@ public class ServerHandler implements Runnable, ClientEventsListener {
         return true;
     }
 
-    public void setServerEventsListener(ServerEventsListener serverEventsListener) {
-        this.serverEventsListener = serverEventsListener;
+    private Boolean onActionsReady(Message message){
+        ActionsReadyMessage msg = (ActionsReadyMessage) message;
+        serverEventsListener.onActionsReady(msg.getUser(), msg.getActionIdentifiers());
+        return true;
     }
 
-    public ServerHandler(Scanner socketIn, PrintWriter socketOut, Socket socket) {
-        this.socketIn = socketIn;
-        this.socketOut = socketOut;
-        this.socket = socket;
+    private Boolean onElimination(Message message){
+        EliminationMessage msg = (EliminationMessage) message;
+        serverEventsListener.onElimination(msg.getUser());
+        return true;
+    }
+
+    private Boolean onRequestPlacePawns(Message message){
+        RequestPlacePawnsMessage msg =(RequestPlacePawnsMessage) message;
+        serverEventsListener.onRequestPlacePawns(msg.getUser());
+        return true;
+    }
+
+    private Boolean onServerError(Message message){
+        ServerErrorMessage msg =(ServerErrorMessage) message;
+        serverEventsListener.onServerError(msg.getType(), msg.getDescription());
+        return true;
+    }
+
+    private Boolean onTurnChange(Message message){
+        TurnChangeMessage msg =(TurnChangeMessage) message;
+        serverEventsListener.onTurnChange(msg.getUser(), msg.getTurn());
+        return true;
+    }
+
+    private Boolean onWin(Message message){
+        WinMessage msg =(WinMessage) message;
+        serverEventsListener.onWin(msg.getUser());
+        return true;
+    }
+
+    public void setServerEventsListener(ServerEventsListener serverEventsListener) {
+        this.serverEventsListener = serverEventsListener;
     }
 
     @Override
