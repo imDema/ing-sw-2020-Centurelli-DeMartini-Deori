@@ -1,0 +1,141 @@
+\documentclass{article}
+\usepackage{graphicx}
+\usepackage{color}
+\usepackage{listings}
+\usepackage[activate=true,final,tracking=true,kerning=true,spacing=true]{microtype}
+\usepackage[margin=2cm]{geometry}
+\setlength\parindent{0pt}
+
+
+\lstset{frame=tb,
+language=Java,
+aboveskip=3mm,
+belowskip=3mm,
+showstringspaces=false,
+columns=flexible,
+basicstyle={\small\ttfamily},
+numbers=none,
+numberstyle=\tiny,
+  breaklines=true,
+  breakatwhitespace=true,
+  tabsize=3
+  }
+\begin{document}
+
+\section*{Communication Protocol}
+When the server is started it waits for clients to connect.
+
+At first the server will require one client to set the lobby size, then it will allow users to login and set up their player and pawns. After this initial setup the server will enter the main game cycle and the users will be able to play the game.
+
+The server only allows setting the lobby size once and logins with identical usernames will be forbidden, as well as logins when the lobby is full.
+On client connection the server will either allow the client to send commands if the lobby isn't full yet or notify the client that the lobby is already full.
+A client disconnecting before logging in will be ignored, although after a client has logged in and has chosen a username its disconnection will notify the users that the current lobby is being terminated.
+
+After finishing a game either because of a disconnection or a win the server will create a new lobby and wait for new client connections.
+
+After any unrecoverable error all clients are notified that the current game will be terminated.
+
+\vspace{8pt}
+
+\noindent
+The next sections will show in detail the communication during the different phases of a match
+
+\subsection*{Setup: set lobby size and login}
+The fist client to send a SelectPlayerNumber message containing a valid size will set the lobby to the desired size and the server will now start accepting user logins.
+
+The users can login using an AddUser message receiving a Result specifying whether the operation completed successfully and in case it was all the users will be notified of the newly created user.
+
+When as many users as the lobby size are added the server will send a message to the users with the gods available to choose from and it will start accepting ChooseGod messages.
+
+ChooseGod messages behave in a similar way to AddUser messages, the client will receive a result and other clients will be notified on success. When the last successful ChooseGod is processed the server will advance to the next phase.
+
+\vspace{8pt}
+\includegraphics[width=0.85\linewidth]{communication_uml_1.pdf}
+
+\subsection*{Setup: pawn placement}
+The server will now send a RequestPlacePawns message notifying users which user must now place their pawns.
+
+The user will send a PlacePawn message with the desired coordinates (as usual it will receive a Result and all users will be notified of successful changes).
+
+Trying to place pawns from another user will result in a negative Result.
+
+When pawns for all users are placed the server will advance to the next phase.
+
+\vspace{8pt}
+\includegraphics[width=0.85\linewidth]{communication_uml_2.pdf}
+\subsection*{Game cycle}
+
+During the main game cycle the server will send ActionReady messages notifying users which user should now execute an action and which actions he is allowed to choose from. 
+
+Users can send a CheckAction message containing the interested pawn, the desired action and the target coordinate, the server will answer with a result that will be positive if the user can execute the action with that specific pawn in that specific moment, negative otherwise. If any user other than the one previously chosen through the ActionReady message tries to execute an action it will receive a negative Result.
+
+The user can send an ExecuteAction message that after checking if the action is allowed it will execute it, the server will then notify all the users with the changes that happened to the model and if the move was a winning move it will send an Elimination message. Then if the player's turn is not yet finished another ActionsReady message will be sent containing the next allowed actions.
+
+When the end of a user's turn has been reached a TurnChange message is sent and the cycle will restart asking for the next user to execute an action.
+
+\vspace{8pt}
+\includegraphics[width=0.85\linewidth]{communication_uml_3.pdf}
+
+\subsection*{Message serialization}
+
+Messages are serialized in JSON form.
+
+\vspace{8pt}
+
+Example message:
+\begin{lstlisting}
+{
+    "type": "ACTION_TYPE",
+    "content": {
+        "user": {
+            "username": "USERNAME"
+        },
+        "id": 0,
+        "actionIdentifier": {
+            "description": "MOVE"
+        },
+        "coordinate": {
+            "x": 0,
+            "y": 0
+        }
+    }
+}
+\end{lstlisting}
+
+The \emph{type} field is used to identify the type of message through an identifier and the \emph{content} field will contain all the message specific parameters
+
+\subsubsection*{Custom class serialization}
+
+This section shows how the relevant non-primitive classes are serialized
+\begin{lstlisting}
+User:	{"username": "USERNAME"}
+ActionIdentifier: {"actionIdentifier": {"description": "DESCRIPTION"}}
+GodIdentifier: {"name": "NAME", "description": "DESCRIPTION"}
+Coordinate: {"x": 0, "y": 0}
+Building: {"level":"LEVEL0", "dome":false}
+\end{lstlisting}
+
+\subsubsection*{Messages}
+Message reference
+\begin{lstlisting}
+    ActionsReadyMessage(User user, List<ActionIdentifier> actionIdentifiers)
+    AddUserMessage(User user)
+    BuildMessage(Building building, Coordinate coordinate)
+    CheckActionMessage(User user, int id, ActionIdentifier actionIdentifier, Coordinate coordinate)
+    ChooseGodMessage(User user, GodIdentifier god)
+    EliminationMessage(User user)
+    ExecuteActionMessage(User user, int id, ActionIdentifier actionIdentifier, Coordinate coordinate)
+    GodChosenMessage(User user, GodIdentifier godIdentifier)
+    GodsAvailableMessage(List<GodIdentifier> gods)
+    MoveMessage(Coordinate from, Coordinate to)
+    PawnPlacedMessage(User owner, int pawnId, Coordinate coordinate)
+    PlacePawnsMessage(User user, Coordinate c1, Coordinate c2)
+    RequestPlacePawnsMessage(User user)
+    ResultMessage(boolean value)
+    SelectPlayerNumberMessage(int size)
+    ServerErrorMessage(String type, String description)
+    TurnChangeMessage(User user, int turn)
+    UserJoinedMessage(User user)
+    WinMessage(User user)
+\end{lstlisting}
+\end{document}
