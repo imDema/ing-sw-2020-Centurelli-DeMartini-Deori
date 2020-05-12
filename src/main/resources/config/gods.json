@@ -16,12 +16,12 @@
               }
             ], [
               {
-                "description": "Build Block",
+                "description": "Build_Block",
                 "family": "BUILD",
                 "effects": ["BUILD_BLOCK"],
                 "checks": ["NEIGHBOUR", "NO_DOME", "NOT_OCCUPIED", "NOT_MAX_LEVEL"]
               }, {
-                "description": "Build Dome",
+                "description": "Build_Dome",
                 "family": "BUILD",
                 "effects": ["BUILD_DOME"],
                 "checks": ["NEIGHBOUR", "NO_DOME", "NOT_OCCUPIED", "MAX_LEVEL"]
@@ -48,12 +48,12 @@
             }
           ], [
             {
-              "description": "Build Block",
+              "description": "Build_Block",
               "family": "BUILD",
               "effects": ["BUILD_BLOCK"],
               "checks": ["NEIGHBOUR", "NO_DOME", "NOT_OCCUPIED", "NOT_MAX_LEVEL"]
             }, {
-              "description": "Build Dome",
+              "description": "Build_Dome",
               "family": "BUILD",
               "effects": ["BUILD_DOME"],
               "checks": ["NEIGHBOUR", "NO_DOME", "NOT_OCCUPIED", "MAX_LEVEL"]
@@ -80,12 +80,12 @@
             }
           ], [
             {
-              "description": "Build Block",
+              "description": "Build_Block",
               "family": "BUILD",
               "effects": ["BUILD_BLOCK"],
               "checks": ["NEIGHBOUR", "NO_DOME", "NOT_OCCUPIED", "NOT_MAX_LEVEL"]
             }, {
-              "description": "Build Dome",
+              "description": "Build_Dome",
               "family": "BUILD",
               "effects": ["BUILD_DOME"],
               "checks": ["NEIGHBOUR", "NO_DOME", "NOT_OCCUPIED", "MIN_LEVEL_ONE"]
@@ -112,12 +112,12 @@
             }
           ], [
             {
-              "description": "Build Block",
+              "description": "Build_Block",
               "family": "BUILD",
               "effects": ["BUILD_BLOCK"],
               "checks": ["NEIGHBOUR", "NO_DOME", "NOT_OCCUPIED", "NOT_MAX_LEVEL"]
             }, {
-              "description": "Build Dome",
+              "description": "Build_Dome",
               "family": "BUILD",
               "effects": ["BUILD_DOME"],
               "checks": ["NEIGHBOUR", "NO_DOME", "NOT_OCCUPIED", "MAX_LEVEL"]
@@ -144,24 +144,24 @@
             }
           ], [
             {
-              "description": "Build Block",
+              "description": "Build_Block",
               "family": "BUILD",
               "effects": ["BUILD_BLOCK", "FORBID_OTHER_COORDINATES"],
               "checks": ["NEIGHBOUR", "NO_DOME", "NOT_OCCUPIED", "NOT_MAX_LEVEL"]
             }, {
-              "description": "Build Dome",
+              "description": "Build_Dome",
               "family": "BUILD",
               "effects": ["BUILD_DOME", "FORBID_OTHER_COORDINATES"],
               "checks": ["NEIGHBOUR", "NO_DOME", "NOT_OCCUPIED", "MAX_LEVEL"]
             }
           ], [
             {
-              "description": "Build Block",
+              "description": "Build_Block",
               "family": "BUILD",
               "effects": ["BUILD_BLOCK"],
               "checks": ["NEIGHBOUR", "NO_DOME", "NOT_OCCUPIED", "NOT_MAX_LEVEL"]
             }, {
-              "description": "Pass turn",
+              "description": "Pass_turn",
               "family": "NONE",
               "effects": [],
               "checks": []
@@ -188,29 +188,29 @@
             }
           ], [
             {
-              "description": "Build Block",
+              "description": "Build_Block",
               "family": "BUILD",
               "effects": ["BUILD_BLOCK", "FORBID_COORDINATE"],
               "checks": ["NEIGHBOUR", "NO_DOME", "NOT_OCCUPIED", "NOT_MAX_LEVEL"]
             }, {
-              "description": "Build Dome",
+              "description": "Build_Dome",
               "family": "BUILD",
               "effects": ["BUILD_DOME", "FORBID_COORDINATE"],
               "checks": ["NEIGHBOUR", "NO_DOME", "NOT_OCCUPIED", "MAX_LEVEL"]
             }
           ], [
             {
-              "description": "Build Block",
+              "description": "Build_Block",
               "family": "BUILD",
               "effects": ["BUILD_BLOCK"],
               "checks": ["NEIGHBOUR", "NO_DOME", "NOT_OCCUPIED", "NOT_MAX_LEVEL"]
             }, {
-              "description": "Build Dome",
+              "description": "Build_Dome",
               "family": "BUILD",
               "effects": ["BUILD_DOME"],
               "checks": ["NEIGHBOUR", "NO_DOME", "NOT_OCCUPIED", "MAX_LEVEL"]
             }, {
-              "description": "Pass turn",
+              "description": "Pass_turn",
               "family": "NONE",
               "effects": [],
               "checks": []
@@ -237,12 +237,12 @@
             }
           ], [
             {
-              "description": "Build Block",
+              "description": "Build_Block",
               "family": "BUILD",
               "effects": ["BUILD_BLOCK"],
               "checks": ["NEIGHBOUR", "NO_DOME", "NOT_OCCUPIED", "NOT_MAX_LEVEL"]
             }, {
-              "description": "Build Dome",
+              "description": "Build_Dome",
               "family": "BUILD",
               "effects": ["BUILD_DOME"],
               "checks": ["NEIGHBOUR", "NO_DOME", "NOT_OCCUPIED", "MAX_LEVEL"]
@@ -282,12 +282,12 @@
               }
             ], [
               {
-                "description": "Build Block",
+                "description": "Build_Block",
                 "family": "BUILD",
                 "effects": ["BUILD_BLOCK"],
                 "checks": ["NEIGHBOUR", "NO_DOME", "NOT_OCCUPIED", "NOT_MAX_LEVEL"]
               }, {
-                "description": "Build Dome",
+                "description": "Build_Dome",
                 "family": "BUILD",
                 "effects": ["BUILD_DOME"],
                 "checks": ["NEIGHBOUR", "NO_DOME", "NOT_OCCUPIED", "MAX_LEVEL"]
@@ -299,12 +299,12 @@
           "steps": [
             [
               {
-                "description": "Build Block",
+                "description": "Build_Block",
                 "family": "BUILD",
                 "effects": ["BUILD_BLOCK"],
                 "checks": ["NEIGHBOUR", "NO_DOME", "NOT_OCCUPIED", "NOT_MAX_LEVEL"]
               }, {
-                "description": "Build Dome",
+                "description": "Build_Dome",
                 "family": "BUILD",
                 "effects": ["BUILD_DOME"],
                 "checks": ["NEIGHBOUR", "NO_DOME", "NOT_OCCUPIED", "MAX_LEVEL"]
@@ -336,12 +336,12 @@
               }
             ], [
               {
-                "description": "Build Block",
+                "description": "Build_Block",
                 "family": "BUILD",
                 "effects": ["BUILD_BLOCK"],
                 "checks": ["NEIGHBOUR", "NO_DOME", "NOT_OCCUPIED", "NOT_MAX_LEVEL"]
               }, {
-                "description": "Build Dome",
+                "description": "Build_Dome",
                 "family": "BUILD",
                 "effects": ["BUILD_DOME"],
                 "checks": ["NEIGHBOUR", "NO_DOME", "NOT_OCCUPIED", "MAX_LEVEL"]
@@ -353,12 +353,12 @@
           "steps": [
             [
               {
-                "description": "Build Block",
+                "description": "Build_Block",
                 "family": "BUILD",
                 "effects": ["BUILD_BLOCK"],
                 "checks": ["NEIGHBOUR", "NO_DOME", "NOT_OCCUPIED", "NOT_MAX_LEVEL"]
               }, {
-                "description": "Build Dome",
+                "description": "Build_Dome",
                 "family": "BUILD",
                 "effects": ["BUILD_DOME"],
                 "checks": ["NEIGHBOUR", "NO_DOME", "NOT_OCCUPIED", "MAX_LEVEL"]
@@ -372,12 +372,12 @@
               }
             ], [
               {
-                "description": "Build Block",
+                "description": "Build_Block",
                 "family": "BUILD",
                 "effects": ["BUILD_BLOCK"],
                 "checks": ["NEIGHBOUR", "NO_DOME", "NOT_OCCUPIED", "NOT_MAX_LEVEL"]
               }, {
-                "description": "Build Dome",
+                "description": "Build_Dome",
                 "family": "BUILD",
                 "effects": ["BUILD_DOME"],
                 "checks": ["NEIGHBOUR", "NO_DOME", "NOT_OCCUPIED", "MAX_LEVEL"]

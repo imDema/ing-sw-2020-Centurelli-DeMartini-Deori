@@ -39,28 +39,32 @@ public class ClientHandler implements Runnable, ServerEventsListener {
 
     private void onAddUser(Message message) {
         AddUserMessage msg = (AddUserMessage) message;
-        System.out.println("INFO: ADD_USER: " + msg.getUser().getUsername());
-        controller.onAddUser(msg.getUser());
+        boolean result = controller.onAddUser(msg.getUser());
+        sendMessage(new ResultMessage(result));
     }
 
     private void onChooseGod(Message message) {
         ChooseGodMessage msg = (ChooseGodMessage) message;
-        controller.onChooseGod(msg.getUser(), msg.getGod());
+        boolean result = controller.onChooseGod(msg.getUser(), msg.getGod());
+        sendMessage(new ResultMessage(result));
     }
 
     private void onPlacePawn(Message message) {
         PlacePawnsMessage msg = (PlacePawnsMessage) message;
-        controller.onPlacePawns(msg.getUser(), msg.getC1(), msg.getC2());
+        boolean result = controller.onPlacePawns(msg.getUser(), msg.getC1(), msg.getC2());
+        sendMessage(new ResultMessage(result));
     }
 
     private void onExecuteAction(Message message) {
         ExecuteActionMessage msg = (ExecuteActionMessage) message;
-        controller.onExecuteAction(msg.getUser(), msg.getId(), msg.getActionIdentifier(), msg.getCoordinate());
+        boolean result = controller.onExecuteAction(msg.getUser(), msg.getId(), msg.getActionIdentifier(), msg.getCoordinate());
+        sendMessage(new ResultMessage(result));
     }
 
     private void onCheckAction(Message message) {
         CheckActionMessage msg = (CheckActionMessage) message;
-        controller.onCheckAction(msg.getUser(), msg.getId(), msg.getActionIdentifier(), msg.getCoordinate());
+        boolean result = controller.onCheckAction(msg.getUser(), msg.getId(), msg.getActionIdentifier(), msg.getCoordinate());
+        sendMessage(new ResultMessage(result));
     }
 
     public ClientHandler(Scanner socketIn, PrintWriter socketOut, GameController controller, Socket socket) {
@@ -89,6 +93,7 @@ public class ClientHandler implements Runnable, ServerEventsListener {
             try {
                 Message message = Serializer.deserializeMessage(socketIn.nextLine());
                 MessageId id = message.getSerializationId();
+                System.out.println("LOG: " + id);
                 Consumer<Message> handler = map.get(id);
                 if (handler != null) {
                     handler.accept(message);
@@ -112,68 +117,74 @@ public class ClientHandler implements Runnable, ServerEventsListener {
 
     @Override
     public void onActionsReady(User user, List<ActionIdentifier> actions) {
-        Message actionsReadyMsg = new ActionsReadyMessage(user, actions);
-        sendMessage(actionsReadyMsg);
+        Message message = new ActionsReadyMessage(user, actions);
+        sendMessage(message);
     }
 
     @Override
     public void onElimination(User user) {
-        Message eliminationMsg = new EliminationMessage(user);
-        sendMessage(eliminationMsg);
+        Message message = new EliminationMessage(user);
+        sendMessage(message);
     }
 
     @Override
     public void onGodsAvailable(List<GodIdentifier> gods) {
-        Message godsAvailableMsg = new GodsAvailableMessage(gods);
-        sendMessage(godsAvailableMsg);
+        Message message = new GodsAvailableMessage(gods);
+        sendMessage(message);
     }
 
     @Override
     public void onRequestPlacePawns(User user) {
-        Message requestPlacePawnsMsg = new RequestPlacePawnsMessage(user);
-        sendMessage(requestPlacePawnsMsg);
+        Message message = new RequestPlacePawnsMessage(user);
+        sendMessage(message);
     }
 
     @Override
     public void onServerError(String type, String description) {
-        Message serverErrorMsg = new ServerErrorMessage(type, description);
-        sendMessage(serverErrorMsg);
+        Message message = new ServerErrorMessage(type, description);
+        sendMessage(message);
     }
 
     @Override
     public void onTurnChange(User currentUser, int turn) {
-        Message turnChangeMsg = new TurnChangeMessage(currentUser, turn);
-        sendMessage(turnChangeMsg);
+        Message message = new TurnChangeMessage(currentUser, turn);
+        sendMessage(message);
     }
 
     @Override
     public void onWin(User user) {
-        Message winMsg = new WinMessage(user);
-        sendMessage(winMsg);
+        Message message = new WinMessage(user);
+        sendMessage(message);
     }
 
     @Override
     public void onBuild(Building building, Coordinate coordinate) {
-        Message buildMsg = new BuildMessage(building, coordinate);
-        sendMessage(buildMsg);
+        Message message = new BuildMessage(building, coordinate);
+        sendMessage(message);
     }
 
     @Override
     public void onMove(Coordinate from, Coordinate to) {
-        Message moveMsg = new MoveMessage(from, to);
-        sendMessage(moveMsg);
+        Message message = new MoveMessage(from, to);
+        sendMessage(message);
     }
 
     @Override
     public void onGodChosen(User user, GodIdentifier godIdentifier) {
-        Message godChosenMsg = new GodChosenMessage(user, godIdentifier);
-        sendMessage(godChosenMsg);
+        Message message = new GodChosenMessage(user, godIdentifier);
+        sendMessage(message);
     }
 
     @Override
     public void onUserJoined(User user) {
-        Message userJoinedMsg = new UserJoinedMessage(user);
-        sendMessage(userJoinedMsg);
+        Message message = new UserJoinedMessage(user);
+        sendMessage(message);
+    }
+
+    @Override
+    public void onPawnPlaced(User owner, int pawnId, Coordinate coordinate) {
+        Message message = new PawnPlacedMessage(owner, pawnId, coordinate);
+        sendMessage(message);
     }
 
     public void sendMessage(Message message) {
@@ -183,4 +194,5 @@ public class ClientHandler implements Runnable, ServerEventsListener {
             socketOut.flush();
         }
     }
+
 }

@@ -40,6 +40,7 @@ public class ProxyView {
             return;
         }
         System.out.println("INFO: Listening on " + server.toString());
+        controller.initLobby();
         while (true) {
             try {
                 Socket s = server.accept();

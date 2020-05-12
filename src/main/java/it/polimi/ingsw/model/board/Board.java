@@ -68,7 +68,7 @@ public class Board {
         pawn1.setPosition(c2);
         pawn2.setPosition(c1);
         if(onMoveListener != null)
-            onMoveListener.onMove(c1, c2);  //TODO: swap can be explicit but check if it's a good idea
+            onMoveListener.onMove(c1, c2);
     }
 
     public void buildBlock(Coordinate c) throws InvalidActionException {

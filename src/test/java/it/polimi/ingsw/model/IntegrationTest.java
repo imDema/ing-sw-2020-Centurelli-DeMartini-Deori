@@ -6,26 +6,22 @@ import it.polimi.ingsw.model.board.Board;
 import it.polimi.ingsw.model.board.BuildingLevel;
 import it.polimi.ingsw.model.board.Coordinate;
 import it.polimi.ingsw.model.board.InvalidActionException;
-import it.polimi.ingsw.model.player.*;
+import it.polimi.ingsw.model.player.God;
+import it.polimi.ingsw.model.player.Pawn;
+import it.polimi.ingsw.model.player.Player;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class IntegrationTest {
     @Test
     public void testBasicGameSequence() throws InvalidActionException {
         // Init lobby
         Lobby lobby = new Lobby(3);
-        try {
-            lobby.loadGods();
-        } catch (IOException ex) {
-            ex.printStackTrace();
-            fail();
-            return;
-        }
+        lobby.loadGods();
 
         // Init players
         User u1 = new User("user_1");
@@ -37,6 +33,7 @@ public class IntegrationTest {
         lobby.addUser(u3);
 
         List<God> gods = lobby.getAvailableGods();
+        assertTrue(gods.size() > 0);
         lobby.chooseGod(u1, gods.get(0));
 
         gods = lobby.getAvailableGods();

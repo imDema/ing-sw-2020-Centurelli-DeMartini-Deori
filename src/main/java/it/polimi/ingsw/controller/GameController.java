@@ -1,16 +1,17 @@
 package it.polimi.ingsw.controller;
 
-import it.polimi.ingsw.controller.events.*;
+import it.polimi.ingsw.controller.events.ServerEventsListener;
 import it.polimi.ingsw.controller.messages.ActionIdentifier;
 import it.polimi.ingsw.controller.messages.GodIdentifier;
+import it.polimi.ingsw.controller.messages.User;
 import it.polimi.ingsw.model.Lobby;
 import it.polimi.ingsw.model.board.Coordinate;
-import it.polimi.ingsw.view.events.*;
 import it.polimi.ingsw.model.player.God;
-import it.polimi.ingsw.controller.messages.User;
+import it.polimi.ingsw.view.events.ClientEventsListener;
 
-import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class GameController implements ClientEventsListener {
@@ -39,10 +40,9 @@ public class GameController implements ClientEventsListener {
     }
 
     public void initLobby() {
-        try {
-            lobby.loadGods();
-        } catch (IOException e) {
-            serverEventsListeners.forEach(l -> l.onServerError("Input-Output error", "error while loading gods configuration"));
+        lobby.loadGods();
+        if (lobby.getAvailableGods() == null || lobby.getAvailableGods().size() < lobby.getSize()) {
+            serverEventsListeners.forEach(l -> l.onServerError("Error retrieving gods", "An error occurred while loading God data from the configuration files"));
         }
         onGodsAvailable(lobby.getAvailableGods());
     }
@@ -60,6 +60,8 @@ public class GameController implements ClientEventsListener {
         synchronized (lobby) {
             if (lobby.addUser(user)) {
                 serverEventsListeners.forEach(l -> l.onUserJoined(user));
+                if (lobby.isLobbyFull())
+                    onGodsAvailable(lobby.getAvailableGods());
                 return true;
             } else {
                 return false;
@@ -97,6 +99,8 @@ public class GameController implements ClientEventsListener {
                 return false;
 
             if (lobby.setUpUserPawns(user, c1, c2)) {
+                serverEventsListeners.forEach(l -> l.onPawnPlaced(user, 0, c1));
+                serverEventsListeners.forEach(l -> l.onPawnPlaced(user, 1, c2));
                 Optional<User> nextUser = lobby.getUserToSetUp();
                 if (nextUser.isPresent()) {
                     serverEventsListeners.forEach(l -> l.onRequestPlacePawns(nextUser.get()));

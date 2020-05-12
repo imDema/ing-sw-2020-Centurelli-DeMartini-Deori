@@ -11,6 +11,7 @@ public enum MessageId {
     GOD_CHOSEN,
     GODS_AVAILABLE,
     MOVE,
+    PAWN_PLACED,
     PLACE_PAWNS,
     REQUEST_PLACE_PAWNS,
     RESULT,

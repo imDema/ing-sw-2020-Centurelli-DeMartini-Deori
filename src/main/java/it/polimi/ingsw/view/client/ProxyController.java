@@ -16,13 +16,11 @@ public class ProxyController {
     }
 
     public ServerHandler start() throws IOException {
+        System.out.println("INFO: Connecting to server at ip: " + ip + " port: " + port);
         InetAddress address = InetAddress.getByName(ip);
         Socket socket = new Socket(address, port);
         Scanner socketIn = new Scanner(socket.getInputStream());
         PrintWriter socketOut = new PrintWriter(socket.getOutputStream());
-        ServerHandler serverHandler = new ServerHandler(socketIn, socketOut, socket);
-        serverHandler.run();
-        return serverHandler;
+        return new ServerHandler(socketIn, socketOut, socket);
     }
-
 }

@@ -30,6 +30,8 @@ public class GameControllerTest {
     public void testControllerSequence() {
         GameController gameController = new GameController();
         gameController.addServerEventsListener(new ServerEventsListener() {
+
+
             @Override
             public void onGodsAvailable(List<GodIdentifier> gods) {
                 availableGods = gods;
@@ -42,6 +44,8 @@ public class GameControllerTest {
                 gameController.onPlacePawns(user, c1, c2);
             }
 
+            @Override
+            public void onPawnPlaced(User owner, int pawnId, Coordinate coordinate) {}
             @Override
             public void onActionsReady(User user, List<ActionIdentifier> actions) {}
             @Override

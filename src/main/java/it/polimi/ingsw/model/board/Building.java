@@ -22,18 +22,16 @@ public class Building {
 
     public void buildBlock() throws InvalidActionException {
         switch (level) {
-            case LEVEL0:
-                level = BuildingLevel.LEVEL1;
-                break;
-            case LEVEL1:
-                level = BuildingLevel.LEVEL2;
-                break;
-            case LEVEL2:
-                level = BuildingLevel.LEVEL3;
-                break;
-            case LEVEL3:
-                throw new InvalidActionException();
+            case LEVEL0 -> level = BuildingLevel.LEVEL1;
+            case LEVEL1 -> level = BuildingLevel.LEVEL2;
+            case LEVEL2 -> level = BuildingLevel.LEVEL3;
+            case LEVEL3 -> throw new InvalidActionException();
         }
+    }
+
+    @Override
+    public String toString() {
+        return "Building: Level " + level.height + (dome ? " with dome" : "");
     }
 
     // returns the level difference of b relative to this

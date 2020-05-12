@@ -22,8 +22,9 @@ public class MessageSerializerTest {
         String json1 = assertDoesNotThrow(() -> Serializer.serializeMessage(msg1));
         String json2 = assertDoesNotThrow(() -> Serializer.serializeMessage(msg2));
 
-//        System.out.println(json1);
-//        System.out.println(json2);
+//        System.out.println(json1);  // {"type":"ADD_USER","content":{"user":{"username":"user 1"}}}
+//        System.out.println(json2);  // {"type":"CHOOSE_GOD","content":{"user":{"username":"user 2"},"god":{"name":"God 2","description":"Description"}}}
+
 
         Message des1 = assertDoesNotThrow(() -> Serializer.deserializeMessage(json1));
         Message des2 = assertDoesNotThrow(() -> Serializer.deserializeMessage(json2));

@@ -21,6 +21,16 @@ public class User {
         return username.equals(u.username);
     }
 
+    @Override
+    public int hashCode() {
+        return username.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return "User {username: \"" + username + "\"}";
+    }
+
     public boolean matches(Player player) {
         return username.equals(player.getUsername());
     }

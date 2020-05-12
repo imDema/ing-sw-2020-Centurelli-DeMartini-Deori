@@ -1,22 +1,35 @@
 package it.polimi.ingsw.serialization;
 
 import com.google.gson.*;
-import it.polimi.ingsw.view.messages.AddUserMessage;
-import it.polimi.ingsw.view.messages.ChooseGodMessage;
-import it.polimi.ingsw.view.messages.Message;
-import it.polimi.ingsw.view.messages.MessageId;
+import it.polimi.ingsw.view.messages.*;
 
 import java.lang.reflect.Type;
-import java.util.Map;
 import java.util.AbstractMap.SimpleImmutableEntry;
+import java.util.Map;
 
 class MessageSerializer implements JsonSerializer<Message>, JsonDeserializer<Message> {
     private final String TYPE = "type";
     private final String CONTENT = "content";
 
     private final Map<MessageId, Type> map = Map.ofEntries(
+            new SimpleImmutableEntry<>(MessageId.ACTION_READY, ActionsReadyMessage.class),
             new SimpleImmutableEntry<>(MessageId.ADD_USER, AddUserMessage.class),
-            new SimpleImmutableEntry<>(MessageId.CHOOSE_GOD, ChooseGodMessage.class)
+            new SimpleImmutableEntry<>(MessageId.BUILD, BuildMessage.class),
+            new SimpleImmutableEntry<>(MessageId.CHECK_ACTION, CheckActionMessage.class),
+            new SimpleImmutableEntry<>(MessageId.CHOOSE_GOD, ChooseGodMessage.class),
+            new SimpleImmutableEntry<>(MessageId.ELIMINATION, EliminationMessage.class),
+            new SimpleImmutableEntry<>(MessageId.EXECUTE_ACTION, ExecuteActionMessage.class),
+            new SimpleImmutableEntry<>(MessageId.GOD_CHOSEN, GodChosenMessage.class),
+            new SimpleImmutableEntry<>(MessageId.GODS_AVAILABLE, GodsAvailableMessage.class),
+            new SimpleImmutableEntry<>(MessageId.MOVE, MoveMessage.class),
+            new SimpleImmutableEntry<>(MessageId.PAWN_PLACED, PawnPlacedMessage.class),
+            new SimpleImmutableEntry<>(MessageId.PLACE_PAWNS, PlacePawnsMessage.class),
+            new SimpleImmutableEntry<>(MessageId.REQUEST_PLACE_PAWNS, RequestPlacePawnsMessage.class),
+            new SimpleImmutableEntry<>(MessageId.RESULT, ResultMessage.class),
+            new SimpleImmutableEntry<>(MessageId.SERVER_ERROR, ServerErrorMessage.class),
+            new SimpleImmutableEntry<>(MessageId.TURN_CHANGE, TurnChangeMessage.class),
+            new SimpleImmutableEntry<>(MessageId.USER_JOINED, UserJoinedMessage.class),
+            new SimpleImmutableEntry<>(MessageId.WIN, WinMessage.class)
     );
 
     @Override

@@ -63,12 +63,14 @@ public class Program {
                 }
             }
         }
-        if (!(ip != null && port != null)) {
+        if (ip != null && port != null) {
+            return true;
+        } else {
             System.err.println("----------------");
             System.err.println("ERROR: Missing arguments");
             System.err.println("----------------");
+            return false;
         }
-        return (ip != null && port != null);
     }
 
     // This method is executed only if the arguments match a valid configuration

@@ -1,14 +1,14 @@
 package it.polimi.ingsw.model;
 
+import it.polimi.ingsw.Resources;
 import it.polimi.ingsw.controller.messages.User;
 import it.polimi.ingsw.model.board.Board;
 import it.polimi.ingsw.model.board.Coordinate;
 import it.polimi.ingsw.model.board.InvalidActionException;
 import it.polimi.ingsw.model.player.God;
-import it.polimi.ingsw.model.player.GodFactory;
 import it.polimi.ingsw.model.player.Player;
+import it.polimi.ingsw.serialization.Serializer;
 
-import java.io.IOException;
 import java.util.*;
 
 public class Lobby {
@@ -105,9 +105,13 @@ public class Lobby {
         return availableGods;
     }
 
-    public void loadGods() throws IOException {
-        GodFactory godFactory = new GodFactory();
-        availableGods = godFactory.getGods();
+    public void loadGods() {
+        String config = Resources.loadGodConfig(this);
+        availableGods = Serializer.deserializeGodList(config);
+    }
+
+    public boolean isLobbyFull() {
+        return getUserNumber() == size;
     }
 
     public boolean isGameFull() {

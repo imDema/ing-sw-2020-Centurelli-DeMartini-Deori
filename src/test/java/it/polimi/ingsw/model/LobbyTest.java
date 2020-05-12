@@ -5,11 +5,9 @@ import it.polimi.ingsw.model.board.Coordinate;
 import it.polimi.ingsw.model.player.God;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class LobbyTest {
 
@@ -18,14 +16,7 @@ public class LobbyTest {
         Lobby lobby = new Lobby(3);
         List<God> godList;
 
-        try {
-            lobby.loadGods();
-        } catch (IOException ex) {
-            ex.printStackTrace();
-            fail();
-            return;
-        }
-
+        lobby.loadGods();
 
         String username1 = "Name1";
         String username2 = "Name2";

@@ -1,13 +1,13 @@
 package it.polimi.ingsw.controller;
 
-import it.polimi.ingsw.controller.events.*;
+import it.polimi.ingsw.controller.events.ServerEventsListener;
 import it.polimi.ingsw.controller.messages.ActionIdentifier;
+import it.polimi.ingsw.controller.messages.User;
 import it.polimi.ingsw.model.Game;
 import it.polimi.ingsw.model.Lobby;
 import it.polimi.ingsw.model.action.Action;
 import it.polimi.ingsw.model.board.Building;
 import it.polimi.ingsw.model.board.Coordinate;
-import it.polimi.ingsw.controller.messages.User;
 import it.polimi.ingsw.model.board.InvalidActionException;
 import it.polimi.ingsw.model.board.events.OnBuildListener;
 import it.polimi.ingsw.model.board.events.OnMoveListener;
@@ -73,7 +73,7 @@ public class GameCycle implements OnExecuteActionListener, OnCheckActionListener
 
     private boolean checkAction(Player player, Pawn pawn, Action action, Coordinate coordinate) {
         if (player.equals(game.getCurrentPlayer()) &&
-                game.getBoard().checkAction(action, currentPawn, coordinate)) {
+                game.getBoard().checkAction(action, pawn, coordinate)) {
             return !pawnSelected || pawn.equals(currentPawn);
         } else {
             return false;

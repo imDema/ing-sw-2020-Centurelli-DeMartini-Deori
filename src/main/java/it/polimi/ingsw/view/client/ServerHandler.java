@@ -25,6 +25,7 @@ public class ServerHandler implements Runnable, ClientEventsListener {
     private ServerEventsListener serverEventsListener = null;
     private final Map<MessageId, Consumer<Message>> map = Map.ofEntries(
             new SimpleImmutableEntry<>(MessageId.GODS_AVAILABLE, this::onGodsAvailable),
+            new SimpleImmutableEntry<>(MessageId.GOD_CHOSEN, this::onGodChosen),
             new SimpleImmutableEntry<>(MessageId.ACTION_READY, this::onActionsReady),
             new SimpleImmutableEntry<>(MessageId.ELIMINATION, this::onElimination),
             new SimpleImmutableEntry<>(MessageId.REQUEST_PLACE_PAWNS, this::onRequestPlacePawns),
@@ -32,7 +33,11 @@ public class ServerHandler implements Runnable, ClientEventsListener {
             new SimpleImmutableEntry<>(MessageId.TURN_CHANGE, this::onTurnChange),
             new SimpleImmutableEntry<>(MessageId.WIN, this::onWin),
             new SimpleImmutableEntry<>(MessageId.USER_JOINED, this::onUserJoined),
-            new SimpleImmutableEntry<>(MessageId.RESULT, this::onResult));
+            new SimpleImmutableEntry<>(MessageId.RESULT, this::onResult),
+            new SimpleImmutableEntry<>(MessageId.MOVE, this::onMove),
+            new SimpleImmutableEntry<>(MessageId.BUILD, this::onBuild),
+            new SimpleImmutableEntry<>(MessageId.PAWN_PLACED, this::onPawnPlaced)
+    );
     private OnResultListener resultListener = null;
 
     public ServerHandler(Scanner socketIn, PrintWriter socketOut, Socket socket) {
@@ -48,6 +53,11 @@ public class ServerHandler implements Runnable, ClientEventsListener {
     private void onGodsAvailable (Message message){
         GodsAvailableMessage msg = (GodsAvailableMessage) message;
         serverEventsListener.onGodsAvailable(msg.getGods());
+    }
+
+    private void onGodChosen (Message message){
+        GodChosenMessage msg = (GodChosenMessage) message;
+        serverEventsListener.onGodChosen(msg.getUser(),msg.getGodIdentifier());
     }
 
     private void onActionsReady(Message message){
@@ -82,7 +92,22 @@ public class ServerHandler implements Runnable, ClientEventsListener {
 
     private void onUserJoined(Message message){
         UserJoinedMessage msg = (UserJoinedMessage) message;
-        serverEventsListener.onWin(msg.getUser());
+        serverEventsListener.onUserJoined(msg.getUser());
+    }
+
+    private void onMove(Message message){
+        MoveMessage msg = (MoveMessage) message;
+        serverEventsListener.onMove(msg.getSource(), msg.getDestination());
+    }
+
+    private void onBuild(Message message){
+        BuildMessage msg = (BuildMessage) message;
+        serverEventsListener.onBuild(msg.getBuilding(), msg.getCoordinate());
+    }
+
+    private void onPawnPlaced(Message message){
+        PawnPlacedMessage msg = (PawnPlacedMessage) message;
+        serverEventsListener.onPawnPlaced(msg.getOwner(), msg.getPawnId(), msg.getCoordinate());
     }
 
     private void onResult(Message message){
