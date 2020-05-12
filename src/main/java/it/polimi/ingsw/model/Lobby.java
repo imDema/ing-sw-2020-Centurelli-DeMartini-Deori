@@ -15,7 +15,7 @@ public class Lobby {
     public final int PAWN_N = 2;
 
     private final Game game = new Game();
-    private final int size;
+    private int size = 0;
     private final List<User> users = new ArrayList<>();
     private final Map<User, Player> userPlayerMap = new HashMap<>();
     private List<God> availableGods = null;
@@ -97,8 +97,11 @@ public class Lobby {
         return size;
     }
 
-    public Lobby(int size) {
-        this.size = size;
+    public void setSize(int size) {
+        // Only allow setting size once
+        if (this.size == 0) {
+            this.size = size;
+        }
     }
 
     public List<God> getAvailableGods() {

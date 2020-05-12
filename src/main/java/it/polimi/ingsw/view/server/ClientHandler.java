@@ -13,6 +13,7 @@ import it.polimi.ingsw.controller.messages.User;
 import it.polimi.ingsw.model.board.Building;
 import it.polimi.ingsw.model.board.Coordinate;
 import it.polimi.ingsw.serialization.Serializer;
+import it.polimi.ingsw.view.cli.CLI;
 import it.polimi.ingsw.view.messages.*;
 
 import java.io.IOException;
@@ -35,36 +36,58 @@ public class ClientHandler implements Runnable, ServerEventsListener {
             new SimpleImmutableEntry<>(MessageId.CHOOSE_GOD, this::onChooseGod),
             new SimpleImmutableEntry<>(MessageId.PLACE_PAWNS, this::onPlacePawn),
             new SimpleImmutableEntry<>(MessageId.EXECUTE_ACTION, this::onExecuteAction),
+            new SimpleImmutableEntry<>(MessageId.SELECT_PLAYER_NUMBER, this::onSelectPlayerNumber),
             new SimpleImmutableEntry<>(MessageId.CHECK_ACTION, this::onCheckAction));
+
+    private boolean running = true;
+    private boolean loggedIn = false;
+    private User user = null;
+
+    private void onSelectPlayerNumber(Message message) {
+        SelectPlayerNumberMessage msg = (SelectPlayerNumberMessage) message;
+        boolean result = controller.onSelectPlayerNumber(msg.getSize());
+        sendMessage(new ResultMessage(result));
+        logMessageProcessed(msg, result);
+    }
 
     private void onAddUser(Message message) {
         AddUserMessage msg = (AddUserMessage) message;
         boolean result = controller.onAddUser(msg.getUser());
+        // Save user information
+        if(result) {
+            loggedIn = true;
+            user = msg.getUser();
+        }
         sendMessage(new ResultMessage(result));
+        logMessageProcessed(msg, result);
     }
 
     private void onChooseGod(Message message) {
         ChooseGodMessage msg = (ChooseGodMessage) message;
         boolean result = controller.onChooseGod(msg.getUser(), msg.getGod());
         sendMessage(new ResultMessage(result));
+        logMessageProcessed(msg, result);
     }
 
     private void onPlacePawn(Message message) {
         PlacePawnsMessage msg = (PlacePawnsMessage) message;
         boolean result = controller.onPlacePawns(msg.getUser(), msg.getC1(), msg.getC2());
         sendMessage(new ResultMessage(result));
+        logMessageProcessed(msg, result);
     }
 
     private void onExecuteAction(Message message) {
         ExecuteActionMessage msg = (ExecuteActionMessage) message;
         boolean result = controller.onExecuteAction(msg.getUser(), msg.getId(), msg.getActionIdentifier(), msg.getCoordinate());
         sendMessage(new ResultMessage(result));
+        logMessageProcessed(msg, result);
     }
 
     private void onCheckAction(Message message) {
         CheckActionMessage msg = (CheckActionMessage) message;
         boolean result = controller.onCheckAction(msg.getUser(), msg.getId(), msg.getActionIdentifier(), msg.getCoordinate());
         sendMessage(new ResultMessage(result));
+        logMessageProcessed(msg, result);
     }
 
     public ClientHandler(Scanner socketIn, PrintWriter socketOut, GameController controller, Socket socket) {
@@ -72,7 +95,6 @@ public class ClientHandler implements Runnable, ServerEventsListener {
         this.socketIn = socketIn;
         this.socketOut = socketOut;
         this.controller = controller;
-
         controller.addServerEventsListener(this);
     }
 
@@ -89,11 +111,10 @@ public class ClientHandler implements Runnable, ServerEventsListener {
      */
     @Override
     public void run() {
-        while (true) {
+        while (running) {
             try {
                 Message message = Serializer.deserializeMessage(socketIn.nextLine());
                 MessageId id = message.getSerializationId();
-                System.out.println("LOG: " + id);
                 Consumer<Message> handler = map.get(id);
                 if (handler != null) {
                     handler.accept(message);
@@ -101,6 +122,9 @@ public class ClientHandler implements Runnable, ServerEventsListener {
                     System.err.println("No handler for MessageId: " + id);
                 }
             } catch (NoSuchElementException e) {
+                if (loggedIn && running) {
+                    controller.onServerError("User disconnected", user + " disconnected. Terminating.");
+                }
                 break;
             }
         }
@@ -143,6 +167,7 @@ public class ClientHandler implements Runnable, ServerEventsListener {
     public void onServerError(String type, String description) {
         Message message = new ServerErrorMessage(type, description);
         sendMessage(message);
+        running = false;
     }
 
     @Override
@@ -185,6 +210,10 @@ public class ClientHandler implements Runnable, ServerEventsListener {
     public void onPawnPlaced(User owner, int pawnId, Coordinate coordinate) {
         Message message = new PawnPlacedMessage(owner, pawnId, coordinate);
         sendMessage(message);
+    }
+
+    private void logMessageProcessed(Message msg, boolean result) {
+        CLI.log(CLI.mark(result) + " " + (user != null ? user.getUsername() : "") + "/" + msg.getSerializationId());
     }
 
     public void sendMessage(Message message) {

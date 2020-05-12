@@ -1,5 +1,6 @@
 package it.polimi.ingsw.controller;
 
+import it.polimi.ingsw.controller.events.OnGameFinishedListener;
 import it.polimi.ingsw.controller.events.ServerEventsListener;
 import it.polimi.ingsw.controller.messages.ActionIdentifier;
 import it.polimi.ingsw.controller.messages.User;
@@ -29,6 +30,7 @@ public class GameCycle implements OnExecuteActionListener, OnCheckActionListener
     private Pawn currentPawn;
     private Action[] actions;
     private final List<ServerEventsListener> serverEventsListeners = new ArrayList<>();
+    private OnGameFinishedListener gameFinishedListener = null;
 
     public GameCycle(Lobby lobby) {
         this.lobby = lobby;
@@ -36,6 +38,10 @@ public class GameCycle implements OnExecuteActionListener, OnCheckActionListener
         // Register this as listener for model events to allow forwarding to view
         game.getBoard().setOnMoveListener(this);
         game.getBoard().setOnBuildListener(this);
+    }
+
+    public void setGameFinishedListener(OnGameFinishedListener gameFinishedListener) {
+        this.gameFinishedListener = gameFinishedListener;
     }
 
     public void addServerEventListener(ServerEventsListener serverEventsListener) {
@@ -119,6 +125,9 @@ public class GameCycle implements OnExecuteActionListener, OnCheckActionListener
                         // Execute the action, call winListener if it was a winning move
                         if (game.getBoard().executeAction(chosenAction, currentPawn, coordinate)) {
                             serverEventsListeners.forEach(l -> l.onWin(new User(player)));
+
+                            if(gameFinishedListener != null)
+                                gameFinishedListener.onGameFinished();
                         }
 
                         // Progress through the steps

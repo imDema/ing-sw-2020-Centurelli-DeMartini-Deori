@@ -15,6 +15,7 @@ public enum MessageId {
     PLACE_PAWNS,
     REQUEST_PLACE_PAWNS,
     RESULT,
+    SELECT_PLAYER_NUMBER,
     SERVER_ERROR,
     TURN_CHANGE,
     USER_JOINED,

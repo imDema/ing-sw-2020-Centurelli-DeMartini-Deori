@@ -20,7 +20,8 @@ public class IntegrationTest {
     @Test
     public void testBasicGameSequence() throws InvalidActionException {
         // Init lobby
-        Lobby lobby = new Lobby(3);
+        Lobby lobby = new Lobby();
+        lobby.setSize(3);
         lobby.loadGods();
 
         // Init players

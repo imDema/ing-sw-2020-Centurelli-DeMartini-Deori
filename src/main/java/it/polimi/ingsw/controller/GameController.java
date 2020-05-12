@@ -1,5 +1,7 @@
 package it.polimi.ingsw.controller;
 
+import it.polimi.ingsw.controller.events.OnGameFinishedListener;
+import it.polimi.ingsw.controller.events.OnServerErrorListener;
 import it.polimi.ingsw.controller.events.ServerEventsListener;
 import it.polimi.ingsw.controller.messages.ActionIdentifier;
 import it.polimi.ingsw.controller.messages.GodIdentifier;
@@ -14,19 +16,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class GameController implements ClientEventsListener {
-
-    private final int SIZE = 3;
-    private final Lobby lobby = new Lobby(SIZE);
-    private final List<ServerEventsListener> serverEventsListeners = new ArrayList<>();
+public class GameController implements ClientEventsListener, OnServerErrorListener {
+    private final Lobby lobby = new Lobby();
     private final GameCycle gameCycle = new GameCycle(lobby);
-
-    public GameCycle getGameCycle() {
-        return gameCycle;
-    }
+    private final List<ServerEventsListener> serverEventsListeners = new ArrayList<>();
+    private OnGameFinishedListener gameFinishedListener = null;
 
     public boolean isGameReady (){
-        return lobby.isGameReady();
+        return lobby.getSize() > 0 && lobby.isGameReady();
     }
 
     public void addServerEventsListener(ServerEventsListener serverEventsListener) {
@@ -39,12 +36,8 @@ public class GameController implements ClientEventsListener {
         gameCycle.removeServerEventsListener(serverEventsListener);
     }
 
-    public void initLobby() {
-        lobby.loadGods();
-        if (lobby.getAvailableGods() == null || lobby.getAvailableGods().size() < lobby.getSize()) {
-            serverEventsListeners.forEach(l -> l.onServerError("Error retrieving gods", "An error occurred while loading God data from the configuration files"));
-        }
-        onGodsAvailable(lobby.getAvailableGods());
+    public void setGameFinishedListener(OnGameFinishedListener gameFinishedListener) {
+        this.gameFinishedListener = gameFinishedListener;
     }
 
     private void onGodsAvailable(List<God> gods) {
@@ -57,6 +50,9 @@ public class GameController implements ClientEventsListener {
 
     @Override
     public boolean onAddUser(User user) {
+        if (lobby.getSize() == 0)
+            return false;
+
         synchronized (lobby) {
             if (lobby.addUser(user)) {
                 serverEventsListeners.forEach(l -> l.onUserJoined(user));
@@ -71,6 +67,9 @@ public class GameController implements ClientEventsListener {
 
     @Override
     public boolean onChooseGod(User user, GodIdentifier god) {
+        if (lobby.getSize() == 0)
+            return false;
+
         synchronized (lobby) {
             if (lobby.isGameFull()) return false;
 
@@ -93,6 +92,9 @@ public class GameController implements ClientEventsListener {
 
     @Override
     public boolean onPlacePawns(User user, Coordinate c1, Coordinate c2) {
+        if (lobby.getSize() == 0)
+            return false;
+
         synchronized (lobby) {
             Optional<User> u = lobby.getUserToSetUp();
             if (!lobby.isGameFull() || !(u.isPresent() && u.get().equals(user)))
@@ -128,6 +130,30 @@ public class GameController implements ClientEventsListener {
             return gameCycle.onExecuteAction(user, pawnId, actionIdentifier, coordinate);
         } else {
             return false;
+        }
+    }
+
+    @Override
+    public boolean onSelectPlayerNumber(int size) {
+        if (lobby.getSize() == 0 && size >= 1 && size <=3) {
+            lobby.setSize(size);
+
+            lobby.loadGods();
+            if (lobby.getAvailableGods() == null || lobby.getAvailableGods().size() < lobby.getSize()) {
+                serverEventsListeners.forEach(l -> l.onServerError("Error retrieving gods", "An error occurred while loading God data from the configuration files"));
+            }
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    // Broadcast fatal error
+    @Override
+    public void onServerError(String type, String description) {
+        serverEventsListeners.forEach(l -> l.onServerError(type, description));
+        if (gameFinishedListener != null) {
+            gameFinishedListener.onGameFinished();
         }
     }
 }

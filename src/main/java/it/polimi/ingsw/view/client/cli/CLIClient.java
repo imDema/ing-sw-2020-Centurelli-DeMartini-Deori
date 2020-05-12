@@ -6,6 +6,7 @@ import it.polimi.ingsw.controller.messages.GodIdentifier;
 import it.polimi.ingsw.controller.messages.User;
 import it.polimi.ingsw.model.board.Building;
 import it.polimi.ingsw.model.board.Coordinate;
+import it.polimi.ingsw.view.cli.CLI;
 import it.polimi.ingsw.view.client.ProxyController;
 import it.polimi.ingsw.view.client.ServerHandler;
 
@@ -45,12 +46,17 @@ public class CLIClient implements ServerEventsListener {
             String opCode = input.next().toLowerCase();
 
             switch (opCode) {
+                case "size" -> {
+                    serverHandler.setOnResultListener(q -> System.out.print((q ? "" : "N") + "ACK\n> "));
+                    serverHandler.onSelectPlayerNumber(input.nextInt());
+                }
                 case "login" -> {
                     User user = new User(input.next());
                     if (!loggedIn) {
                         serverHandler.setOnResultListener(r -> {
                             if (r) {
                                 loggedIn = true;
+                                System.out.print("ACK\n> ");
                                 serverHandler.setOnResultListener(q -> System.out.print((q ? "" : "N") + "ACK\n> "));
                             } else {
                                 System.out.print("NACK\n> ");
@@ -67,7 +73,7 @@ public class CLIClient implements ServerEventsListener {
                         .findFirst()
                         .ifPresentOrElse(
                             g -> serverHandler.onChooseGod(user, g),
-                            () -> System.out.println("God not found")
+                            () -> CLI.error("God not found")
                         );
                 }
                 case "place" -> {
@@ -79,8 +85,8 @@ public class CLIClient implements ServerEventsListener {
                     serverHandler.onPlacePawns(user, c1, c2);
                 }
                 case "check" -> {
-                    int pawnId = input.nextInt();
                     String actionDesc = input.next().toLowerCase();
+                    int pawnId = input.nextInt();
                     Coordinate c = new Coordinate(input.nextInt(), input.nextInt());
 
                     availableActions.stream()
@@ -88,12 +94,12 @@ public class CLIClient implements ServerEventsListener {
                         .findFirst()
                         .ifPresentOrElse(
                                 a -> serverHandler.onCheckAction(user, pawnId, a, c),
-                                () -> System.out.print("ERROR: Use an action from the supplied list")
+                                () -> CLI.error("Use an action from the supplied list")
                         );
                 }
                 case "execute" -> {
-                    int pawnId = input.nextInt();
                     String actionDesc = input.next().toLowerCase();
+                    int pawnId = input.nextInt();
                     Coordinate c = new Coordinate(input.nextInt(), input.nextInt());
 
                     availableActions.stream()
@@ -101,16 +107,17 @@ public class CLIClient implements ServerEventsListener {
                             .findFirst()
                             .ifPresentOrElse(
                                     a -> serverHandler.onExecuteAction(user, pawnId, a, c),
-                                    () -> System.out.print("ERROR: Use an action from the supplied list")
+                                    () -> CLI.error("Use an action from the supplied list")
                             );
                 }
                 default -> {
                     System.out.println("COMMANDS:");
-                    System.out.println("login USER\n" +
+                    System.out.println("size N\n" +
+                            "login USER\n" +
                             "choose GOD_ID\n" +
                             "place ROW1 COL1 ROW2 COL2 \n" +
-                            "check PAWN_ID ACTION_ID ROW COL\n" +
-                            "execute PAWN_ID ACTION_ID ROW COL");
+                            "check ACTION_ID PAWN_ID ROW COL\n" +
+                            "execute ACTION_ID PAWN_ID  ROW COL");
                 }
             }
             System.out.print("> ");
@@ -126,7 +133,7 @@ public class CLIClient implements ServerEventsListener {
     @Override
     public void onActionsReady(User user, List<ActionIdentifier> actions) {
         availableActions = actions;
-        System.out.print("INFO: Available actions for user " + user.getUsername() + ": ");
+        CLI.info("Available actions for user " + user.getUsername() + ": ");
         availableActions.stream()
                 .map(ActionIdentifier::getDescription)
                 .map(n -> n + ", ")
@@ -137,49 +144,52 @@ public class CLIClient implements ServerEventsListener {
 
     @Override
     public void onElimination(User user) {
-        System.out.print("INFO: " + user + " eliminated\n> ");
+        CLI.info(user + " eliminated");
+        System.out.print("\n> ");
         System.out.flush();
     }
 
     @Override
     public void onGodChosen(User user, GodIdentifier godIdentifier) {
-        System.out.print("INFO: User " + user + " has chosen the god " + godIdentifier.getName() + "\n> ");
+        CLI.info("User " + user + " has chosen the god " + godIdentifier.getName());
+        System.out.print("> ");
         System.out.flush();
     }
 
     @Override
     public void onGodsAvailable(List<GodIdentifier> gods) {
         availableGods = gods;
-        System.out.print("INFO: Gods: ");
+        CLI.info("Gods: " +
         availableGods.stream().map(GodIdentifier::getName)
-                .map(n -> n + ", ")
-                .forEach(System.out::print);
-        System.out.print("\n> ");
+                .reduce("", (res, s) -> res + s + ", "));
+        System.out.print("> ");
         System.out.flush();
     }
 
     @Override
     public void onRequestPlacePawns(User user) {
-        System.out.print("INFO: User " + user + " must place his pawns\n> ");
+        CLI.info("User " + user + " must place his pawns");
+        System.out.print("> ");
         System.out.flush();
     }
 
     @Override
     public void onServerError(String type, String description) {
-        System.out.print("INFO: Server error: " + type + "\n" + description + "\nterminating client\n> ");
-        System.out.flush();
+        CLI.info("Server error: " + type + "\n" + description + "\nterminating client");
         System.exit(0);
     }
 
     @Override
     public void onTurnChange(User currentUser, int turn) {
-        System.out.print("INFO: Turn " + (turn + 1) + ", current player " + currentUser + "\n> ");
+        CLI.info("Turn " + (turn + 1) + ", current player " + currentUser + "> ");
+        System.out.print("> ");
         System.out.flush();
     }
 
     @Override
     public void onUserJoined(User user) {
-        System.out.print("INFO: User " + user + " joined\n> ");
+        CLI.info("User " + user + " joined");
+        System.out.print("> ");
         System.out.flush();
     }
 
@@ -191,7 +201,7 @@ public class CLIClient implements ServerEventsListener {
 
     @Override
     public void onBuild(Building building, Coordinate coordinate) {
-        System.out.print("INFO: building at " + coordinate + " is now " + building);
+        System.out.print("INFO: building at " + coordinate + " is now " + building + "\n> ");
         System.out.flush();
     }
 
@@ -203,7 +213,7 @@ public class CLIClient implements ServerEventsListener {
 
     @Override
     public void onPawnPlaced(User owner, int pawnId, Coordinate coordinate) {
-        System.out.println("INFO: User \"" + owner.getUsername() +
+        CLI.info("User \"" + owner.getUsername() +
                 "\" placed pawn " + pawnId + " at " + coordinate);
         System.out.flush();
     }

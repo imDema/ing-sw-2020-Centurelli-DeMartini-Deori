@@ -138,6 +138,13 @@ public class ServerHandler implements Runnable, ClientEventsListener {
     }
 
     @Override
+    public boolean onSelectPlayerNumber(int size) {
+        Message message = new SelectPlayerNumberMessage(size);
+        sendMessage(message);
+        return true;
+    }
+
+    @Override
     public boolean onAddUser(User user) {
         Message message = new AddUserMessage(user);
         sendMessage(message);
@@ -179,4 +186,5 @@ public class ServerHandler implements Runnable, ClientEventsListener {
             socketOut.flush();
         }
     }
+
 }

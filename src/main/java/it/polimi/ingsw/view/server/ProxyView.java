@@ -1,6 +1,8 @@
 package it.polimi.ingsw.view.server;
 
 import it.polimi.ingsw.controller.GameController;
+import it.polimi.ingsw.controller.events.OnGameFinishedListener;
+import it.polimi.ingsw.view.cli.CLI;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -13,11 +15,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 
-public class ProxyView {
+public class ProxyView implements OnGameFinishedListener {
     private final String ip;
     private final int port;
-    private GameController controller = new GameController();
-    ExecutorService executor = Executors.newFixedThreadPool(4);
+    private GameController controller;
+    ExecutorService executor = Executors.newCachedThreadPool();
 
 
     public ProxyView(String ip, int port) {
@@ -39,24 +41,24 @@ public class ProxyView {
             System.err.println("Port " + port + " is already in use");
             return;
         }
-        System.out.println("INFO: Listening on " + server.toString());
-        controller.initLobby();
+        CLI.info("Listening on " + server.toString());
+        controller = startLobby();
         while (true) {
             try {
                 Socket s = server.accept();
-                System.out.println("INFO: Client connected: " + s.toString());
+                CLI.info("Client connected: " + s.toString());
                 Scanner socketIn = new Scanner(s.getInputStream());
                 PrintWriter socketOut = new PrintWriter(s.getOutputStream());
 
                 if(!controller.isGameReady()){
                     executor.submit(new ClientHandler(socketIn, socketOut, controller, s));
-                    System.out.println("INFO: Started ClientHandler");
+                    CLI.info("Started ClientHandler");
                 } else {
                     socketOut.println("Lobby is full, closing connection");
                     socketIn.close();
                     socketOut.close();
                     s.close();
-                    System.out.println("INFO: Lobby is full, closing connection");
+                    CLI.info("Lobby is full, closing connection");
                 }
             } catch (IOException e){
                 e.printStackTrace();
@@ -64,5 +66,17 @@ public class ProxyView {
             }
         }
         executor.shutdown();
+    }
+
+    private GameController startLobby() {
+        GameController controller = new GameController();
+        controller.setGameFinishedListener(this);
+        return controller;
+    }
+
+    @Override
+    public void onGameFinished() {
+        CLI.info("Lobby terminated, starting a new one");
+        controller = startLobby();
     }
 }

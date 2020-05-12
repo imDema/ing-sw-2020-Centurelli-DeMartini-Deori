@@ -13,7 +13,8 @@ public class LobbyTest {
 
     @Test
     public void testIsGameReady() {
-        Lobby lobby = new Lobby(3);
+        Lobby lobby = new Lobby();
+        lobby.setSize(3);
         List<God> godList;
 
         lobby.loadGods();

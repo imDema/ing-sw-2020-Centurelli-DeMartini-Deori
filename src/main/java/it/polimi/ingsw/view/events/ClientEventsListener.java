@@ -1,4 +1,4 @@
 package it.polimi.ingsw.view.events;
 
 public interface ClientEventsListener extends OnAddUserListener, OnChooseGodListener, OnCheckActionListener,
-        OnExecuteActionListener, OnPlacePawnsListener {}
+        OnExecuteActionListener, OnPlacePawnsListener, OnSelectPlayerNumber {}

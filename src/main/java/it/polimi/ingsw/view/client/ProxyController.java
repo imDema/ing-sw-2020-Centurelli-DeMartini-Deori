@@ -1,5 +1,7 @@
 package it.polimi.ingsw.view.client;
 
+import it.polimi.ingsw.view.cli.CLI;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.InetAddress;
@@ -16,7 +18,7 @@ public class ProxyController {
     }
 
     public ServerHandler start() throws IOException {
-        System.out.println("INFO: Connecting to server at ip: " + ip + " port: " + port);
+        CLI.info("Connecting to server at ip: " + ip + " port: " + port);
         InetAddress address = InetAddress.getByName(ip);
         Socket socket = new Socket(address, port);
         Scanner socketIn = new Scanner(socket.getInputStream());

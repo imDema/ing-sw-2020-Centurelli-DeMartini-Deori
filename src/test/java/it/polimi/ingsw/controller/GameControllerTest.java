@@ -66,12 +66,11 @@ public class GameControllerTest {
             public void onMove(Coordinate from, Coordinate to) {}
         });
 
-        gameController.initLobby();
+        gameController.onSelectPlayerNumber(3);
         User u1 = new User("User1");
         User u2 = new User("User2");
         User u3 = new User("User3");
         User u4 = new User("User4");
-
 
         assertTrue(gameController.onAddUser(u1));
         assertTrue(gameController.onAddUser(u2));
