@@ -18,12 +18,15 @@ import java.util.stream.Collectors;
 
 public class GameController implements ClientEventsListener, OnServerErrorListener {
     private final Lobby lobby = new Lobby();
-    private final GameCycle gameCycle = new GameCycle(lobby);
+    private final GameCycle gameCycle = new GameCycle(lobby, this);
     private final List<ServerEventsListener> serverEventsListeners = new ArrayList<>();
     private OnGameFinishedListener gameFinishedListener = null;
 
     public boolean isGameReady (){
         return lobby.getSize() > 0 && lobby.isGameReady();
+    }
+    public boolean isLobbyFull (){
+        return lobby.getSize() > 0 && lobby.isLobbyFull();
     }
 
     public void addServerEventsListener(ServerEventsListener serverEventsListener) {
@@ -38,6 +41,7 @@ public class GameController implements ClientEventsListener, OnServerErrorListen
 
     public void setGameFinishedListener(OnGameFinishedListener gameFinishedListener) {
         this.gameFinishedListener = gameFinishedListener;
+        gameCycle.setGameFinishedListener(gameFinishedListener);
     }
 
     private void onGodsAvailable(List<God> gods) {
@@ -153,7 +157,7 @@ public class GameController implements ClientEventsListener, OnServerErrorListen
     public void onServerError(String type, String description) {
         serverEventsListeners.forEach(l -> l.onServerError(type, description));
         if (gameFinishedListener != null) {
-            gameFinishedListener.onGameFinished();
+            gameFinishedListener.onGameFinished(this);
         }
     }
 }

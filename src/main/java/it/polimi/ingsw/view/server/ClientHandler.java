@@ -1,10 +1,5 @@
 package it.polimi.ingsw.view.server;
 
-// read socket messages
-// identify messages with MessageId
-// map messages to the controller function (Using java.util.Map)
-// synchronized(socket stream)
-
 import it.polimi.ingsw.controller.GameController;
 import it.polimi.ingsw.controller.events.ServerEventsListener;
 import it.polimi.ingsw.controller.messages.ActionIdentifier;
@@ -19,76 +14,19 @@ import it.polimi.ingsw.view.messages.*;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.List;
-import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
-import java.util.function.Consumer;
 
 public class ClientHandler implements Runnable, ServerEventsListener {
     private final Scanner socketIn;
     private final PrintWriter socketOut;
     private final Socket socket;
     private final GameController controller;
-    private final Map<MessageId, Consumer<Message>> map = Map.ofEntries(
-            new SimpleImmutableEntry<>(MessageId.ADD_USER, this::onAddUser),
-            new SimpleImmutableEntry<>(MessageId.CHOOSE_GOD, this::onChooseGod),
-            new SimpleImmutableEntry<>(MessageId.PLACE_PAWNS, this::onPlacePawn),
-            new SimpleImmutableEntry<>(MessageId.EXECUTE_ACTION, this::onExecuteAction),
-            new SimpleImmutableEntry<>(MessageId.SELECT_PLAYER_NUMBER, this::onSelectPlayerNumber),
-            new SimpleImmutableEntry<>(MessageId.CHECK_ACTION, this::onCheckAction));
 
     private boolean running = true;
     private boolean loggedIn = false;
     private User user = null;
-
-    private void onSelectPlayerNumber(Message message) {
-        SelectPlayerNumberMessage msg = (SelectPlayerNumberMessage) message;
-        boolean result = controller.onSelectPlayerNumber(msg.getSize());
-        sendMessage(new ResultMessage(result));
-        logMessageProcessed(msg, result);
-    }
-
-    private void onAddUser(Message message) {
-        AddUserMessage msg = (AddUserMessage) message;
-        boolean result = controller.onAddUser(msg.getUser());
-        // Save user information
-        if(result) {
-            loggedIn = true;
-            user = msg.getUser();
-        }
-        sendMessage(new ResultMessage(result));
-        logMessageProcessed(msg, result);
-    }
-
-    private void onChooseGod(Message message) {
-        ChooseGodMessage msg = (ChooseGodMessage) message;
-        boolean result = controller.onChooseGod(msg.getUser(), msg.getGod());
-        sendMessage(new ResultMessage(result));
-        logMessageProcessed(msg, result);
-    }
-
-    private void onPlacePawn(Message message) {
-        PlacePawnsMessage msg = (PlacePawnsMessage) message;
-        boolean result = controller.onPlacePawns(msg.getUser(), msg.getC1(), msg.getC2());
-        sendMessage(new ResultMessage(result));
-        logMessageProcessed(msg, result);
-    }
-
-    private void onExecuteAction(Message message) {
-        ExecuteActionMessage msg = (ExecuteActionMessage) message;
-        boolean result = controller.onExecuteAction(msg.getUser(), msg.getId(), msg.getActionIdentifier(), msg.getCoordinate());
-        sendMessage(new ResultMessage(result));
-        logMessageProcessed(msg, result);
-    }
-
-    private void onCheckAction(Message message) {
-        CheckActionMessage msg = (CheckActionMessage) message;
-        boolean result = controller.onCheckAction(msg.getUser(), msg.getId(), msg.getActionIdentifier(), msg.getCoordinate());
-        sendMessage(new ResultMessage(result));
-        logMessageProcessed(msg, result);
-    }
 
     public ClientHandler(Scanner socketIn, PrintWriter socketOut, GameController controller, Socket socket) {
         this.socket = socket;
@@ -115,11 +53,22 @@ public class ClientHandler implements Runnable, ServerEventsListener {
             try {
                 Message message = Serializer.deserializeMessage(socketIn.nextLine());
                 MessageId id = message.getSerializationId();
-                Consumer<Message> handler = map.get(id);
-                if (handler != null) {
-                    handler.accept(message);
+
+                if (id.clientMessage()) {
+                    // Process message
+                    boolean result = ((ClientMessage) message).visit(controller);
+
+                    // Save login information in client handler on successful login
+                    if(id == MessageId.ADD_USER && result) {
+                        loggedIn = true;
+                        user = ((AddUserMessage)message).getUser();
+                    }
+
+                    // Send result
+                    sendMessage(new ResultMessage(result));
+                    logMessageProcessed(message, result);
                 } else {
-                    System.err.println("No handler for MessageId: " + id);
+                    CLI.error("Cannot process ServerMessage " + message.getSerializationId());
                 }
             } catch (NoSuchElementException e) {
                 if (loggedIn && running) {
@@ -134,6 +83,7 @@ public class ClientHandler implements Runnable, ServerEventsListener {
         try {
             socket.close();
         } catch (IOException e) {
+            CLI.error("Exception thrown while closing socket");
             e.printStackTrace();
         }
     }
@@ -180,6 +130,7 @@ public class ClientHandler implements Runnable, ServerEventsListener {
     public void onWin(User user) {
         Message message = new WinMessage(user);
         sendMessage(message);
+        running = false;
     }
 
     @Override

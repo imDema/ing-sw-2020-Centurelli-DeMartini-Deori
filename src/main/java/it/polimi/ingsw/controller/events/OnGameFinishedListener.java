@@ -1,5 +1,7 @@
 package it.polimi.ingsw.controller.events;
 
+import it.polimi.ingsw.controller.GameController;
+
 public interface OnGameFinishedListener {
-    void onGameFinished();
+    void onGameFinished(GameController controller);
 }

@@ -1,9 +1,10 @@
 package it.polimi.ingsw.view.messages;
 
+import it.polimi.ingsw.controller.events.ServerEventsListener;
 import it.polimi.ingsw.controller.messages.GodIdentifier;
 import it.polimi.ingsw.controller.messages.User;
 
-public class GodChosenMessage implements Message {
+public class GodChosenMessage implements ServerMessage {
     private final User user;
     private final GodIdentifier godIdentifier;
 
@@ -23,5 +24,10 @@ public class GodChosenMessage implements Message {
     @Override
     public MessageId getSerializationId() {
         return MessageId.GOD_CHOSEN;
+    }
+
+    @Override
+    public void visit(ServerEventsListener listener) {
+        listener.onGodChosen(user, godIdentifier);
     }
 }

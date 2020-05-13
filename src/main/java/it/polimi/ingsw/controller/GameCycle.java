@@ -29,26 +29,28 @@ public class GameCycle implements OnExecuteActionListener, OnCheckActionListener
     private boolean pawnSelected = false;
     private Pawn currentPawn;
     private Action[] actions;
+    private  final GameController gameController;
     private final List<ServerEventsListener> serverEventsListeners = new ArrayList<>();
     private OnGameFinishedListener gameFinishedListener = null;
 
-    public GameCycle(Lobby lobby) {
+    public GameCycle(Lobby lobby, GameController gameController) {
         this.lobby = lobby;
         this.game = lobby.getGame();
+        this.gameController = gameController;
         // Register this as listener for model events to allow forwarding to view
         game.getBoard().setOnMoveListener(this);
         game.getBoard().setOnBuildListener(this);
     }
 
-    public void setGameFinishedListener(OnGameFinishedListener gameFinishedListener) {
+    void setGameFinishedListener(OnGameFinishedListener gameFinishedListener) {
         this.gameFinishedListener = gameFinishedListener;
     }
 
-    public void addServerEventListener(ServerEventsListener serverEventsListener) {
+    void addServerEventListener(ServerEventsListener serverEventsListener) {
         serverEventsListeners.add(serverEventsListener);
     }
 
-    public void removeServerEventsListener(ServerEventsListener serverEventsListener) {
+    void removeServerEventsListener(ServerEventsListener serverEventsListener) {
         serverEventsListeners.remove(serverEventsListener);
     }
 
@@ -127,7 +129,7 @@ public class GameCycle implements OnExecuteActionListener, OnCheckActionListener
                             serverEventsListeners.forEach(l -> l.onWin(new User(player)));
 
                             if(gameFinishedListener != null)
-                                gameFinishedListener.onGameFinished();
+                                gameFinishedListener.onGameFinished(gameController);
                         }
 
                         // Progress through the steps

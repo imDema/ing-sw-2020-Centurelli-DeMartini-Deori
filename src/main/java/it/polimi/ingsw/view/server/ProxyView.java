@@ -50,16 +50,11 @@ public class ProxyView implements OnGameFinishedListener {
                 Scanner socketIn = new Scanner(s.getInputStream());
                 PrintWriter socketOut = new PrintWriter(s.getOutputStream());
 
-                if(!controller.isGameReady()){
-                    executor.submit(new ClientHandler(socketIn, socketOut, controller, s));
-                    CLI.info("Started ClientHandler");
-                } else {
-                    socketOut.println("Lobby is full, closing connection");
-                    socketIn.close();
-                    socketOut.close();
-                    s.close();
-                    CLI.info("Lobby is full, closing connection");
+                if(controller.isLobbyFull()) {
+                    CLI.info("Current lobby is full, starting a new one");
+                    controller = startLobby();
                 }
+                executor.submit(new ClientHandler(socketIn, socketOut, controller, s));
             } catch (IOException e){
                 e.printStackTrace();
                 break;
@@ -75,8 +70,13 @@ public class ProxyView implements OnGameFinishedListener {
     }
 
     @Override
-    public void onGameFinished() {
-        CLI.info("Lobby terminated, starting a new one");
-        controller = startLobby();
+    public void onGameFinished(GameController controller) {
+        CLI.info("A lobby has finished");
+
+        // Start a new controller to avoid giving new clients a stale controller
+        if (controller.equals(this.controller)) {
+            CLI.info("Starting a new controller to avoid giving new clients a stale controller");
+            this.controller = startLobby();
+        }
     }
 }

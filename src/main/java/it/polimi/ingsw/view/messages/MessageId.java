@@ -19,5 +19,16 @@ public enum MessageId {
     SERVER_ERROR,
     TURN_CHANGE,
     USER_JOINED,
-    WIN
+    WIN;
+
+    public boolean clientMessage() {
+        return switch (this) {
+            case ADD_USER, CHECK_ACTION, CHOOSE_GOD, EXECUTE_ACTION, PLACE_PAWNS, SELECT_PLAYER_NUMBER  -> true;
+            default -> false;
+        };
+    }
+
+    public boolean serverMessage() {
+        return !clientMessage();
+    }
 }
