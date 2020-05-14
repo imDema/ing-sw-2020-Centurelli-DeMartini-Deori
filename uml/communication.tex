@@ -3,6 +3,7 @@
 \usepackage{color}
 \usepackage{listings}
 \usepackage[activate=true,final,tracking=true,kerning=true,spacing=true]{microtype}
+\microtypecontext{spacing=nonfrench}
 \usepackage[margin=2cm]{geometry}
 \setlength\parindent{0pt}
 
@@ -28,12 +29,13 @@ When the server is started it waits for clients to connect.
 At first the server will require one client to set the lobby size, then it will allow users to login and set up their player and pawns. After this initial setup the server will enter the main game cycle and the users will be able to play the game.
 
 The server only allows setting the lobby size once and logins with identical usernames will be forbidden, as well as logins when the lobby is full.
-On client connection the server will either allow the client to send commands if the lobby isn't full yet or notify the client that the lobby is already full.
-A client disconnecting before logging in will be ignored, although after a client has logged in and has chosen a username its disconnection will notify the users that the current lobby is being terminated.
 
-After finishing a game either because of a disconnection or a win the server will create a new lobby and wait for new client connections.
+On client connection the server will direct the client to the lobby that is being filled. When the current lobby is full a new one will be started and successive connections will be directed to the new lobby.
+A client disconnecting before logging in will be ignored, although after a client has logged in and has chosen a username its disconnection will notify the users that their lobby is being terminated.
 
-After any unrecoverable error all clients are notified that the current game will be terminated.
+After finishing a game either because someone won or beacuse of an unrecoverable server error the server will notify the clients, close the lobby and clients may reconnect to play again.
+
+After any unrecoverable error all clients are notified that the lobby will be terminated.
 
 \vspace{8pt}
 
@@ -69,7 +71,7 @@ During the main game cycle the server will send ActionReady messages notifying u
 
 Users can send a CheckAction message containing the interested pawn, the desired action and the target coordinate, the server will answer with a result that will be positive if the user can execute the action with that specific pawn in that specific moment, negative otherwise. If any user other than the one previously chosen through the ActionReady message tries to execute an action it will receive a negative Result.
 
-The user can send an ExecuteAction message that after checking if the action is allowed it will execute it, the server will then notify all the users with the changes that happened to the model and if the move was a winning move it will send an Elimination message. Then if the player's turn is not yet finished another ActionsReady message will be sent containing the next allowed actions.
+The user can send an ExecuteAction message that, after checking if the action is allowed, will be executed, the server will then notify all the users with the changes that happened to the model and if the move was a winning move it will send an Win message. Then, if the player's turn is not finished yet, another ActionsReady message will be sent containing the next allowed actions.
 
 When the end of a user's turn has been reached a TurnChange message is sent and the cycle will restart asking for the next user to execute an action.
 
