@@ -9,6 +9,8 @@ import it.polimi.ingsw.model.board.Coordinate;
 import it.polimi.ingsw.view.cli.CLI;
 import it.polimi.ingsw.view.client.ProxyController;
 import it.polimi.ingsw.view.client.ServerHandler;
+import it.polimi.ingsw.view.client.state.PawnView;
+import it.polimi.ingsw.view.client.state.PlayerView;
 
 import java.io.IOException;
 import java.util.List;
@@ -20,6 +22,9 @@ public class CLIClient implements ServerEventsListener {
     private List<ActionIdentifier> availableActions = null;
     private User user;
     private boolean loggedIn = false;
+    private CLIBoardView board = new CLIBoardView();
+    private boolean executedAction =false;
+    private boolean endTurn = false;
 
     public CLIClient(String ip, int port) {
         this.proxyController = new ProxyController(ip, port);
@@ -130,6 +135,10 @@ public class CLIClient implements ServerEventsListener {
         }
     }
 
+    public void print() {
+        board.updateBoard();
+    }
+
     @Override
     public void onActionsReady(User user, List<ActionIdentifier> actions) {
         availableActions = actions;
@@ -147,6 +156,10 @@ public class CLIClient implements ServerEventsListener {
         CLI.info(user + " eliminated");
         System.out.print("\n> ");
         System.out.flush();
+        for(PawnView pawn : board.getPawns()){
+            if(pawn.getOwner().getUser().equals(user))
+                board.removePawn(pawn);
+        }
     }
 
     @Override
@@ -191,6 +204,7 @@ public class CLIClient implements ServerEventsListener {
         CLI.info("User " + user + " joined");
         System.out.print("> ");
         System.out.flush();
+        print();
     }
 
     @Override
@@ -201,20 +215,21 @@ public class CLIClient implements ServerEventsListener {
 
     @Override
     public void onBuild(Building building, Coordinate coordinate) {
-        System.out.print("INFO: building at " + coordinate + " is now " + building + "\n> ");
-        System.out.flush();
+        board.build(building, coordinate);
+        print();
     }
 
     @Override
     public void onMove(Coordinate from, Coordinate to) {
-        System.out.print("INFO: pawn moved from: " + from + " to: " + to + "\n> ");
-        System.out.flush();
+        board.move(from, to);
+        print();
     }
 
     @Override
     public void onPawnPlaced(User owner, int pawnId, Coordinate coordinate) {
-        CLI.info("User \"" + owner.getUsername() +
-                "\" placed pawn " + pawnId + " at " + coordinate);
-        System.out.flush();
+        PlayerView player = new PlayerView(owner);
+        PawnView p = new PawnView(player, pawnId);
+        board.putPawn(p, coordinate);
+        print();
     }
 }
