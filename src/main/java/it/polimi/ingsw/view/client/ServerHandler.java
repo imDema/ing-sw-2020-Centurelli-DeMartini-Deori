@@ -25,7 +25,6 @@ public class ServerHandler implements Runnable, ClientEventsListener {
     private final Scanner socketIn;
     private final PrintWriter socketOut;
     private final Socket socket;
-    private ServerEventsListener serverEventsListener = null;
     private OnGodsAvailableListener godsAvailableListener = null;
     private OnGodChosenListener godChosenListener = null;
     private OnActionsReadyListener actionsReadyListener = null;
@@ -52,8 +51,8 @@ public class ServerHandler implements Runnable, ClientEventsListener {
             new SimpleImmutableEntry<>(MessageId.RESULT, this::onResult),
             new SimpleImmutableEntry<>(MessageId.MOVE, this::onMove),
             new SimpleImmutableEntry<>(MessageId.BUILD, this::onBuild),
-            new SimpleImmutableEntry<>(MessageId.PAWN_PLACED, this::onPawnPlaced)
-    );
+            new SimpleImmutableEntry<>(MessageId.PAWN_PLACED, this::onPawnPlaced),
+            new SimpleImmutableEntry<>(MessageId.RESULT, this::onResult) );
 
     public ServerHandler(Scanner socketIn, PrintWriter socketOut, Socket socket) {
         this.socketIn = socketIn;
@@ -208,10 +207,6 @@ public class ServerHandler implements Runnable, ClientEventsListener {
         this.resultListener = onResultListener;
     }
 
-    public void setServerEventsListener(ServerEventsListener serverEventsListener) {
-        this.serverEventsListener = serverEventsListener;
-    }
-
     @Override
     public void run() {
         while (true) {
@@ -219,17 +214,12 @@ public class ServerHandler implements Runnable, ClientEventsListener {
                 Message message = Serializer.deserializeMessage(socketIn.nextLine());
                 MessageId id = message.getSerializationId();
                 Consumer<Message> handler = map.get(id);
-                if(id.serverMessage()){
-                    if (id == MessageId.RESULT && handler != null) {
-                        handler.accept(message);
-                        ResultMessage msg = (ResultMessage) message;
-                        resultListener.onResult(msg.getValue());
-                    } else {
-                        ((ServerMessage)message).visit(serverEventsListener);
-                    }
+                if (handler != null) {
+                    handler.accept(message);
+                } else {
+                    System.err.println("No handler for MessageId: " + id);
                 }
             } catch (NoSuchElementException e) {
-                serverEventsListener.onServerError("Server connection lost", "");
                 break;
             }
         }

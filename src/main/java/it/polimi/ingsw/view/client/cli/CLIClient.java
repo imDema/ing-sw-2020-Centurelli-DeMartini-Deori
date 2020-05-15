@@ -42,7 +42,6 @@ public class CLIClient implements ServerEventsListener {
 
         Thread controllerThread = new Thread(serverHandler);
         controllerThread.start();
-        serverHandler.setServerEventsListener(this);
         Scanner input = new Scanner(System.in);
         System.out.print("> ");
         System.out.flush();
