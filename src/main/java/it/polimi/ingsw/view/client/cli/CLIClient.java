@@ -42,6 +42,7 @@ public class CLIClient implements ServerEventsListener {
 
         Thread controllerThread = new Thread(serverHandler);
         controllerThread.start();
+        serverHandler.setServerEventListener(this);
         Scanner input = new Scanner(System.in);
         System.out.print("> ");
         System.out.flush();
@@ -135,7 +136,7 @@ public class CLIClient implements ServerEventsListener {
     }
 
     public void print() {
-        board.updateBoard();
+        board.printBoard();
     }
 
     @Override
@@ -208,12 +209,13 @@ public class CLIClient implements ServerEventsListener {
 
     @Override
     public void onWin(User user) {
-        System.out.print("INFO: " + user + " won the game!\n> ");
+        CLI.info(user + " won the game!\n> ");
         System.out.flush();
     }
 
     @Override
     public void onBuild(Building building, Coordinate coordinate) {
+        CLI.info("building at " + coordinate + " is now " + building + "\n> ");
         board.build(building, coordinate);
         print();
     }
@@ -226,6 +228,10 @@ public class CLIClient implements ServerEventsListener {
 
     @Override
     public void onPawnPlaced(User owner, int pawnId, Coordinate coordinate) {
+        CLI.info("User \"" + owner.getUsername() +
+                "\" placed pawn " + pawnId + " at " + coordinate);
+        System.out.flush();
+
         PlayerView player = new PlayerView(owner);
         PawnView p = new PawnView(player, pawnId);
         board.putPawn(p, coordinate);

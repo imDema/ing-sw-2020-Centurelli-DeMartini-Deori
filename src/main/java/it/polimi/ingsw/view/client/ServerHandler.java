@@ -48,11 +48,10 @@ public class ServerHandler implements Runnable, ClientEventsListener {
             new SimpleImmutableEntry<>(MessageId.TURN_CHANGE, this::onTurnChange),
             new SimpleImmutableEntry<>(MessageId.WIN, this::onWin),
             new SimpleImmutableEntry<>(MessageId.USER_JOINED, this::onUserJoined),
-            new SimpleImmutableEntry<>(MessageId.RESULT, this::onResult),
             new SimpleImmutableEntry<>(MessageId.MOVE, this::onMove),
             new SimpleImmutableEntry<>(MessageId.BUILD, this::onBuild),
             new SimpleImmutableEntry<>(MessageId.PAWN_PLACED, this::onPawnPlaced),
-            new SimpleImmutableEntry<>(MessageId.RESULT, this::onResult) );
+            new SimpleImmutableEntry<>(MessageId.RESULT, this::onResult));
 
     public ServerHandler(Scanner socketIn, PrintWriter socketOut, Socket socket) {
         this.socketIn = socketIn;
@@ -60,56 +59,71 @@ public class ServerHandler implements Runnable, ClientEventsListener {
         this.socket = socket;
     }
 
-    public void setGodsAvailableListener(OnGodsAvailableListener godsAvailableListener) {
+    public void setOnGodsAvailableListener(OnGodsAvailableListener godsAvailableListener) {
         this.godsAvailableListener = godsAvailableListener;
     }
 
-    public void setGodChosenListener(OnGodChosenListener godChosenListener) {
+    public void setOnGodChosenListener(OnGodChosenListener godChosenListener) {
         this.godChosenListener = godChosenListener;
     }
 
-    public void setActionsReadyListener(OnActionsReadyListener actionsReadyListener) {
+    public void setOnActionsReadyListener(OnActionsReadyListener actionsReadyListener) {
         this.actionsReadyListener = actionsReadyListener;
     }
 
-    public void setEliminationListener(OnEliminationListener eliminationListener) {
+    public void setOnEliminationListener(OnEliminationListener eliminationListener) {
         this.eliminationListener = eliminationListener;
     }
 
-    public void setRequestPlacePawnsListener(OnRequestPlacePawnsListener requestPlacePawnsListener) {
+    public void setOnRequestPlacePawnsListener(OnRequestPlacePawnsListener requestPlacePawnsListener) {
         this.requestPlacePawnsListener = requestPlacePawnsListener;
     }
 
-    public void setServerErrorListener(OnServerErrorListener serverErrorListener) {
+    public void setOnServerErrorListener(OnServerErrorListener serverErrorListener) {
         this.serverErrorListener = serverErrorListener;
     }
 
-    public void setTurnChangeListener(OnTurnChangeListener turnChangeListener) {
+    public void setOnTurnChangeListener(OnTurnChangeListener turnChangeListener) {
         this.turnChangeListener = turnChangeListener;
     }
 
-    public void setWinListener(OnWinListener winListener) {
+    public void setOnWinListener(OnWinListener winListener) {
         this.winListener = winListener;
     }
 
-    public void setUserJoinedListener(OnUserJoinedListener userJoinedListener) {
+    public void setOnUserJoinedListener(OnUserJoinedListener userJoinedListener) {
         this.userJoinedListener = userJoinedListener;
     }
 
-    public void setResultListener(OnResultListener resultListener) {
+    public void setOnResultListener(OnResultListener resultListener) {
         this.resultListener = resultListener;
     }
 
-    public void setMoveListener(OnMoveListener moveListener) {
+    public void setOnMoveListener(OnMoveListener moveListener) {
         this.moveListener = moveListener;
     }
 
-    public void setBuildListener(OnBuildListener buildListener) {
+    public void setOnBuildListener(OnBuildListener buildListener) {
         this.buildListener = buildListener;
     }
 
-    public void setPawnPlacedListener(OnPawnPlacedListener pawnPlacedListener) {
+    public void setOnPawnPlacedListener(OnPawnPlacedListener pawnPlacedListener) {
         this.pawnPlacedListener = pawnPlacedListener;
+    }
+
+    public void setServerEventListener(ServerEventsListener serverEventsListener) {
+        this.godsAvailableListener = serverEventsListener;
+        this.godChosenListener = serverEventsListener;
+        this.actionsReadyListener = serverEventsListener;
+        this.eliminationListener = serverEventsListener;
+        this.requestPlacePawnsListener = serverEventsListener;
+        this.serverErrorListener = serverEventsListener;
+        this.turnChangeListener = serverEventsListener;
+        this.winListener = serverEventsListener;
+        this.userJoinedListener = serverEventsListener;
+        this.moveListener = serverEventsListener;
+        this.buildListener = serverEventsListener;
+        this.pawnPlacedListener = serverEventsListener;
     }
 
     private void onGodsAvailable (Message message) {
@@ -203,10 +217,6 @@ public class ServerHandler implements Runnable, ClientEventsListener {
         }
     }
 
-    public void setOnResultListener(OnResultListener onResultListener) {
-        this.resultListener = onResultListener;
-    }
-
     @Override
     public void run() {
         while (true) {
@@ -217,7 +227,7 @@ public class ServerHandler implements Runnable, ClientEventsListener {
                 if (handler != null) {
                     handler.accept(message);
                 } else {
-                    System.err.println("No handler for MessageId: " + id);
+                    CLI.error("No handler for MessageId: " + id);
                 }
             } catch (NoSuchElementException e) {
                 break;

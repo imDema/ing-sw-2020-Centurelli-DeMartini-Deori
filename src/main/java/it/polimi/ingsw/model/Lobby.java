@@ -13,6 +13,7 @@ import java.util.*;
 
 public class Lobby {
     public final int PAWN_N = 2;
+    public final int MAX_NAME_LENGTH = 16;
 
     private final Game game = new Game();
     private int size = 0;
@@ -49,7 +50,8 @@ public class Lobby {
     }
 
     public boolean addUser(User user) {
-        if (!users.contains(user) && users.size() < size) {
+        if (!users.contains(user) && users.size() < size &&
+                user.getUsername().length() > 0 && user.getUsername().length() < MAX_NAME_LENGTH) {
             users.add(user);
             return true;
         }

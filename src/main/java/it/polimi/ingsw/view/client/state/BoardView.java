@@ -6,11 +6,11 @@ import it.polimi.ingsw.model.board.Coordinate;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class BoardView {
+public class BoardView {
 
     private final int BOARD_SIZE = 5;
-    private CellView[][] cells;
-    private List<PawnView> pawns = new ArrayList<>();
+    private final CellView[][] cells;
+    private final List<PawnView> pawns = new ArrayList<>();
 
     public List<PawnView> getPawns() {
         return pawns;

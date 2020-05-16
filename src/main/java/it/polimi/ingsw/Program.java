@@ -1,6 +1,7 @@
 package it.polimi.ingsw;
 
 import it.polimi.ingsw.view.client.cli.CLIClient;
+import it.polimi.ingsw.view.client.gui.GUIClient;
 import it.polimi.ingsw.view.server.Server;
 
 import java.util.Arrays;
@@ -20,13 +21,15 @@ public class Program {
             program.startConfig();
         } else {
             System.out.println(
-                    "Usage: java -jar AM8-1.0-SNAPSHOT.jar [-g|--gui] [-s|--server] ip_address port_number\n" +
+                    "Usage: java -jar AM8-1.0-SNAPSHOT.jar [-g|--gui] [-s|--server] [IP PORT]\n" +
                     "\n" +
-                    "By default the application is launched  in client mode with a Command Line Interface (CLI)\n" +
+                    "Launching in server or cli mode requires specifying IP and PORT\n" +
+                    "By default the application is launched in cli mode\n" +
                     "\n" +
                     "-s, --server:    Launch the application in server mode using ip_address and port_number as the server’s parameters\n" +
                     "-g, --gui:       Launch the application in client mode with a Graphic User Interface (GUI)\n" +
-                    "-h, --help:      Display this help message");
+                    "-h, --help:      Display this help message\n" +
+                    "Example: java -jar AM8-1.0-SNAPSHOT.jar 127.0.0.1 5000");
         }
     }
 
@@ -63,11 +66,11 @@ public class Program {
                 }
             }
         }
-        if (ip != null && port != null) {
+        if ((!serverMode && clientGUI ) || (ip != null && port != null)) {
             return true;
         } else {
             System.err.println("----------------");
-            System.err.println("ERROR: Missing arguments");
+            System.err.println("ERROR: Missing arguments IP PORT");
             System.err.println("----------------");
             return false;
         }
@@ -78,9 +81,8 @@ public class Program {
         if (serverMode) {
             Server server = new Server(ip, port);
             server.start();
-        }
-        else if (clientGUI) {
-            throw new UnsupportedOperationException();
+        } else if (clientGUI) {
+            GUIClient.main();
         } else {
             CLIClient cliClient = new CLIClient(ip, port);
             cliClient.startClient();
