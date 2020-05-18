@@ -136,13 +136,14 @@ public class CLIClient implements ServerEventsListener {
     }
 
     public void print() {
-        board.printBoard();
+        System.out.println("\n\n\n\n" + board.renderBoard());
+        System.out.flush();
     }
 
     @Override
     public void onActionsReady(User user, List<ActionIdentifier> actions) {
         availableActions = actions;
-        CLI.info("Available actions for user " + user.getUsername() + ": ");
+        CLI.info("\nAvailable actions for user " + user.getUsername() + ": ");
         availableActions.stream()
                 .map(ActionIdentifier::getDescription)
                 .map(n -> n + ", ")
@@ -153,7 +154,7 @@ public class CLIClient implements ServerEventsListener {
 
     @Override
     public void onElimination(User user) {
-        CLI.info(user + " eliminated");
+        CLI.info("\n" + user + " eliminated");
         System.out.print("\n> ");
         System.out.flush();
         for(PawnView pawn : board.getPawns()){
@@ -164,7 +165,7 @@ public class CLIClient implements ServerEventsListener {
 
     @Override
     public void onGodChosen(User user, GodIdentifier godIdentifier) {
-        CLI.info("User " + user + " has chosen the god " + godIdentifier.getName());
+        CLI.info("\nUser " + user + " has chosen the god " + godIdentifier.getName());
         System.out.print("> ");
         System.out.flush();
     }
@@ -172,7 +173,7 @@ public class CLIClient implements ServerEventsListener {
     @Override
     public void onGodsAvailable(List<GodIdentifier> gods) {
         availableGods = gods;
-        CLI.info("Gods: " +
+        CLI.info("\nGods: " +
         availableGods.stream().map(GodIdentifier::getName)
                 .reduce("", (res, s) -> res + s + ", "));
         System.out.print("> ");
@@ -181,41 +182,40 @@ public class CLIClient implements ServerEventsListener {
 
     @Override
     public void onRequestPlacePawns(User user) {
-        CLI.info("User " + user + " must place his pawns");
+        CLI.info("\nUser " + user + " must place his pawns");
         System.out.print("> ");
         System.out.flush();
     }
 
     @Override
     public void onServerError(String type, String description) {
-        CLI.info("Server error: " + type + "\n" + description + "\nterminating client");
+        CLI.info("\nServer error: " + type + "\n" + description + "\nterminating client");
         System.exit(0);
     }
 
     @Override
     public void onTurnChange(User currentUser, int turn) {
-        CLI.info("Turn " + (turn + 1) + ", current player " + currentUser + "> ");
+        CLI.info("\nTurn " + (turn + 1) + ", current player " + currentUser + "> ");
         System.out.print("> ");
         System.out.flush();
     }
 
     @Override
     public void onUserJoined(User user) {
-        CLI.info("User " + user + " joined");
+        CLI.info("\nUser " + user + " joined");
         System.out.print("> ");
         System.out.flush();
-        print();
     }
 
     @Override
     public void onWin(User user) {
-        CLI.info(user + " won the game!\n> ");
+        CLI.info("\n" + user + " won the game!\n> ");
         System.out.flush();
     }
 
     @Override
     public void onBuild(Building building, Coordinate coordinate) {
-        CLI.info("building at " + coordinate + " is now " + building + "\n> ");
+        //CLI.info("building at " + coordinate + " is now " + building + "\n> ");
         board.build(building, coordinate);
         print();
     }
@@ -228,12 +228,12 @@ public class CLIClient implements ServerEventsListener {
 
     @Override
     public void onPawnPlaced(User owner, int pawnId, Coordinate coordinate) {
-        CLI.info("User \"" + owner.getUsername() +
+        CLI.info("\nUser \"" + owner.getUsername() +
                 "\" placed pawn " + pawnId + " at " + coordinate);
         System.out.flush();
-
-        PlayerView player = new PlayerView(owner);
+        PlayerView player = board.setUpPlayer(owner);
         PawnView p = new PawnView(player, pawnId);
+        player.addPawn(p);
         board.putPawn(p, coordinate);
         print();
     }

@@ -29,7 +29,7 @@ public class GameCycle implements OnExecuteActionListener, OnCheckActionListener
     private boolean pawnSelected = false;
     private Pawn currentPawn;
     private Action[] actions;
-    private  final GameController gameController;
+    private final GameController gameController;
     private final List<ServerEventsListener> serverEventsListeners = new ArrayList<>();
     private OnGameFinishedListener gameFinishedListener = null;
 

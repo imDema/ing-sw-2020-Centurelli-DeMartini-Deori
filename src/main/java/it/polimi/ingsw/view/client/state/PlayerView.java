@@ -10,9 +10,15 @@ public class PlayerView {
     private final User user;
     private final List<PawnView> pawns = new ArrayList<>();
     private GodIdentifier god;
+    private String symbol;
 
-    public PlayerView(User user) {
+    public String getSymbol() {
+        return symbol;
+    }
+
+    public PlayerView(User user, String symbol) {
         this.user = user;
+        this.symbol = symbol;
     }
 
     public List<PawnView> getPawns() {
@@ -37,9 +43,5 @@ public class PlayerView {
 
     public void addPawn(PawnView pawn) {
         pawns.add(pawn);
-    }
-
-    public void removePawn(PawnView pawn) {
-        pawns.remove(pawn);
     }
 }
