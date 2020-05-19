@@ -1,6 +1,10 @@
 package it.polimi.ingsw;
 
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+
 import java.io.InputStream;
+import java.util.Optional;
 import java.util.Scanner;
 
 public abstract class Resources {
@@ -17,6 +21,17 @@ public abstract class Resources {
         } else {
             System.err.println("ERROR: Could not load \"config/gods.json\" from resources");
             return "";
+        }
+    }
+
+    public static Optional<ImageView> loadGodCard(Object context, String godName) {
+        String id = godName.strip().toLowerCase();
+        InputStream stream = context.getClass().getClassLoader().getResourceAsStream("drawable/card_" + id + ".png");
+        if (stream != null) {
+            Image img = new Image(stream);
+            return Optional.of(new ImageView(img));
+        } else {
+            return Optional.empty();
         }
     }
 }

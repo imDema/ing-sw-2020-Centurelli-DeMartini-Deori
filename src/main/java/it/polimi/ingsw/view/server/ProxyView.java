@@ -75,7 +75,7 @@ public class ProxyView implements OnGameFinishedListener {
 
         // Start a new controller to avoid giving new clients a stale controller
         if (controller.equals(this.controller)) {
-            CLI.info("Starting a new controller to avoid giving new clients a stale controller");
+            CLI.info("Starting a new lobby");
             this.controller = startLobby();
         }
     }

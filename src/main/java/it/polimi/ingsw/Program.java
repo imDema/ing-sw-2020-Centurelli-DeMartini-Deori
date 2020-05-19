@@ -1,7 +1,7 @@
 package it.polimi.ingsw;
 
 import it.polimi.ingsw.view.client.cli.CLIClient;
-import it.polimi.ingsw.view.client.gui.GUIClient;
+import it.polimi.ingsw.view.client.gui.App;
 import it.polimi.ingsw.view.server.Server;
 
 import java.util.Arrays;
@@ -82,7 +82,7 @@ public class Program {
             Server server = new Server(ip, port);
             server.start();
         } else if (clientGUI) {
-            GUIClient.main();
+            App.main();
         } else {
             CLIClient cliClient = new CLIClient(ip, port);
             cliClient.startClient();

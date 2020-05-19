@@ -56,14 +56,14 @@ public class CellView {
                 bot = "░░,░░░░░░░";
             }
             case LEVEL2 -> {
-                top = "▒▒▒▒▒▒▒,▒▒▒";
-                fill = "▒▒";
-                bot = "▒▒,▒▒▒▒▒▒▒";
+                top = "███████,█░░";
+                fill = "░░";
+                bot = "░█,███████";
             }
             case LEVEL3 -> {
-                top = "███████,███";
+                top = "░░███░░,░██";
                 fill = "██";
-                bot = "██,███████";
+                bot = "█░,░░███░░";
             }
             default -> throw new IllegalStateException("Unexpected value: " + building.getLevel());
         }

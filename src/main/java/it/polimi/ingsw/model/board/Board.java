@@ -126,6 +126,18 @@ public class Board {
         cellAt(c).removePawn();
     }
 
+    public int countPawns() {
+        int count = 0;
+        for(Cell[] r : cells) {
+            for (Cell c : r) {
+                if (c.getPawn().isPresent()) {
+                    count += 1;
+                }
+            }
+        }
+        return count;
+    }
+
     private Cell cellAt(Coordinate c) {
         return cells[c.getX()][c.getY()];
     }

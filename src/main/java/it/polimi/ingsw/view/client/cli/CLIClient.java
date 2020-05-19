@@ -7,12 +7,14 @@ import it.polimi.ingsw.controller.messages.User;
 import it.polimi.ingsw.model.board.Building;
 import it.polimi.ingsw.model.board.Coordinate;
 import it.polimi.ingsw.view.cli.CLI;
+import it.polimi.ingsw.view.cli.Colors;
 import it.polimi.ingsw.view.client.ProxyController;
 import it.polimi.ingsw.view.client.ServerHandler;
 import it.polimi.ingsw.view.client.state.PawnView;
 import it.polimi.ingsw.view.client.state.PlayerView;
 
 import java.io.IOException;
+import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
@@ -23,9 +25,7 @@ public class CLIClient implements ServerEventsListener {
     private List<ActionIdentifier> availableActions = null;
     private User user;
     private boolean loggedIn = false;
-    private CLIBoardView board = new CLIBoardView();
-    private boolean executedAction =false;
-    private boolean endTurn = false;
+    private final CLIBoardView board = new CLIBoardView();
 
     public CLIClient(String ip, int port) {
         this.proxyController = new ProxyController(ip, port);
@@ -83,52 +83,66 @@ public class CLIClient implements ServerEventsListener {
                         );
                 }
                 case "place" -> {
-                    // row - column for pawn1
-                    String s = input.next();
-                    Optional<Coordinate> c1 = decodeCoordinate(s);
-                    // row - column for pawn2
-                    String s1 = input.next();
-                    Optional<Coordinate> c2 = decodeCoordinate(s1);
-                    if( c1.isPresent() && c2.isPresent())
+                    Optional<Coordinate> c1 = decodeCoordinate(input.next());
+                    Optional<Coordinate> c2 = decodeCoordinate(input.next());
+                    if(c1.isPresent() && c2.isPresent())
                         serverHandler.onPlacePawns(user, c1.get(), c2.get());
                     else
                         System.out.println("You can't place pawn out of the board");
                 }
                 case "check" -> {
                     String actionDesc = input.next().toLowerCase();
-                    int pawnId = input.nextInt();
-                    String s = input.next();
-                    Optional<Coordinate> c = decodeCoordinate(s);
+                    int pawnId;
+                    try {
+                        pawnId = input.nextInt();
+                    } catch (InputMismatchException e) {
+                        CLI.error("Please select a pawn");
+                        break;
+                    }
+                    Optional<Coordinate> c = decodeCoordinate(input.next());
 
-                    c.ifPresent(coordinate -> availableActions.stream()
+                    if (c.isPresent()) {
+                        availableActions.stream()
                             .filter(a -> a.getDescription().toLowerCase().equals(actionDesc))
                             .findFirst()
                             .ifPresentOrElse(
-                                    a -> serverHandler.onCheckAction(user, pawnId, a, coordinate),
+                                    a -> serverHandler.onCheckAction(user, pawnId, a, c.get()),
                                     () -> CLI.error("Use an action from the supplied list")
-                            ));
+                            );
+                    } else {
+                        CLI.error("Invalid format for coordinate");
+                    }
                 }
                 case "execute" -> {
                     String actionDesc = input.next().toLowerCase();
-                    int pawnId = input.nextInt();
-                    String s = input.next();
-                    Optional<Coordinate> c = decodeCoordinate(s);
-                    c.ifPresent(coordinate -> availableActions.stream()
+                    int pawnId;
+                    try {
+                        pawnId = input.nextInt();
+                    } catch (InputMismatchException e) {
+                        CLI.error("Please select a pawn");
+                        break;
+                    }
+                    Optional<Coordinate> c = decodeCoordinate(input.next());
+                    if (c.isPresent()) {
+                        availableActions.stream()
                             .filter(a -> a.getDescription().toLowerCase().equals(actionDesc))
                             .findFirst()
                             .ifPresentOrElse(
-                                    a -> serverHandler.onExecuteAction(user, pawnId, a, coordinate),
+                                    a -> serverHandler.onExecuteAction(user, pawnId, a, c.get()),
                                     () -> CLI.error("Use an action from the supplied list")
-                            ));
+                            );
+                    } else {
+                        CLI.error("Invalid format for coordinate");
+                    }
                 }
                 default -> {
                     System.out.println("COMMANDS:");
                     System.out.println("size N\n" +
                             "login USER\n" +
                             "choose GOD_ID\n" +
-                            "place ROW1 COL1 ROW2 COL2 \n" +
-                            "check ACTION_ID PAWN_ID ROW COL\n" +
-                            "execute ACTION_ID PAWN_ID  ROW COL");
+                            "place COORDINATE COORDINATE \n" +
+                            "check ACTION_ID PAWN_ID COORDINATE\n" +
+                            "execute ACTION_ID PAWN_ID COORDINATE");
                 }
             }
             System.out.print("> ");
@@ -215,8 +229,9 @@ public class CLIClient implements ServerEventsListener {
 
     @Override
     public void onWin(User user) {
-        CLI.info("\n" + user + " won the game!\n> ");
+        System.out.println(CLI.color("\n" + user.getUsername() + " won the game!\n> ", Colors.BG_YELLOW));
         System.out.flush();
+        System.exit(0);
     }
 
     @Override

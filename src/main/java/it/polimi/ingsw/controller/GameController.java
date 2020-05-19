@@ -37,6 +37,10 @@ public class GameController implements ClientEventsListener, OnServerErrorListen
     public void removeServerEventsListener(ServerEventsListener serverEventsListener) {
         serverEventsListeners.remove(serverEventsListener);
         gameCycle.removeServerEventsListener(serverEventsListener);
+        if (serverEventsListeners.size() == 0 && gameFinishedListener != null) {
+            gameFinishedListener.onGameFinished(this);
+            gameFinishedListener = null; // Prevent re triggering game finish
+        }
     }
 
     public void setGameFinishedListener(OnGameFinishedListener gameFinishedListener) {
@@ -158,6 +162,7 @@ public class GameController implements ClientEventsListener, OnServerErrorListen
         serverEventsListeners.forEach(l -> l.onServerError(type, description));
         if (gameFinishedListener != null) {
             gameFinishedListener.onGameFinished(this);
+            gameFinishedListener = null; // Prevent re triggering game finish
         }
     }
 }

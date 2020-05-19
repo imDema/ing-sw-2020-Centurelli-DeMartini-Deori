@@ -70,8 +70,26 @@ public class BranchingTurnSequence implements TurnSequence {
         commonSteps.start();
         branches[0].start();
         branches[1].start();
-        state = State.COMMON;
-        currentStep = commonSteps.next().orElse(new Action[] {Action.endTurn});
+
+        Optional<Action[]> common = commonSteps.next();
+        if (common.isPresent()) {
+            state = State.COMMON;
+            currentStep = common.get();
+        } else {
+            // If there are no common steps immediately start branching
+            Action[] b0 = branches[0].peek().orElse(new Action[0]);
+            Action[] b1 = branches[1].peek().orElse(new Action[0]);
+            Action[] actions = concatArrays(b0, b1);
+
+            if (actions.length > 0) {
+                state = State.BRANCHING;
+                currentStep = actions;
+            } else {
+                // All branches are empty, return end turn
+                state = State.BRANCHED;
+                currentStep = new Action[] {Action.endTurn};
+            }
+        }
     }
 
     @Override

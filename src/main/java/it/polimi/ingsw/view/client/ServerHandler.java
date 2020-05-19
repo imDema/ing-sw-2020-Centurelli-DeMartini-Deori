@@ -25,6 +25,7 @@ public class ServerHandler implements Runnable, ClientEventsListener {
     private final Scanner socketIn;
     private final PrintWriter socketOut;
     private final Socket socket;
+    private boolean running = true;
     private OnGodsAvailableListener godsAvailableListener = null;
     private OnGodChosenListener godChosenListener = null;
     private OnActionsReadyListener actionsReadyListener = null;
@@ -219,7 +220,7 @@ public class ServerHandler implements Runnable, ClientEventsListener {
 
     @Override
     public void run() {
-        while (true) {
+        while (running) {
             try {
                 Message message = Serializer.deserializeMessage(socketIn.nextLine());
                 MessageId id = message.getSerializationId();
@@ -230,6 +231,10 @@ public class ServerHandler implements Runnable, ClientEventsListener {
                     CLI.error("No handler for MessageId: " + id);
                 }
             } catch (NoSuchElementException e) {
+                if (running) {
+                    if (serverErrorListener != null)
+                        serverErrorListener.onServerError("Connection error", "The connection to the server has been lost");
+                }
                 break;
             }
         }
@@ -241,6 +246,12 @@ public class ServerHandler implements Runnable, ClientEventsListener {
             CLI.error("Exception thrown while closing socket");
             e.printStackTrace();
         }
+    }
+
+    public void stop() {
+        running = false;
+        socketOut.close();
+        socketIn.close();
     }
 
     @Override

@@ -1,6 +1,8 @@
 package it.polimi.ingsw.model.action;
 
-import it.polimi.ingsw.model.board.*;
+import it.polimi.ingsw.model.board.Building;
+import it.polimi.ingsw.model.board.BuildingLevel;
+import it.polimi.ingsw.model.board.Coordinate;
 import it.polimi.ingsw.model.player.Pawn;
 
 public abstract class Effects {
@@ -65,7 +67,8 @@ public abstract class Effects {
                     !(a.getFamily() == ActionFamily.MOVE &&
                             b.getBuildingAt(p.getPosition()).getLevelDifference(b.getBuildingAt(c)) > 0);
 
-            board.addCheckEffect(3, checkEffect); // TODO: Duration is hardcoded, should take account of player number instead
+            int duration = board.countPawns() / 2;
+            board.addCheckEffect(duration, checkEffect);
         }
 
         return false;
