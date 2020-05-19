@@ -1,6 +1,6 @@
 package it.polimi.ingsw.view.client.cli;
 
-import it.polimi.ingsw.controller.events.ServerEventsListener;
+import it.polimi.ingsw.controller.events.OnServerEventListener;
 import it.polimi.ingsw.controller.messages.ActionIdentifier;
 import it.polimi.ingsw.controller.messages.GodIdentifier;
 import it.polimi.ingsw.controller.messages.User;
@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
 
-public class CLIClient implements ServerEventsListener {
+public class CLIClient implements OnServerEventListener {
     private final ProxyController proxyController;
     private List<GodIdentifier> availableGods = null;
     private List<ActionIdentifier> availableActions = null;
@@ -43,7 +43,7 @@ public class CLIClient implements ServerEventsListener {
 
         Thread controllerThread = new Thread(serverHandler);
         controllerThread.start();
-        serverHandler.setServerEventListener(this);
+        serverHandler.dispatcher().setOnServerEventListener(this);
         Scanner input = new Scanner(System.in);
         System.out.print("> ");
         System.out.flush();
@@ -53,17 +53,17 @@ public class CLIClient implements ServerEventsListener {
 
             switch (opCode) {
                 case "size" -> {
-                    serverHandler.setOnResultListener(q -> System.out.print((q ? "" : "N") + "ACK\n> "));
+                    serverHandler.dispatcher().setOnResultListener(q -> System.out.print((q ? "" : "N") + "ACK\n> "));
                     serverHandler.onSelectPlayerNumber(input.nextInt());
                 }
                 case "login" -> {
                     User user = new User(input.next());
                     if (!loggedIn) {
-                        serverHandler.setOnResultListener(r -> {
+                        serverHandler.dispatcher().setOnResultListener(r -> {
                             if (r) {
                                 loggedIn = true;
                                 System.out.print("ACK\n> ");
-                                serverHandler.setOnResultListener(q -> System.out.print((q ? "" : "N") + "ACK\n> "));
+                                serverHandler.dispatcher().setOnResultListener(q -> System.out.print((q ? "" : "N") + "ACK\n> "));
                             } else {
                                 System.out.print("NACK\n> ");
                             }

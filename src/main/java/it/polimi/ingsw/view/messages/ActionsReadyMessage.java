@@ -1,12 +1,13 @@
 package it.polimi.ingsw.view.messages;
 
-import it.polimi.ingsw.controller.events.ServerEventsListener;
 import it.polimi.ingsw.controller.messages.ActionIdentifier;
 import it.polimi.ingsw.controller.messages.User;
 
 import java.util.List;
 
-public class ActionsReadyMessage implements ServerMessage {
+import static it.polimi.ingsw.view.messages.MessageId.ACTION_READY;
+
+public class ActionsReadyMessage implements Message {
     private final User user;
     private final List<ActionIdentifier> actionIdentifiers;
 
@@ -25,11 +26,11 @@ public class ActionsReadyMessage implements ServerMessage {
 
     @Override
     public MessageId getSerializationId() {
-        return MessageId.ACTION_READY;
+        return ACTION_READY;
     }
 
     @Override
-    public void visit(ServerEventsListener listener) {
-        listener.onActionsReady(user, actionIdentifiers);
+    public boolean visit(MessageDispatcher dispatcher) {
+        return dispatcher.onActionsReady(user, actionIdentifiers);
     }
 }

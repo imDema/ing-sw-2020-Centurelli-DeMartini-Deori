@@ -1,5 +1,5 @@
 package it.polimi.ingsw.view.events;
 
-public interface OnSelectPlayerNumber {
+public interface OnSelectPlayerNumberListener {
     boolean onSelectPlayerNumber(int size);
 }

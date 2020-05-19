@@ -1,8 +1,8 @@
 package it.polimi.ingsw.view.messages;
 
-import it.polimi.ingsw.view.events.ClientEventsListener;
+import static it.polimi.ingsw.view.messages.MessageId.SELECT_PLAYER_NUMBER;
 
-public class SelectPlayerNumberMessage implements ClientMessage {
+public class SelectPlayerNumberMessage implements Message {
     private final int size;
 
     public SelectPlayerNumberMessage(int size) {
@@ -15,11 +15,11 @@ public class SelectPlayerNumberMessage implements ClientMessage {
 
     @Override
     public MessageId getSerializationId() {
-        return MessageId.SELECT_PLAYER_NUMBER;
+        return SELECT_PLAYER_NUMBER;
     }
 
     @Override
-    public boolean visit(ClientEventsListener listener) {
-        return listener.onSelectPlayerNumber(size);
+    public boolean visit(MessageDispatcher dispatcher) {
+        return dispatcher.onSelectPlayerNumber(size);
     }
 }

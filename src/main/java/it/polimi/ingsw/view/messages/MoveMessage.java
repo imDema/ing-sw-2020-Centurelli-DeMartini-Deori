@@ -1,9 +1,10 @@
 package it.polimi.ingsw.view.messages;
 
-import it.polimi.ingsw.controller.events.ServerEventsListener;
 import it.polimi.ingsw.model.board.Coordinate;
 
-public class MoveMessage implements ServerMessage {
+import static it.polimi.ingsw.view.messages.MessageId.MOVE;
+
+public class MoveMessage implements Message {
     private final Coordinate from;
     private final Coordinate to;
 
@@ -22,11 +23,11 @@ public class MoveMessage implements ServerMessage {
 
     @Override
     public MessageId getSerializationId() {
-        return MessageId.MOVE;
+        return MOVE;
     }
 
     @Override
-    public void visit(ServerEventsListener listener) {
-        listener.onMove(from, to);
+    public boolean visit(MessageDispatcher dispatcher) {
+        return dispatcher.onMove(from, to);
     }
 }

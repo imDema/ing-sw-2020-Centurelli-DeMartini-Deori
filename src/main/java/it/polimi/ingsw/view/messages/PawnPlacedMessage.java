@@ -1,10 +1,11 @@
 package it.polimi.ingsw.view.messages;
 
-import it.polimi.ingsw.controller.events.ServerEventsListener;
 import it.polimi.ingsw.controller.messages.User;
 import it.polimi.ingsw.model.board.Coordinate;
 
-public class PawnPlacedMessage implements ServerMessage {
+import static it.polimi.ingsw.view.messages.MessageId.PAWN_PLACED;
+
+public class PawnPlacedMessage implements Message {
     private final User owner;
     private final int pawnId;
     private final Coordinate coordinate;
@@ -29,11 +30,11 @@ public class PawnPlacedMessage implements ServerMessage {
 
     @Override
     public MessageId getSerializationId() {
-        return MessageId.PAWN_PLACED;
+        return PAWN_PLACED;
     }
 
     @Override
-    public void visit(ServerEventsListener listener) {
-        listener.onPawnPlaced(owner, pawnId, coordinate);
+    public boolean visit(MessageDispatcher dispatcher) {
+        return dispatcher.onPawnPlaced(owner, pawnId, coordinate);
     }
 }

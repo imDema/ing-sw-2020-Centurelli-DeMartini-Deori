@@ -2,9 +2,10 @@ package it.polimi.ingsw.view.messages;
 
 import it.polimi.ingsw.controller.messages.GodIdentifier;
 import it.polimi.ingsw.controller.messages.User;
-import it.polimi.ingsw.view.events.ClientEventsListener;
 
-public class ChooseGodMessage implements ClientMessage {
+import static it.polimi.ingsw.view.messages.MessageId.CHOOSE_GOD;
+
+public class ChooseGodMessage implements Message {
     private final User user;
     private final GodIdentifier god;
 
@@ -23,11 +24,11 @@ public class ChooseGodMessage implements ClientMessage {
 
     @Override
     public MessageId getSerializationId() {
-        return MessageId.CHOOSE_GOD;
+        return CHOOSE_GOD;
     }
 
     @Override
-    public boolean visit(ClientEventsListener listener) {
-        return listener.onChooseGod(user, god);
+    public boolean visit(MessageDispatcher dispatcher) {
+        return dispatcher.onChooseGod(user, god);
     }
 }

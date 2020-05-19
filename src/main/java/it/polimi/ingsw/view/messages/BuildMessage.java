@@ -1,10 +1,11 @@
 package it.polimi.ingsw.view.messages;
 
-import it.polimi.ingsw.controller.events.ServerEventsListener;
 import it.polimi.ingsw.model.board.Building;
 import it.polimi.ingsw.model.board.Coordinate;
 
-public class BuildMessage implements ServerMessage {
+import static it.polimi.ingsw.view.messages.MessageId.BUILD;
+
+public class BuildMessage implements Message {
     private final Building building;
     private final Coordinate coordinate;
 
@@ -23,11 +24,11 @@ public class BuildMessage implements ServerMessage {
 
     @Override
     public MessageId getSerializationId() {
-        return MessageId.BUILD;
+        return BUILD;
     }
 
     @Override
-    public void visit(ServerEventsListener listener) {
-        listener.onBuild(building, coordinate);
+    public boolean visit(MessageDispatcher dispatcher) {
+        return dispatcher.onBuild(building, coordinate);
     }
 }

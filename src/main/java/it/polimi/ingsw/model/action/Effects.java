@@ -81,16 +81,16 @@ public abstract class Effects {
         return false;
     };
 
-    public static final Effect forbidCoordinate = (board, pawn, coordinate) -> {
+    public static final Effect forbidBuildAtCoordinate = (board, pawn, coordinate) -> {
         final Coordinate position = coordinate;
-        CheckEffect checkEffect = (b, p, c, a) -> !c.equals(position);
+        CheckEffect checkEffect = (b, p, c, a) -> !c.equals(position) || a.getFamily() != ActionFamily.BUILD;
         board.addCheckEffect(1, checkEffect);
         return false;
     };
 
-    public static final Effect forbidOtherCoordinates = (board, pawn, coordinate) -> {
+    public static final Effect forbidBuildAtOtherCoordinates = (board, pawn, coordinate) -> {
         final Coordinate position = coordinate;
-        CheckEffect checkEffect = (b, p, c, a) -> c.equals(position);
+        CheckEffect checkEffect = (b, p, c, a) -> c.equals(position) || a.getFamily() != ActionFamily.BUILD;
         board.addCheckEffect(1, checkEffect);
         return false;
     };

@@ -34,7 +34,7 @@ public class App extends Application {
         stage.setScene(new Scene(loginView));
         stage.show();
 
-        server.setOnGodsAvailableListener(gods -> {
+        server.dispatcher().setOnGodsAvailableListener(gods -> {
             GodSelectorView godSelector = new GodSelectorView(gods, server);
             Platform.runLater(() -> {
                 stage.setTitle("Choose your god");
@@ -42,7 +42,7 @@ public class App extends Application {
             });
         });
 
-        server.setOnRequestPlacePawnsListener(user -> {
+        server.dispatcher().setOnRequestPlacePawnsListener(user -> {
 
         });
     }

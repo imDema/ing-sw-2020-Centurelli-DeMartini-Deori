@@ -1,8 +1,11 @@
 package it.polimi.ingsw.serialization;
 
-import com.google.gson.*;
-import it.polimi.ingsw.model.action.Effects;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
 import it.polimi.ingsw.model.action.Effect;
+import it.polimi.ingsw.model.action.Effects;
 
 import java.lang.reflect.Type;
 import java.util.AbstractMap.SimpleImmutableEntry;
@@ -18,8 +21,8 @@ class EffectDeserializer implements JsonDeserializer<Effect> {
         PUSH_PAWN,
         FORBID_MOVE_UP,
         FORBID_MOVE_BACK,
-        FORBID_COORDINATE,
-        FORBID_OTHER_COORDINATES,
+        FORBID_BUILD_AT_COORDINATE,
+        FORBID_BUILD_AT_OTHER_COORDINATES,
         WIN_ON_JUMP_DOWN
     }
 
@@ -31,8 +34,8 @@ class EffectDeserializer implements JsonDeserializer<Effect> {
         new SimpleImmutableEntry<>(EffectId.PUSH_PAWN, Effects.pushPawn),
         new SimpleImmutableEntry<>(EffectId.FORBID_MOVE_UP, Effects.forbidMoveUp),
         new SimpleImmutableEntry<>(EffectId.FORBID_MOVE_BACK, Effects.forbidMoveBack),
-        new SimpleImmutableEntry<>(EffectId.FORBID_COORDINATE, Effects.forbidCoordinate),
-        new SimpleImmutableEntry<>(EffectId.FORBID_OTHER_COORDINATES, Effects.forbidOtherCoordinates),
+        new SimpleImmutableEntry<>(EffectId.FORBID_BUILD_AT_COORDINATE, Effects.forbidBuildAtCoordinate),
+        new SimpleImmutableEntry<>(EffectId.FORBID_BUILD_AT_OTHER_COORDINATES, Effects.forbidBuildAtOtherCoordinates),
         new SimpleImmutableEntry<>(EffectId.WIN_ON_JUMP_DOWN, Effects.winOnJumpDown)
     );
 

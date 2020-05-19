@@ -1,9 +1,10 @@
 package it.polimi.ingsw.view.messages;
 
-import it.polimi.ingsw.controller.events.ServerEventsListener;
 import it.polimi.ingsw.controller.messages.User;
 
-public class RequestPlacePawnsMessage implements ServerMessage {
+import static it.polimi.ingsw.view.messages.MessageId.REQUEST_PLACE_PAWNS;
+
+public class RequestPlacePawnsMessage implements Message {
     private final User user;
 
     public User getUser() {
@@ -16,11 +17,11 @@ public class RequestPlacePawnsMessage implements ServerMessage {
 
     @Override
     public MessageId getSerializationId() {
-        return MessageId.REQUEST_PLACE_PAWNS;
+        return REQUEST_PLACE_PAWNS;
     }
 
     @Override
-    public void visit(ServerEventsListener listener) {
-        listener.onRequestPlacePawns(user);
+    public boolean visit(MessageDispatcher dispatcher) {
+        return dispatcher.onRequestPlacePawns(user);
     }
 }

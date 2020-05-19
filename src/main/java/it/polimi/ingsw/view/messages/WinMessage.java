@@ -1,9 +1,10 @@
 package it.polimi.ingsw.view.messages;
 
-import it.polimi.ingsw.controller.events.ServerEventsListener;
 import it.polimi.ingsw.controller.messages.User;
 
-public class WinMessage implements ServerMessage {
+import static it.polimi.ingsw.view.messages.MessageId.WIN;
+
+public class WinMessage implements Message {
     private final User user;
 
     public WinMessage(User user) {
@@ -16,11 +17,11 @@ public class WinMessage implements ServerMessage {
 
     @Override
     public MessageId getSerializationId() {
-        return MessageId.WIN;
+        return WIN;
     }
 
     @Override
-    public void visit(ServerEventsListener listener) {
-        listener.onWin(user);
+    public boolean visit(MessageDispatcher dispatcher) {
+        return dispatcher.onWin(user);
     }
 }

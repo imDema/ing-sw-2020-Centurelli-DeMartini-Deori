@@ -1,11 +1,12 @@
 package it.polimi.ingsw.view.messages;
 
-import it.polimi.ingsw.controller.events.ServerEventsListener;
 import it.polimi.ingsw.controller.messages.GodIdentifier;
 
 import java.util.List;
 
-public class GodsAvailableMessage implements ServerMessage {
+import static it.polimi.ingsw.view.messages.MessageId.GODS_AVAILABLE;
+
+public class GodsAvailableMessage implements Message {
     private final List<GodIdentifier> gods;
 
     public GodsAvailableMessage(List<GodIdentifier> gods) {
@@ -18,11 +19,11 @@ public class GodsAvailableMessage implements ServerMessage {
 
     @Override
     public MessageId getSerializationId() {
-        return MessageId.GODS_AVAILABLE;
+        return GODS_AVAILABLE;
     }
 
     @Override
-    public void visit(ServerEventsListener listener) {
-        listener.onGodsAvailable(gods);
+    public boolean visit(MessageDispatcher dispatcher) {
+        return dispatcher.onGodsAvailable(gods);
     }
 }

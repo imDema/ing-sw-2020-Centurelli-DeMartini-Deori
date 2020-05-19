@@ -1,6 +1,6 @@
 package it.polimi.ingsw.controller;
 
-import it.polimi.ingsw.controller.events.ServerEventsListener;
+import it.polimi.ingsw.controller.events.OnServerEventListener;
 import it.polimi.ingsw.controller.messages.ActionIdentifier;
 import it.polimi.ingsw.controller.messages.GodIdentifier;
 import it.polimi.ingsw.controller.messages.User;
@@ -29,7 +29,7 @@ public class GameControllerTest {
     @Test
     public void testControllerSequence() {
         GameController gameController = new GameController();
-        gameController.addServerEventsListener(new ServerEventsListener() {
+        gameController.addServerEventsListener(new OnServerEventListener() {
 
 
             @Override

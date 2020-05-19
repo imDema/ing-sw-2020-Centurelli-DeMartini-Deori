@@ -1,7 +1,7 @@
 package it.polimi.ingsw.controller;
 
 import it.polimi.ingsw.controller.events.OnGameFinishedListener;
-import it.polimi.ingsw.controller.events.ServerEventsListener;
+import it.polimi.ingsw.controller.events.OnServerEventListener;
 import it.polimi.ingsw.controller.messages.ActionIdentifier;
 import it.polimi.ingsw.controller.messages.User;
 import it.polimi.ingsw.model.Game;
@@ -18,7 +18,6 @@ import it.polimi.ingsw.model.player.Player;
 import it.polimi.ingsw.view.events.OnCheckActionListener;
 import it.polimi.ingsw.view.events.OnExecuteActionListener;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -32,7 +31,7 @@ public class GameCycle implements OnExecuteActionListener, OnCheckActionListener
     private Pawn currentPawn;
     private Action[] actions;
     private final GameController gameController;
-    private final List<ServerEventsListener> serverEventsListeners = new ArrayList<>();
+    private final List<OnServerEventListener> serverEventListeners = new ArrayList<>();
     private OnGameFinishedListener gameFinishedListener = null;
 
     public GameCycle(Lobby lobby, GameController gameController) {
@@ -48,23 +47,23 @@ public class GameCycle implements OnExecuteActionListener, OnCheckActionListener
         this.gameFinishedListener = gameFinishedListener;
     }
 
-    void addServerEventListener(ServerEventsListener serverEventsListener) {
-        serverEventsListeners.add(serverEventsListener);
+    void addServerEventListener(OnServerEventListener onServerEventListener) {
+        serverEventListeners.add(onServerEventListener);
     }
 
-    void removeServerEventsListener(ServerEventsListener serverEventsListener) {
-        serverEventsListeners.remove(serverEventsListener);
+    void removeServerEventsListener(OnServerEventListener onServerEventListener) {
+        serverEventListeners.remove(onServerEventListener);
     }
 
     // Forward model events to all listeners
     @Override
     public void onBuild(Building building, Coordinate coordinate) {
-        serverEventsListeners.forEach(l -> l.onBuild(building, coordinate));
+        serverEventListeners.forEach(l -> l.onBuild(building, coordinate));
     }
 
     @Override
     public void onMove(Coordinate from, Coordinate to) {
-        serverEventsListeners.forEach(l -> l.onMove(from, to));
+        serverEventListeners.forEach(l -> l.onMove(from, to));
     }
 
     private void onActionsReady(Player player, Action[] actions) {
@@ -72,7 +71,7 @@ public class GameCycle implements OnExecuteActionListener, OnCheckActionListener
         List<ActionIdentifier> actionIds = Arrays.stream(actions)
                 .map(ActionIdentifier::new)
                 .collect(Collectors.toList());
-        serverEventsListeners.forEach(l -> l.onActionsReady(user, actionIds));
+        serverEventListeners.forEach(l -> l.onActionsReady(user, actionIds));
     }
 
     private Optional<Action> actionFromId(Action[] array, ActionIdentifier actionIdentifier) {
@@ -128,7 +127,7 @@ public class GameCycle implements OnExecuteActionListener, OnCheckActionListener
                     try {
                         // Execute the action, call winListener if it was a winning move
                         if (game.getBoard().executeAction(chosenAction, currentPawn, coordinate)) {
-                            serverEventsListeners.forEach(l -> l.onWin(new User(player)));
+                            serverEventListeners.forEach(l -> l.onWin(new User(player)));
 
                             if(gameFinishedListener != null)
                                 gameFinishedListener.onGameFinished(gameController);
@@ -144,10 +143,10 @@ public class GameCycle implements OnExecuteActionListener, OnCheckActionListener
                             // Check if the player is eliminated and progress
                             if (!canDoAnything(currentPawn, actions)) {
                                 game.elimination(player);
-                                serverEventsListeners.forEach(l -> l.onElimination(user));
+                                serverEventListeners.forEach(l -> l.onElimination(user));
                                 if (game.getPlayerNumber() == 1) {
                                     User winner = lobby.getUser(game.getPlayers().get(0)).orElseThrow();
-                                    serverEventsListeners.forEach(l -> l.onWin(winner));
+                                    serverEventListeners.forEach(l -> l.onWin(winner));
                                 }
                             } else {
                                 onActionsReady(player, actions);
@@ -156,7 +155,7 @@ public class GameCycle implements OnExecuteActionListener, OnCheckActionListener
                         return true;
                     } catch (InvalidActionException e) {
                         // This should never happen because action is checked before being executed
-                        serverEventsListeners.forEach(l -> l.onServerError("Invalid board action", "An error occurred while executing the action"));
+                        serverEventListeners.forEach(l -> l.onServerError("Invalid board action", "An error occurred while executing the action"));
                         e.printStackTrace();
                         return false;
                     }
@@ -174,20 +173,20 @@ public class GameCycle implements OnExecuteActionListener, OnCheckActionListener
                                 canDoAnything(currentPlayer.getPawn(1), actions);
 
         if (user.isPresent()) {
-            serverEventsListeners.forEach(l -> l.onTurnChange(user.get(), game.getTurn()));
+            serverEventListeners.forEach(l -> l.onTurnChange(user.get(), game.getTurn()));
             pawnSelected = false;
             onActionsReady(currentPlayer, actions);
 
             if (!canDoAnything){
                 game.elimination(currentPlayer);
-                serverEventsListeners.forEach(l -> l.onElimination(user.get()));
+                serverEventListeners.forEach(l -> l.onElimination(user.get()));
                 if (game.getPlayerNumber() == 1) {
                     User winner = lobby.getUser(game.getPlayers().get(0)).orElseThrow();
-                    serverEventsListeners.forEach(l -> l.onWin(winner));
+                    serverEventListeners.forEach(l -> l.onWin(winner));
                 }
             }
         } else {
-            serverEventsListeners.forEach(l -> l.onServerError("Error retrieving user", "No user matches current player"));
+            serverEventListeners.forEach(l -> l.onServerError("Error retrieving user", "No user matches current player"));
         }
 
     }

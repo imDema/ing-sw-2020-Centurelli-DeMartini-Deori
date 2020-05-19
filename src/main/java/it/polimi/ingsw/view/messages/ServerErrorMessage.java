@@ -1,8 +1,8 @@
 package it.polimi.ingsw.view.messages;
 
-import it.polimi.ingsw.controller.events.ServerEventsListener;
+import static it.polimi.ingsw.view.messages.MessageId.SERVER_ERROR;
 
-public class ServerErrorMessage implements ServerMessage {
+public class ServerErrorMessage implements Message {
     private final String type;
     private final String description;
 
@@ -21,11 +21,11 @@ public class ServerErrorMessage implements ServerMessage {
 
     @Override
     public MessageId getSerializationId() {
-        return MessageId.SERVER_ERROR;
+        return SERVER_ERROR;
     }
 
     @Override
-    public void visit(ServerEventsListener listener) {
-        listener.onServerError(type, description);
+    public boolean visit(MessageDispatcher dispatcher) {
+        return dispatcher.onServerError(type, description);
     }
 }

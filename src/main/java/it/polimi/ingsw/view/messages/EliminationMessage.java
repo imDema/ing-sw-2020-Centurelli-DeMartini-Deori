@@ -1,9 +1,10 @@
 package it.polimi.ingsw.view.messages;
 
-import it.polimi.ingsw.controller.events.ServerEventsListener;
 import it.polimi.ingsw.controller.messages.User;
 
-public class EliminationMessage implements ServerMessage {
+import static it.polimi.ingsw.view.messages.MessageId.ELIMINATION;
+
+public class EliminationMessage implements Message {
     private final User user;
 
     public User getUser() {
@@ -16,11 +17,11 @@ public class EliminationMessage implements ServerMessage {
 
     @Override
     public MessageId getSerializationId() {
-        return MessageId.ELIMINATION;
+        return ELIMINATION;
     }
 
     @Override
-    public void visit(ServerEventsListener listener) {
-        listener.onElimination(user);
+    public boolean visit(MessageDispatcher dispatcher) {
+        return dispatcher.onElimination(user);
     }
 }

@@ -15,4 +15,9 @@ public class ResultMessage implements Message {
     public MessageId getSerializationId() {
         return MessageId.RESULT;
     }
+
+    @Override
+    public boolean visit(MessageDispatcher dispatcher) {
+        return dispatcher.onResult(value);
+    }
 }

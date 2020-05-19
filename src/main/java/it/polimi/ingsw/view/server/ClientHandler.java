@@ -1,7 +1,7 @@
 package it.polimi.ingsw.view.server;
 
 import it.polimi.ingsw.controller.GameController;
-import it.polimi.ingsw.controller.events.ServerEventsListener;
+import it.polimi.ingsw.controller.events.OnServerEventListener;
 import it.polimi.ingsw.controller.messages.ActionIdentifier;
 import it.polimi.ingsw.controller.messages.GodIdentifier;
 import it.polimi.ingsw.controller.messages.User;
@@ -18,11 +18,12 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
-public class ClientHandler implements Runnable, ServerEventsListener {
+public class ClientHandler implements Runnable, OnServerEventListener {
     private final Scanner socketIn;
     private final PrintWriter socketOut;
     private final Socket socket;
     private final GameController controller;
+    private final MessageDispatcher dispatcher = new MessageDispatcher();
 
     private boolean running = true;
     private boolean loggedIn = false;
@@ -34,6 +35,7 @@ public class ClientHandler implements Runnable, ServerEventsListener {
         this.socketOut = socketOut;
         this.controller = controller;
         controller.addServerEventsListener(this);
+        dispatcher.setOnClientEventListener(controller);
     }
 
     /**
@@ -52,24 +54,20 @@ public class ClientHandler implements Runnable, ServerEventsListener {
         while (running) {
             try {
                 Message message = Serializer.deserializeMessage(socketIn.nextLine());
-                MessageId id = message.getSerializationId();
 
-                if (id.clientMessage()) {
-                    // Process message
-                    boolean result = ((ClientMessage) message).visit(controller);
+                // Process message
+                boolean result = message.visit(dispatcher);
 
-                    // Save login information in client handler on successful login
-                    if(id == MessageId.ADD_USER && result) {
-                        loggedIn = true;
-                        user = ((AddUserMessage)message).getUser();
-                    }
-
-                    // Send result
-                    sendMessage(new ResultMessage(result));
-                    logMessageProcessed(message, result);
-                } else {
-                    CLI.error("Cannot process ServerMessage " + message.getSerializationId());
+                // Save login information in client handler on successful login
+                if(message.getSerializationId() == MessageId.ADD_USER && result) {
+                    loggedIn = true;
+                    user = ((AddUserMessage)message).getUser();
                 }
+
+                // Send result
+                sendMessage(new ResultMessage(result));
+                logMessageProcessed(message, result);
+
             } catch (NoSuchElementException e) {
                 if (loggedIn && running) {
                     controller.onServerError("User disconnected", user + " disconnected. Terminating.");

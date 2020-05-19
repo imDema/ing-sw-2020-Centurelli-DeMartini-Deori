@@ -61,9 +61,9 @@ public class CellView {
                 bot = "░█,███████";
             }
             case LEVEL3 -> {
-                top = "░░███░░,░██";
+                top = "▓▓███▓▓,▓██";
                 fill = "██";
-                bot = "█░,░░███░░";
+                bot = "█▓,▓▓███▓▓";
             }
             default -> throw new IllegalStateException("Unexpected value: " + building.getLevel());
         }

@@ -1,9 +1,10 @@
 package it.polimi.ingsw.view.messages;
 
-import it.polimi.ingsw.controller.events.ServerEventsListener;
 import it.polimi.ingsw.controller.messages.User;
 
-public class UserJoinedMessage implements ServerMessage {
+import static it.polimi.ingsw.view.messages.MessageId.USER_JOINED;
+
+public class UserJoinedMessage implements Message {
     private final User user;
 
     public UserJoinedMessage(User user) {
@@ -16,11 +17,11 @@ public class UserJoinedMessage implements ServerMessage {
 
     @Override
     public MessageId getSerializationId() {
-        return MessageId.USER_JOINED;
+        return USER_JOINED;
     }
 
     @Override
-    public void visit(ServerEventsListener listener) {
-        listener.onUserJoined(user);
+    public boolean visit(MessageDispatcher dispatcher) {
+        return dispatcher.onUserJoined(user);
     }
 }

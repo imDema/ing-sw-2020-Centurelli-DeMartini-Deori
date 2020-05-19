@@ -50,7 +50,7 @@ public class LoginViewModel {
 
     public LoginViewModel(ServerHandler server) {
         this.server = server;
-        server.setOnUserJoinedListener(u -> {
+        server.dispatcher().setOnUserJoinedListener(u -> {
             users.add(u);
             if (onUserJoinedListener != null) {
                 onUserJoinedListener.onUserJoined(u);
@@ -61,7 +61,7 @@ public class LoginViewModel {
     public void login() {
         if (myUser == null) {
             final User user = new User(usernameProperty().get());
-            server.setOnResultListener(r -> {
+            server.dispatcher().setOnResultListener(r -> {
                 if (r) {
                     myUser = user;
                     onLoginAttemptListener.accept(true, "Successfully logged in");
@@ -77,7 +77,7 @@ public class LoginViewModel {
 
     public void setSize() {
         final int size = sizeProperty().get();
-        server.setOnResultListener(r -> {
+        server.dispatcher().setOnResultListener(r -> {
             if (r) {
                 onSetSizeAttemptListener.accept(true, "Successfully set player number");
             } else {

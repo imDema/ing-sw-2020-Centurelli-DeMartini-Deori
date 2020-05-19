@@ -146,12 +146,12 @@
             {
               "description": "Build_Block",
               "family": "BUILD",
-              "effects": ["BUILD_BLOCK", "FORBID_OTHER_COORDINATES"],
+              "effects": ["BUILD_BLOCK", "FORBID_BUILD_AT_OTHER_COORDINATES"],
               "checks": ["NEIGHBOUR", "NO_DOME", "NOT_OCCUPIED", "NOT_MAX_LEVEL"]
             }, {
               "description": "Build_Dome",
               "family": "BUILD",
-              "effects": ["BUILD_DOME", "FORBID_OTHER_COORDINATES"],
+              "effects": ["BUILD_DOME", "FORBID_BUILD_AT_OTHER_COORDINATES"],
               "checks": ["NEIGHBOUR", "NO_DOME", "NOT_OCCUPIED", "MAX_LEVEL"]
             }
           ], [
@@ -190,12 +190,12 @@
             {
               "description": "Build_Block",
               "family": "BUILD",
-              "effects": ["BUILD_BLOCK", "FORBID_COORDINATE"],
+              "effects": ["BUILD_BLOCK", "FORBID_BUILD_AT_COORDINATE"],
               "checks": ["NEIGHBOUR", "NO_DOME", "NOT_OCCUPIED", "NOT_MAX_LEVEL"]
             }, {
               "description": "Build_Dome",
               "family": "BUILD",
-              "effects": ["BUILD_DOME", "FORBID_COORDINATE"],
+              "effects": ["BUILD_DOME", "FORBID_BUILD_AT_COORDINATE"],
               "checks": ["NEIGHBOUR", "NO_DOME", "NOT_OCCUPIED", "MAX_LEVEL"]
             }
           ], [

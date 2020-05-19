@@ -3,9 +3,10 @@ package it.polimi.ingsw.view.messages;
 import it.polimi.ingsw.controller.messages.ActionIdentifier;
 import it.polimi.ingsw.controller.messages.User;
 import it.polimi.ingsw.model.board.Coordinate;
-import it.polimi.ingsw.view.events.ClientEventsListener;
 
-public class ExecuteActionMessage implements ClientMessage {
+import static it.polimi.ingsw.view.messages.MessageId.EXECUTE_ACTION;
+
+public class ExecuteActionMessage implements Message {
     private final User user;
     private final int id;
     private final ActionIdentifier actionIdentifier;
@@ -36,12 +37,12 @@ public class ExecuteActionMessage implements ClientMessage {
 
     @Override
     public MessageId getSerializationId() {
-        return MessageId.EXECUTE_ACTION;
+        return EXECUTE_ACTION;
     }
 
     @Override
-    public boolean visit(ClientEventsListener listener) {
-        return listener.onExecuteAction(user, id, actionIdentifier, coordinate);
+    public boolean visit(MessageDispatcher dispatcher) {
+        return dispatcher.onExecuteAction(user, id, actionIdentifier, coordinate);
     }
 }
 

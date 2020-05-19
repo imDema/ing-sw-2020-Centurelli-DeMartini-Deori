@@ -1,9 +1,10 @@
 package it.polimi.ingsw.view.messages;
 
-import it.polimi.ingsw.controller.events.ServerEventsListener;
 import it.polimi.ingsw.controller.messages.User;
 
-public class TurnChangeMessage implements ServerMessage {
+import static it.polimi.ingsw.view.messages.MessageId.TURN_CHANGE;
+
+public class TurnChangeMessage implements Message {
     private final User user;
     private final int turn;
 
@@ -22,11 +23,11 @@ public class TurnChangeMessage implements ServerMessage {
 
     @Override
     public MessageId getSerializationId() {
-        return MessageId.TURN_CHANGE;
+        return TURN_CHANGE;
     }
 
     @Override
-    public void visit(ServerEventsListener listener) {
-        listener.onTurnChange(user, turn);
+    public boolean visit(MessageDispatcher dispatcher) {
+        return dispatcher.onTurnChange(user, turn);
     }
 }
