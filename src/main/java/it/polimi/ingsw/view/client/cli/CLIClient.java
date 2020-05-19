@@ -14,6 +14,7 @@ import it.polimi.ingsw.view.client.state.PlayerView;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import java.util.Scanner;
 
 public class CLIClient implements ServerEventsListener {
@@ -83,37 +84,42 @@ public class CLIClient implements ServerEventsListener {
                 }
                 case "place" -> {
                     // row - column for pawn1
-                    Coordinate c1 = new Coordinate(input.nextInt(), input.nextInt());
+                    String s = input.next();
+                    Optional<Coordinate> c1 = decodeCoordinate(s);
                     // row - column for pawn2
-                    Coordinate c2 = new Coordinate(input.nextInt(), input.nextInt());
-
-                    serverHandler.onPlacePawns(user, c1, c2);
+                    String s1 = input.next();
+                    Optional<Coordinate> c2 = decodeCoordinate(s1);
+                    if( c1.isPresent() && c2.isPresent())
+                        serverHandler.onPlacePawns(user, c1.get(), c2.get());
+                    else
+                        System.out.println("You can't place pawn out of the board");
                 }
                 case "check" -> {
                     String actionDesc = input.next().toLowerCase();
                     int pawnId = input.nextInt();
-                    Coordinate c = new Coordinate(input.nextInt(), input.nextInt());
+                    String s = input.next();
+                    Optional<Coordinate> c = decodeCoordinate(s);
 
-                    availableActions.stream()
-                        .filter(a -> a.getDescription().toLowerCase().equals(actionDesc))
-                        .findFirst()
-                        .ifPresentOrElse(
-                                a -> serverHandler.onCheckAction(user, pawnId, a, c),
-                                () -> CLI.error("Use an action from the supplied list")
-                        );
+                    c.ifPresent(coordinate -> availableActions.stream()
+                            .filter(a -> a.getDescription().toLowerCase().equals(actionDesc))
+                            .findFirst()
+                            .ifPresentOrElse(
+                                    a -> serverHandler.onCheckAction(user, pawnId, a, coordinate),
+                                    () -> CLI.error("Use an action from the supplied list")
+                            ));
                 }
                 case "execute" -> {
                     String actionDesc = input.next().toLowerCase();
                     int pawnId = input.nextInt();
-                    Coordinate c = new Coordinate(input.nextInt(), input.nextInt());
-
-                    availableActions.stream()
+                    String s = input.next();
+                    Optional<Coordinate> c = decodeCoordinate(s);
+                    c.ifPresent(coordinate -> availableActions.stream()
                             .filter(a -> a.getDescription().toLowerCase().equals(actionDesc))
                             .findFirst()
                             .ifPresentOrElse(
-                                    a -> serverHandler.onExecuteAction(user, pawnId, a, c),
+                                    a -> serverHandler.onExecuteAction(user, pawnId, a, coordinate),
                                     () -> CLI.error("Use an action from the supplied list")
-                            );
+                            ));
                 }
                 default -> {
                     System.out.println("COMMANDS:");
@@ -229,12 +235,33 @@ public class CLIClient implements ServerEventsListener {
     @Override
     public void onPawnPlaced(User owner, int pawnId, Coordinate coordinate) {
         CLI.info("\nUser \"" + owner.getUsername() +
-                "\" placed pawn " + pawnId + " at " + coordinate);
+                "\" placed pawn " + pawnId + " at " + (char)(coordinate.getX() + 'A') + (coordinate.getY() + 1));
         System.out.flush();
         PlayerView player = board.setUpPlayer(owner);
         PawnView p = new PawnView(player, pawnId);
         player.addPawn(p);
         board.putPawn(p, coordinate);
         print();
+        }
+
+    private Optional<Coordinate> decodeCoordinate(String string) {
+        if((string.length() == 2)) {
+            String s = string.toLowerCase();
+            int number;
+            int letter = s.charAt(0) - 'a';
+            try {
+                number = Integer.parseInt(s.substring(1)) - 1;
+            }
+            catch(NumberFormatException e) {
+                return Optional.empty();
+                }
+            if ((letter >= 0) && (letter <= 5) && (number >= 0 ) && (number <= 5)) {
+                return Optional.of(new Coordinate(number, letter));
+            } else{
+                return Optional.empty();
+                }
+            } else {
+            return Optional.empty();
+        }
     }
 }
