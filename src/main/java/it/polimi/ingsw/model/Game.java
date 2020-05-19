@@ -46,6 +46,7 @@ public class Game {
     public void nextTurn() {
         turn++;
         turnHelper.next();
+        board.tickCheckEffect();
     }
 
     public Player getCurrentPlayer() {

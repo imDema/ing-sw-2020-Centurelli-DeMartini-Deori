@@ -12,7 +12,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class Board {
-    public final int BOARD_SIZE = 5;
+    public static final int BOARD_SIZE = 5;
     private OnMoveListener onMoveListener;
     private OnBuildListener onBuildListener;
     private Cell[][] cells;
@@ -110,7 +110,7 @@ public class Board {
     }
 
     // Ticks down one turn from all active check effects
-    protected void tickCheckEffect() {
+    public void tickCheckEffect() {
         activeCheckEffects = activeCheckEffects.stream()
                 .peek(ActiveEffect::tickTurn)
                 .filter(a -> a.getDuration() > 0)

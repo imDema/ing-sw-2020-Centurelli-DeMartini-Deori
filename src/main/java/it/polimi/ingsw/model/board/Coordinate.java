@@ -1,5 +1,17 @@
 package it.polimi.ingsw.model.board;
 
+import it.polimi.ingsw.model.Game;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Function;
+
+/**
+ * The Coordinate class is the abstraction used to map the cells of the game board, each cell on the board
+ * correspond to a coordinate;
+ * A coordinate is determined by two fields: the row and the column of the board, these two fields
+ * are internally represented by two int  values (x-> row and y->column)
+ */
 public class Coordinate {
     private final int x, y;
 
@@ -11,9 +23,29 @@ public class Coordinate {
         return y;
     }
 
-    public boolean isNeighbour(Coordinate c2) {
-        return !(x > c2.getX() + 1 || x < c2.getX() - 1 || y > c2.getY() + 1 || y < c2.getY() - 1)
-                && !(x == c2.getX() && y == c2.getY());
+    /**
+     * @return true if this coordinate and c are adjacent
+     */
+    public boolean isNeighbour(Coordinate c) {
+        return !(x > c.getX() + 1 || x < c.getX() - 1 || y > c.getY() + 1 || y < c.getY() - 1)
+                && !(x == c.getX() && y == c.getY());
+    }
+
+    /**
+     * @param function is applied to all the adjacent coordinates of the coordinate on which this method is called
+     * @return a boolean flag that is true, if the function returns true on a adjacent coordinate of the one
+     * on which the method is called, or false if the function never returns true on any of the adjacent coordinates
+     * of the one on which it's called
+     */
+    public boolean anyNeighbouring(Function<Coordinate, Boolean> function) {
+        for (int i = Math.max(0, x-1); i < Math.min(Board.BOARD_SIZE, x+2); i++) {
+            for (int j = Math.max(0, y-1); j < Math.min(Board.BOARD_SIZE, y+2); j++) {
+                if (!(i == x && j == y) && function.apply(new Coordinate(i, j))) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     public Coordinate(int x, int y) {

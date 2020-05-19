@@ -7,6 +7,7 @@ import it.polimi.ingsw.controller.messages.User;
 import it.polimi.ingsw.model.Game;
 import it.polimi.ingsw.model.Lobby;
 import it.polimi.ingsw.model.action.Action;
+import it.polimi.ingsw.model.board.Board;
 import it.polimi.ingsw.model.board.Building;
 import it.polimi.ingsw.model.board.Coordinate;
 import it.polimi.ingsw.model.board.InvalidActionException;
@@ -17,6 +18,7 @@ import it.polimi.ingsw.model.player.Player;
 import it.polimi.ingsw.view.events.OnCheckActionListener;
 import it.polimi.ingsw.view.events.OnExecuteActionListener;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -135,11 +137,21 @@ public class GameCycle implements OnExecuteActionListener, OnCheckActionListener
                         // Progress through the steps
                         actions = player.nextStep(chosenAction);
                         if (Arrays.equals(actions, new Action[]{Action.endTurn})) {
-                            // Progress the turn
+                            // Start the next turn
                             game.nextTurn();
                             startTurn();
                         } else {
-                            onActionsReady(player, actions);
+                            // Check if the player is eliminated and progress
+                            if (!canDoAnything(currentPawn, actions)) {
+                                game.elimination(player);
+                                serverEventsListeners.forEach(l -> l.onElimination(user));
+                                if (game.getPlayerNumber() == 1) {
+                                    User winner = lobby.getUser(game.getPlayers().get(0)).orElseThrow();
+                                    serverEventsListeners.forEach(l -> l.onWin(winner));
+                                }
+                            } else {
+                                onActionsReady(player, actions);
+                            }
                         }
                         return true;
                     } catch (InvalidActionException e) {
@@ -158,12 +170,36 @@ public class GameCycle implements OnExecuteActionListener, OnCheckActionListener
         Player currentPlayer = game.getCurrentPlayer();
         actions = currentPlayer.nextStep(Action.start);
         Optional<User> user = lobby.getUser(currentPlayer);
+        boolean canDoAnything = canDoAnything(currentPlayer.getPawn(0), actions) ||
+                                canDoAnything(currentPlayer.getPawn(1), actions);
+
         if (user.isPresent()) {
             serverEventsListeners.forEach(l -> l.onTurnChange(user.get(), game.getTurn()));
+            pawnSelected = false;
+            onActionsReady(currentPlayer, actions);
+
+            if (!canDoAnything){
+                game.elimination(currentPlayer);
+                serverEventsListeners.forEach(l -> l.onElimination(user.get()));
+                if (game.getPlayerNumber() == 1) {
+                    User winner = lobby.getUser(game.getPlayers().get(0)).orElseThrow();
+                    serverEventsListeners.forEach(l -> l.onWin(winner));
+                }
+            }
         } else {
             serverEventsListeners.forEach(l -> l.onServerError("Error retrieving user", "No user matches current player"));
         }
-        pawnSelected = false;
-        onActionsReady(currentPlayer, actions);
+
+    }
+
+    private boolean canDoAnything(Pawn pawn, Action[] actions) {
+        Coordinate coordinate = pawn.getPosition();
+        final Board board = game.getBoard();
+        for (Action a: actions) {
+            if (coordinate.anyNeighbouring(c -> board.checkAction(a, pawn, c))){
+                return true;
+            }
+        }
+        return false;
     }
 }
