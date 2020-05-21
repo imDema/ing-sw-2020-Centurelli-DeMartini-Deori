@@ -21,11 +21,11 @@ import java.util.Scanner;
 
 public class CLIClient implements OnServerEventListener {
     private final ProxyController proxyController;
+    private final CLIBoardView cliBoardView = new CLIBoardView();
     private List<GodIdentifier> availableGods = null;
     private List<ActionIdentifier> availableActions = null;
     private User user;
     private boolean loggedIn = false;
-    private final CLIBoardView board = new CLIBoardView();
 
     public CLIClient(String ip, int port) {
         this.proxyController = new ProxyController(ip, port);
@@ -156,7 +156,7 @@ public class CLIClient implements OnServerEventListener {
     }
 
     public void print() {
-        System.out.println("\n\n\n\n" + board.renderBoard());
+        System.out.println("\n\n\n\n" + cliBoardView.renderBoard());
         System.out.flush();
     }
 
@@ -177,9 +177,9 @@ public class CLIClient implements OnServerEventListener {
         CLI.info("\n" + user + " eliminated");
         System.out.print("\n> ");
         System.out.flush();
-        for(PawnView pawn : board.getPawns()){
+        for(PawnView pawn : cliBoardView.getPawns()){
             if(pawn.getOwner().getUser().equals(user))
-                board.removePawn(pawn);
+                cliBoardView.removePawn(pawn);
         }
     }
 
@@ -188,6 +188,7 @@ public class CLIClient implements OnServerEventListener {
         CLI.info("\nUser " + user + " has chosen the god " + godIdentifier.getName());
         System.out.print("> ");
         System.out.flush();
+        cliBoardView.addPlayer(new PlayerView(user), godIdentifier);
     }
 
     @Override
@@ -237,13 +238,13 @@ public class CLIClient implements OnServerEventListener {
     @Override
     public void onBuild(Building building, Coordinate coordinate) {
         //CLI.info("building at " + coordinate + " is now " + building + "\n> ");
-        board.build(building, coordinate);
+        cliBoardView.build(building, coordinate);
         print();
     }
 
     @Override
     public void onMove(Coordinate from, Coordinate to) {
-        board.move(from, to);
+        cliBoardView.move(from, to);
         print();
     }
 
@@ -252,10 +253,10 @@ public class CLIClient implements OnServerEventListener {
         CLI.info("\nUser \"" + owner.getUsername() +
                 "\" placed pawn " + pawnId + " at " + (char)(coordinate.getX() + 'A') + (coordinate.getY() + 1));
         System.out.flush();
-        PlayerView player = board.setUpPlayer(owner);
+        PlayerView player = cliBoardView.getPLayer(user);
         PawnView p = new PawnView(player, pawnId);
         player.addPawn(p);
-        board.putPawn(p, coordinate);
+        cliBoardView.putPawn(p, coordinate);
         print();
         }
 

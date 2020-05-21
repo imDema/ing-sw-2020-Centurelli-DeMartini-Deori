@@ -1,8 +1,6 @@
 package it.polimi.ingsw.view.client.state;
 
 import it.polimi.ingsw.model.board.Building;
-import it.polimi.ingsw.view.cli.CLI;
-import it.polimi.ingsw.view.cli.Colors;
 
 import java.util.Optional;
 
@@ -37,38 +35,4 @@ public class CellView {
         this.building = building;
     }
 
-    public String setUpStringBuilder(int size) {
-        if(building.hasDome()) {
-            return "▓▓" + CLI.color("███", Colors.BLUE) + "▓▓,▓" +
-                    CLI.color("█████", Colors.BLUE) + "▓,▓▓" +
-                    CLI.color("███", Colors.BLUE) + "▓▓";
-        }
-        String top, fill, bot;
-        switch (building.getLevel()) {
-            case LEVEL0 -> {
-                top = "       ,   ";
-                fill = "  ";
-                bot = "  ,       ";
-            }
-            case LEVEL1 -> {
-                top = "░░░░░░░,░░░";
-                fill = "░░";
-                bot = "░░,░░░░░░░";
-            }
-            case LEVEL2 -> {
-                top = "███████,█░░";
-                fill = "░░";
-                bot = "░█,███████";
-            }
-            case LEVEL3 -> {
-                top = "▓▓███▓▓,▓██";
-                fill = "██";
-                bot = "█▓,▓▓███▓▓";
-            }
-            default -> throw new IllegalStateException("Unexpected value: " + building.getLevel());
-        }
-        return top +
-                getPawn().map(PawnView::getSymbol).orElse(fill) +
-                bot;
-    }
 }

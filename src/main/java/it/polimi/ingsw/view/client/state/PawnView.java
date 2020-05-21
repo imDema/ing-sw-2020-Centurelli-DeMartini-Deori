@@ -11,8 +11,6 @@ public class PawnView {
         return owner;
     }
 
-    public String getSymbol() { return owner.getSymbol() + id;}
-
     public int getId() {
         return id;
     }
