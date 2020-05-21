@@ -4,12 +4,12 @@ import it.polimi.ingsw.model.board.Building;
 
 import java.util.Optional;
 
-public class CellView {
+public class CellViewModel {
     private boolean hasPawn = false;
-    private PawnView pawn = null;
+    private PawnViewModel pawn = null;
     private Building building = new Building();
 
-    public Optional<PawnView> getPawn() {
+    public Optional<PawnViewModel> getPawn() {
         if (hasPawn) {
             return Optional.of(pawn);
         } else {
@@ -17,7 +17,7 @@ public class CellView {
         }
     }
 
-    public void putPawn(PawnView pawn) {
+    public void putPawn(PawnViewModel pawn) {
         this.pawn = pawn;
         this.hasPawn = true;
     }

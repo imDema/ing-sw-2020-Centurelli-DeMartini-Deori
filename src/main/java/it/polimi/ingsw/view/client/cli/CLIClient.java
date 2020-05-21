@@ -10,8 +10,8 @@ import it.polimi.ingsw.view.cli.CLI;
 import it.polimi.ingsw.view.cli.Colors;
 import it.polimi.ingsw.view.client.ProxyController;
 import it.polimi.ingsw.view.client.ServerHandler;
-import it.polimi.ingsw.view.client.state.PawnView;
-import it.polimi.ingsw.view.client.state.PlayerView;
+import it.polimi.ingsw.view.client.state.PawnViewModel;
+import it.polimi.ingsw.view.client.state.PlayerViewModel;
 
 import java.io.IOException;
 import java.util.InputMismatchException;
@@ -21,7 +21,7 @@ import java.util.Scanner;
 
 public class CLIClient implements OnServerEventListener {
     private final ProxyController proxyController;
-    private final CLIBoardView cliBoardView = new CLIBoardView();
+    private final CLIBoardViewModel cliBoardViewModel = new CLIBoardViewModel();
     private List<GodIdentifier> availableGods = null;
     private List<ActionIdentifier> availableActions = null;
     private User user;
@@ -156,7 +156,7 @@ public class CLIClient implements OnServerEventListener {
     }
 
     public void print() {
-        System.out.println("\n\n\n\n" + cliBoardView.renderBoard());
+        System.out.println("\n\n\n\n" + cliBoardViewModel.renderBoard());
         System.out.flush();
     }
 
@@ -177,9 +177,9 @@ public class CLIClient implements OnServerEventListener {
         CLI.info("\n" + user + " eliminated");
         System.out.print("\n> ");
         System.out.flush();
-        for(PawnView pawn : cliBoardView.getPawns()){
+        for(PawnViewModel pawn : cliBoardViewModel.getBoardViewModel().getPawns()){
             if(pawn.getOwner().getUser().equals(user))
-                cliBoardView.removePawn(pawn);
+                cliBoardViewModel.getBoardViewModel().removePawn(pawn);
         }
     }
 
@@ -188,7 +188,7 @@ public class CLIClient implements OnServerEventListener {
         CLI.info("\nUser " + user + " has chosen the god " + godIdentifier.getName());
         System.out.print("> ");
         System.out.flush();
-        cliBoardView.addPlayer(new PlayerView(user), godIdentifier);
+        cliBoardViewModel.addPlayer(new PlayerViewModel(user), godIdentifier);
     }
 
     @Override
@@ -238,13 +238,13 @@ public class CLIClient implements OnServerEventListener {
     @Override
     public void onBuild(Building building, Coordinate coordinate) {
         //CLI.info("building at " + coordinate + " is now " + building + "\n> ");
-        cliBoardView.build(building, coordinate);
+        cliBoardViewModel.getBoardViewModel().build(building, coordinate);
         print();
     }
 
     @Override
     public void onMove(Coordinate from, Coordinate to) {
-        cliBoardView.move(from, to);
+        cliBoardViewModel.getBoardViewModel().move(from, to);
         print();
     }
 
@@ -253,10 +253,10 @@ public class CLIClient implements OnServerEventListener {
         CLI.info("\nUser \"" + owner.getUsername() +
                 "\" placed pawn " + pawnId + " at " + (char)(coordinate.getX() + 'A') + (coordinate.getY() + 1));
         System.out.flush();
-        PlayerView player = cliBoardView.getPLayer(user);
-        PawnView p = new PawnView(player, pawnId);
+        PlayerViewModel player = cliBoardViewModel.getBoardViewModel().getPlayer(user);
+        PawnViewModel p = new PawnViewModel(player, pawnId);
         player.addPawn(p);
-        cliBoardView.putPawn(p, coordinate);
+        cliBoardViewModel.getBoardViewModel().putPawn(p, coordinate);
         print();
         }
 

@@ -6,21 +6,21 @@ import it.polimi.ingsw.controller.messages.User;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PlayerView {
+public class PlayerViewModel {
     private final User user;
-    private final List<PawnView> pawns = new ArrayList<>();
+    private final List<PawnViewModel> pawns = new ArrayList<>();
     private GodIdentifier god;
 
 
-    public PlayerView(User user) {
+    public PlayerViewModel(User user) {
         this.user = user;
     }
 
-    public List<PawnView> getPawns() {
+    public List<PawnViewModel> getPawns() {
         return pawns;
     }
 
-    public PawnView getPawn(int id){
+    public PawnViewModel getPawn(int id){
         return pawns.get(id);
     }
 
@@ -36,7 +36,7 @@ public class PlayerView {
         this.god = god;
     }
 
-    public void addPawn(PawnView pawn) {
+    public void addPawn(PawnViewModel pawn) {
         pawns.add(pawn);
     }
 }

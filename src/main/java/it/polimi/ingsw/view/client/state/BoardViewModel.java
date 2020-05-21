@@ -9,27 +9,27 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class BoardView {
+public class BoardViewModel {
 
     private final int BOARD_SIZE = 5;
-    private final CellView[][] cells;
-    private final List<PawnView> pawns = new ArrayList<>();
-    private final Map<User, PlayerView> userPlayerViewMap = new HashMap<>();
+    private final CellViewModel[][] cells;
+    private final List<PawnViewModel> pawns = new ArrayList<>();
+    private final Map<User, PlayerViewModel> userPlayerViewMap = new HashMap<>();
 
-    public BoardView() {
-        cells = new CellView[BOARD_SIZE][BOARD_SIZE];
+    public BoardViewModel() {
+        cells = new CellViewModel[BOARD_SIZE][BOARD_SIZE];
         for (int i = 0; i < BOARD_SIZE; i++)
             for (int j = 0; j < BOARD_SIZE; j++)
-                cells[i][j] = new CellView();
+                cells[i][j] = new CellViewModel();
     }
 
-    public List<PawnView> getPawns() {
+    public List<PawnViewModel> getPawns() {
         return pawns;
     }
 
     public void move(Coordinate c1, Coordinate c2) {
-        final CellView cell1 = cellAt(c1);
-        final CellView cell2 = cellAt(c2);
+        final CellViewModel cell1 = cellAt(c1);
+        final CellViewModel cell2 = cellAt(c2);
         cell1.getPawn().ifPresent(p1 -> {
             p1.setPosition(c2);
             cell1.removePawn();
@@ -43,12 +43,12 @@ public class BoardView {
     }
 
 
-    public void removePawn(PawnView pawn) {
+    public void removePawn(PawnViewModel pawn) {
         Coordinate c = pawn.getPosition();
         cellAt(c).removePawn();
     }
 
-    public void putPawn(PawnView pawn, Coordinate c) {
+    public void putPawn(PawnViewModel pawn, Coordinate c) {
         cellAt(c).putPawn(pawn);
         pawn.setPosition(c);
     }
@@ -57,19 +57,19 @@ public class BoardView {
         cellAt(c).setBuilding(building);
     }
 
-    public CellView cellAt(Coordinate c) {
+    public CellViewModel cellAt(Coordinate c) {
         return cells[c.getX()][c.getY()];
     }
 
-    public PlayerView getPlayer(User user) {
+    public PlayerViewModel getPlayer(User user) {
         return userPlayerViewMap.get(user);
     }
 
-    public void addPawn(PawnView pawn) {
+    public void addPawn(PawnViewModel pawn) {
         pawns.add(pawn);
     }
 
-    public void addPlayer(PlayerView player) {
+    public void addPlayer(PlayerViewModel player) {
         userPlayerViewMap.put(player.getUser(), player);
     }
 }
