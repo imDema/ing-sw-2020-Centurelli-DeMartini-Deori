@@ -10,6 +10,7 @@ import it.polimi.ingsw.view.cli.CLI;
 import it.polimi.ingsw.view.cli.Colors;
 import it.polimi.ingsw.view.client.ProxyController;
 import it.polimi.ingsw.view.client.ServerHandler;
+import it.polimi.ingsw.view.client.state.BoardViewModel;
 import it.polimi.ingsw.view.client.state.PawnViewModel;
 import it.polimi.ingsw.view.client.state.PlayerViewModel;
 
@@ -21,7 +22,7 @@ import java.util.Scanner;
 
 public class CLIClient implements OnServerEventListener {
     private final ProxyController proxyController;
-    private final CLIBoardViewModel cliBoardViewModel = new CLIBoardViewModel();
+    private final CLIBoardView cliBoardView = new CLIBoardView();
     private List<GodIdentifier> availableGods = null;
     private List<ActionIdentifier> availableActions = null;
     private User user;
@@ -156,7 +157,7 @@ public class CLIClient implements OnServerEventListener {
     }
 
     public void print() {
-        System.out.println("\n\n\n\n" + cliBoardViewModel.renderBoard());
+        System.out.println("\n\n\n\n" + cliBoardView.renderBoard());
         System.out.flush();
     }
 
@@ -177,18 +178,24 @@ public class CLIClient implements OnServerEventListener {
         CLI.info("\n" + user + " eliminated");
         System.out.print("\n> ");
         System.out.flush();
-        for(PawnViewModel pawn : cliBoardViewModel.getBoardViewModel().getPawns()){
+        for(PawnViewModel pawn : cliBoardView.getViewModel().getPawns()){
             if(pawn.getOwner().getUser().equals(user))
-                cliBoardViewModel.getBoardViewModel().removePawn(pawn);
+                cliBoardView.getViewModel().removePawn(pawn);
         }
     }
 
     @Override
     public void onGodChosen(User user, GodIdentifier godIdentifier) {
+        cliBoardView.getViewModel().getPlayer(user).ifPresentOrElse(
+                p -> p.setGod(godIdentifier),
+                () -> {
+                    PlayerViewModel player = new PlayerViewModel(user); // TODO This shouldn't be needed
+                    player.setGod(godIdentifier);
+                    cliBoardView.getViewModel().addPlayer(player);
+                });
         CLI.info("\nUser " + user + " has chosen the god " + godIdentifier.getName());
         System.out.print("> ");
         System.out.flush();
-        cliBoardViewModel.addPlayer(new PlayerViewModel(user), godIdentifier);
     }
 
     @Override
@@ -223,6 +230,7 @@ public class CLIClient implements OnServerEventListener {
 
     @Override
     public void onUserJoined(User user) {
+        cliBoardView.newPlayer(user);
         CLI.info("\nUser " + user + " joined");
         System.out.print("> ");
         System.out.flush();
@@ -237,28 +245,25 @@ public class CLIClient implements OnServerEventListener {
 
     @Override
     public void onBuild(Building building, Coordinate coordinate) {
-        //CLI.info("building at " + coordinate + " is now " + building + "\n> ");
-        cliBoardViewModel.getBoardViewModel().build(building, coordinate);
+        cliBoardView.getViewModel().build(building, coordinate);
         print();
     }
 
     @Override
     public void onMove(Coordinate from, Coordinate to) {
-        cliBoardViewModel.getBoardViewModel().move(from, to);
+        cliBoardView.getViewModel().move(from, to);
         print();
     }
 
     @Override
     public void onPawnPlaced(User owner, int pawnId, Coordinate coordinate) {
-        CLI.info("\nUser \"" + owner.getUsername() +
-                "\" placed pawn " + pawnId + " at " + (char)(coordinate.getX() + 'A') + (coordinate.getY() + 1));
-        System.out.flush();
-        PlayerViewModel player = cliBoardViewModel.getBoardViewModel().getPlayer(user);
+        BoardViewModel board = cliBoardView.getViewModel();
+        PlayerViewModel player = board.getPlayer(user).orElseThrow();
         PawnViewModel p = new PawnViewModel(player, pawnId);
         player.addPawn(p);
-        cliBoardViewModel.getBoardViewModel().putPawn(p, coordinate);
+        board.putPawn(p, coordinate);
         print();
-        }
+    }
 
     private Optional<Coordinate> decodeCoordinate(String string) {
         if((string.length() == 2)) {
@@ -270,13 +275,13 @@ public class CLIClient implements OnServerEventListener {
             }
             catch(NumberFormatException e) {
                 return Optional.empty();
-                }
+            }
             if ((letter >= 0) && (letter <= 5) && (number >= 0 ) && (number <= 5)) {
                 return Optional.of(new Coordinate(number, letter));
             } else{
                 return Optional.empty();
                 }
-            } else {
+        } else {
             return Optional.empty();
         }
     }

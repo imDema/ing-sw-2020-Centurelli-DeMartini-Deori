@@ -1,6 +1,6 @@
 package it.polimi.ingsw.view.client.cli;
 
-import it.polimi.ingsw.controller.messages.GodIdentifier;
+import it.polimi.ingsw.controller.messages.User;
 import it.polimi.ingsw.model.board.Coordinate;
 import it.polimi.ingsw.view.cli.CLI;
 import it.polimi.ingsw.view.cli.Colors;
@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
 
-public class CLIBoardViewModel {
+public class CLIBoardView {
     private final int BOARD_SIZE = 5;
     private final int DIM_ROW = 8;
     private final String firstRow;
@@ -25,11 +25,17 @@ public class CLIBoardViewModel {
     private final Stack<String> symbols= new Stack<>();
     // ╔ ╗ ║ ╚  ╝ ═ ╦ ╩ ╬ ╣ ╠
 
-    public BoardViewModel getBoardViewModel() {
+    public BoardViewModel getViewModel() {
         return boardViewModel;
     }
 
-    public CLIBoardViewModel() {
+    public void newPlayer(User user) {
+        PlayerViewModel player = new PlayerViewModel(user);
+        playerSymbolMap.put(player, symbols.pop());
+        boardViewModel.addPlayer(player);
+    }
+
+    public CLIBoardView() {
         // Fixed row setup
         StringBuilder firstRow = new StringBuilder(" ╔");
         StringBuilder divisorRow = new StringBuilder(" ╠");
@@ -67,16 +73,6 @@ public class CLIBoardViewModel {
         symbols.push(CLI.color("☻", Colors.CYAN));
         symbols.push(CLI.color("☻", Colors.PURPLE));
     }
-
-        public void addPlayer(PlayerViewModel player, GodIdentifier godIdentifier) {
-            playerSymbolMap.put(player, symbols.pop());
-            player.setGod(godIdentifier);
-            boardViewModel.addPlayer(player);
-        }
-
-        private CellViewModel getCell (Coordinate coordinate){
-            return boardViewModel.cellAt(coordinate);
-        }
 
     public String renderCell(CellViewModel cell) {
         if(cell.getBuilding().hasDome()) {
@@ -126,7 +122,7 @@ public class CLIBoardViewModel {
             StringBuilder line3 = new StringBuilder(" ║");
             for(int j = 0; j < BOARD_SIZE; j++) {
                 Coordinate c = new Coordinate(i,j);
-                String s = renderCell(getCell(c));
+                String s = renderCell(boardViewModel.cellAt(c));
                 String[] array = s.split(",");
                 line1.append(array[0]).append("║");
                 line2.append(array[1]).append("║");
@@ -143,10 +139,5 @@ public class CLIBoardViewModel {
         }
         builder.append('\n').append(letterRow);
         return builder.toString();
-    }
-
-
-    public void addPawn(PawnViewModel pawn) {
-            boardViewModel.addPawn(pawn);
     }
 }

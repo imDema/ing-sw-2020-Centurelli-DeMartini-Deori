@@ -1,9 +1,11 @@
 package it.polimi.ingsw.view.client.gui;
 
 import it.polimi.ingsw.view.client.ServerHandler;
+import it.polimi.ingsw.view.client.state.BoardViewModel;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 
 import java.util.Optional;
@@ -12,30 +14,38 @@ import java.util.concurrent.Executors;
 
 
 public class App extends Application {
-    ServerHandler server;
     protected static ExecutorService executor = Executors.newCachedThreadPool();
 
-    ConnectionDialog connectionDialog;
-    LoginView loginView;
+    private ServerHandler server;
+    private BoardViewModel boardViewModel;
 
     @Override
     public void start(Stage stage) {
-        connectionDialog = new ConnectionDialog();
+        ConnectionDialog connectionDialog = new ConnectionDialog();
 
         Optional<ServerHandler> serverOpt = connectionDialog.showAndWait();
         serverOpt.ifPresentOrElse(
                 s -> server = s,
                 () -> System.exit(1));
 
-        loginView = new LoginView(server);
+        boardViewModel = new GUIBoardViewModel();
+        LoginView loginView = new LoginView(server, boardViewModel);
         executor.submit(server);
+
+        server.dispatcher().setOnServerErrorListener((type, desc) -> Platform.runLater(() -> {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle(type);
+            alert.setContentText(desc);
+            alert.showAndWait();
+            start(stage);
+        }));
 
         stage.setTitle("Login");
         stage.setScene(new Scene(loginView));
         stage.show();
 
         server.dispatcher().setOnGodsAvailableListener(gods -> {
-            GodSelectorView godSelector = new GodSelectorView(gods, server);
+            GodSelectorView godSelector = new GodSelectorView(server, boardViewModel, gods);
             Platform.runLater(() -> {
                 stage.setTitle("Choose your god");
                 stage.setScene(new Scene(godSelector, 1200, 600));
@@ -43,7 +53,11 @@ public class App extends Application {
         });
 
         server.dispatcher().setOnRequestPlacePawnsListener(user -> {
-
+            GameView gameView = new GameView(server, boardViewModel);
+            Platform.runLater(() -> {
+                stage.setTitle("Santorini");
+                stage.setScene(new Scene(gameView, 1200, 600));
+            });
         });
     }
 

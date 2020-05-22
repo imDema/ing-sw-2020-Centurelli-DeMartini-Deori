@@ -34,5 +34,4 @@ public class CellViewModel {
     public void setBuilding(Building building) {
         this.building = building;
     }
-
 }

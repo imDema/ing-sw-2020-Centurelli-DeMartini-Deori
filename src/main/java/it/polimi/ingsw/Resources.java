@@ -34,4 +34,25 @@ public abstract class Resources {
             return Optional.empty();
         }
     }
+
+    // To be used as a fallback if loadGodCard failed
+    public static ImageView loadGodCard(Object context) {
+        InputStream stream = context.getClass().getClassLoader().getResourceAsStream("drawable/card_" + "apollo" + ".png"); // TODO replace
+        if (stream != null) {
+            Image img = new Image(stream);
+            return new ImageView(img);
+        } else {
+            return new ImageView();
+        }
+    }
+
+    public static ImageView loadBoardBackground(Object context) {
+        InputStream stream = context.getClass().getClassLoader().getResourceAsStream("drawable/bg_board.png");
+        if (stream != null) {
+            Image img = new Image(stream);
+            return new ImageView(img);
+        } else {
+            return new ImageView();
+        }
+    }
 }

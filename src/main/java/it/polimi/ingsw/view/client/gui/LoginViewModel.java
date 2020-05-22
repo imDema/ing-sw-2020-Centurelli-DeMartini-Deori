@@ -3,30 +3,25 @@ package it.polimi.ingsw.view.client.gui;
 import it.polimi.ingsw.controller.events.OnUserJoinedListener;
 import it.polimi.ingsw.controller.messages.User;
 import it.polimi.ingsw.view.client.ServerHandler;
+import it.polimi.ingsw.view.client.state.BoardViewModel;
+import it.polimi.ingsw.view.client.state.PlayerViewModel;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.BiConsumer;
 
 public class LoginViewModel {
     private final ServerHandler server;
+    private final BoardViewModel boardViewModel;
+
     private BiConsumer<Boolean, String> onLoginAttemptListener = null;
     private BiConsumer<Boolean, String> onSetSizeAttemptListener = null;
     private OnUserJoinedListener onUserJoinedListener = null;
 
     private final StringProperty username = new SimpleStringProperty("");
     private final IntegerProperty size = new SimpleIntegerProperty(3);
-
-    private List<User> users = new ArrayList<>();
-    private User myUser = null;
-
-    public List<User> getUsers() {
-        return users;
-    }
 
     public StringProperty usernameProperty() {
         return username;
@@ -48,10 +43,11 @@ public class LoginViewModel {
         this.onSetSizeAttemptListener = listener;
     }
 
-    public LoginViewModel(ServerHandler server) {
+    public LoginViewModel(ServerHandler server, BoardViewModel boardViewModel) {
         this.server = server;
+        this.boardViewModel = boardViewModel;
         server.dispatcher().setOnUserJoinedListener(u -> {
-            users.add(u);
+            boardViewModel.addPlayer(new PlayerViewModel(u));
             if (onUserJoinedListener != null) {
                 onUserJoinedListener.onUserJoined(u);
             }
@@ -59,11 +55,11 @@ public class LoginViewModel {
     }
 
     public void login() {
-        if (myUser == null) {
+        if (boardViewModel.getMyUser().isEmpty()) {
             final User user = new User(usernameProperty().get());
             server.dispatcher().setOnResultListener(r -> {
                 if (r) {
-                    myUser = user;
+                    boardViewModel.setMyUser(user);
                     onLoginAttemptListener.accept(true, "Successfully logged in");
                 } else {
                     onLoginAttemptListener.accept(false, "");

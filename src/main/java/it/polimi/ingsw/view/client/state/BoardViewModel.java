@@ -4,10 +4,7 @@ import it.polimi.ingsw.controller.messages.User;
 import it.polimi.ingsw.model.board.Building;
 import it.polimi.ingsw.model.board.Coordinate;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class BoardViewModel {
 
@@ -15,12 +12,21 @@ public class BoardViewModel {
     private final CellViewModel[][] cells;
     private final List<PawnViewModel> pawns = new ArrayList<>();
     private final Map<User, PlayerViewModel> userPlayerViewMap = new HashMap<>();
+    private User myUser = null;
 
     public BoardViewModel() {
         cells = new CellViewModel[BOARD_SIZE][BOARD_SIZE];
         for (int i = 0; i < BOARD_SIZE; i++)
             for (int j = 0; j < BOARD_SIZE; j++)
                 cells[i][j] = new CellViewModel();
+    }
+
+    public Optional<User> getMyUser() {
+        return Optional.ofNullable(myUser);
+    }
+
+    public void setMyUser(User user) {
+        myUser = user;
     }
 
     public List<PawnViewModel> getPawns() {
@@ -61,8 +67,12 @@ public class BoardViewModel {
         return cells[c.getX()][c.getY()];
     }
 
-    public PlayerViewModel getPlayer(User user) {
-        return userPlayerViewMap.get(user);
+    public Optional<PlayerViewModel> getPlayer(User user) {
+        return Optional.ofNullable(userPlayerViewMap.get(user));
+    }
+
+    public Collection<PlayerViewModel> getPlayers() {
+        return userPlayerViewMap.values();
     }
 
     public void addPawn(PawnViewModel pawn) {

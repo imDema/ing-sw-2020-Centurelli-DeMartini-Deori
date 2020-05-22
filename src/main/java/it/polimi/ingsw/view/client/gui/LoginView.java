@@ -1,6 +1,7 @@
 package it.polimi.ingsw.view.client.gui;
 
 import it.polimi.ingsw.view.client.ServerHandler;
+import it.polimi.ingsw.view.client.state.BoardViewModel;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
@@ -19,14 +20,14 @@ public class LoginView extends HBox {
     private final Button selectSizeButton = new Button("Select");
     private final ListView<String> usersListView = new ListView<>();
 
-    public LoginView(ServerHandler server) {
-        loginViewModel = new LoginViewModel(server);
+    public LoginView(ServerHandler server, BoardViewModel boardViewModel) {
+        loginViewModel = new LoginViewModel(server, boardViewModel);
 
-        createView();
-        bindViewModelEvents();
+        initView();
+        bindViewModel();
     }
 
-    private void bindViewModelEvents() {
+    private void bindViewModel() {
         usernameTextField.textProperty().bindBidirectional(loginViewModel.usernameProperty());
         loginViewModel.sizeProperty().bind(sizeSpinner.valueProperty());
 
@@ -35,7 +36,7 @@ public class LoginView extends HBox {
         );
     }
 
-    private void createView() {
+    private void initView() {
         usersListView.setMinWidth(100);
 
         loginButton.setOnMouseClicked(this::login);
