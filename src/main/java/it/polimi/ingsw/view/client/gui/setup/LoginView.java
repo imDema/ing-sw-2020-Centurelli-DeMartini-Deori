@@ -1,4 +1,4 @@
-package it.polimi.ingsw.view.client.gui;
+package it.polimi.ingsw.view.client.gui.setup;
 
 import it.polimi.ingsw.view.client.ServerHandler;
 import it.polimi.ingsw.view.client.state.BoardViewModel;
@@ -14,7 +14,7 @@ public class LoginView extends HBox {
     private final LoginViewModel loginViewModel;
 
     // Controls
-    private final Spinner<Integer> sizeSpinner = new Spinner<>(1,3, 3);
+    private final Spinner<Integer> sizeSpinner = new Spinner<>(1,3, 1);
     private final TextField usernameTextField = new TextField();
     private final Button loginButton = new Button("Login");
     private final Button selectSizeButton = new Button("Select");

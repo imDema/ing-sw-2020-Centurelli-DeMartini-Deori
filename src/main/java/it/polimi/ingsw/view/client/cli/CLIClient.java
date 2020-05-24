@@ -258,7 +258,7 @@ public class CLIClient implements OnServerEventListener {
     @Override
     public void onPawnPlaced(User owner, int pawnId, Coordinate coordinate) {
         BoardViewModel board = cliBoardView.getViewModel();
-        PlayerViewModel player = board.getPlayer(user).orElseThrow();
+        PlayerViewModel player = board.getPlayer(owner).orElseThrow();
         PawnViewModel p = new PawnViewModel(player, pawnId);
         player.addPawn(p);
         board.putPawn(p, coordinate);

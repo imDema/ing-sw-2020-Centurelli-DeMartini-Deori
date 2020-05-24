@@ -1,4 +1,4 @@
-package it.polimi.ingsw.view.client.gui;
+package it.polimi.ingsw.view.client.gui.setup;
 
 import it.polimi.ingsw.Resources;
 import it.polimi.ingsw.controller.messages.GodIdentifier;

@@ -1,8 +1,9 @@
-package it.polimi.ingsw.view.client.gui;
+package it.polimi.ingsw.view.client.gui.setup;
 
 import it.polimi.ingsw.controller.messages.GodIdentifier;
 import it.polimi.ingsw.controller.messages.User;
 import it.polimi.ingsw.view.client.ServerHandler;
+import it.polimi.ingsw.view.client.gui.game.PlayerListView;
 import it.polimi.ingsw.view.client.state.BoardViewModel;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleListProperty;

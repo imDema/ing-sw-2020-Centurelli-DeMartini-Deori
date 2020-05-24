@@ -1,9 +1,5 @@
 package it.polimi.ingsw.model.board;
 
-import it.polimi.ingsw.model.Game;
-
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Function;
 
 /**

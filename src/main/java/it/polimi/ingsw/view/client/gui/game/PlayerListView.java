@@ -1,4 +1,4 @@
-package it.polimi.ingsw.view.client.gui;
+package it.polimi.ingsw.view.client.gui.game;
 
 import it.polimi.ingsw.Resources;
 import it.polimi.ingsw.controller.messages.GodIdentifier;
@@ -38,11 +38,11 @@ public class PlayerListView extends VBox {
         gameViewModel.currentUserProperty().addListener((o,oldV,newV) -> highlight(newV));
     }
 
-    public void highlight(User user) {
+    private void highlight(User user) {
         labels.stream()
-                .peek(l -> l.setStyle("-fx-underline false"))
+                .peek(l -> l.setStyle("-fx-underline: false;"))
                 .filter(l -> l.getText().equals(user.getUsername()))
-                .forEach(l -> l.setStyle("-fx-underline true"));
+                .forEach(l -> l.setStyle("-fx-underline: true;"));
     }
 
     private Node playerView(User user, GodIdentifier god) {

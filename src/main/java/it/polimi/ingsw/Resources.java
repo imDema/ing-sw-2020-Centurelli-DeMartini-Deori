@@ -1,5 +1,6 @@
 package it.polimi.ingsw;
 
+import it.polimi.ingsw.model.board.Building;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
@@ -37,22 +38,48 @@ public abstract class Resources {
 
     // To be used as a fallback if loadGodCard failed
     public static ImageView loadGodCard(Object context) {
-        InputStream stream = context.getClass().getClassLoader().getResourceAsStream("drawable/card_" + "apollo" + ".png"); // TODO replace
-        if (stream != null) {
-            Image img = new Image(stream);
-            return new ImageView(img);
-        } else {
-            return new ImageView();
-        }
+        return loadImage(context, "drawable/card_" + "apollo" + ".png");
     }
 
     public static ImageView loadBoardBackground(Object context) {
-        InputStream stream = context.getClass().getClassLoader().getResourceAsStream("drawable/bg_board.png");
+        return loadImage(context, "drawable/bg_board_sea.png");
+    }
+
+    public static ImageView loadBoardForeground(Object context) {
+        return loadImage(context, "drawable/bg_board_transparent.png");
+    }
+
+    public static ImageView loadBuilding(Object context, Building building) {
+        if (building.hasDome()) {
+            return loadImage(context, "drawable/cell_dome.png");
+        } else {
+            return switch (building.getLevel()) {
+                case LEVEL0 -> new ImageView();
+                case LEVEL1 -> loadImage(context, "drawable/cell_l1.png");
+                case LEVEL2 -> loadImage(context, "drawable/cell_l2.png");
+                case LEVEL3 -> loadImage(context, "drawable/cell_l3.png");
+            };
+        }
+    }
+
+    public static Optional<Image> loadPawn(Object context, int id) {
+        InputStream stream = context.getClass().getClassLoader().getResourceAsStream("drawable/pawn_" + id + ".png");
+        if (stream != null) {
+            Image img = new Image(stream);
+            return Optional.of(img);
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    private static ImageView loadImage(Object context, String path) {
+        InputStream stream = context.getClass().getClassLoader().getResourceAsStream(path);
         if (stream != null) {
             Image img = new Image(stream);
             return new ImageView(img);
         } else {
-            return new ImageView();
+            throw new IllegalStateException(); //TODO remove in production
+            // return new ImageView();
         }
     }
 }

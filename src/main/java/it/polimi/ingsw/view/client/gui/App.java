@@ -1,6 +1,10 @@
 package it.polimi.ingsw.view.client.gui;
 
 import it.polimi.ingsw.view.client.ServerHandler;
+import it.polimi.ingsw.view.client.gui.game.GameView;
+import it.polimi.ingsw.view.client.gui.setup.ConnectionDialog;
+import it.polimi.ingsw.view.client.gui.setup.GodSelectorView;
+import it.polimi.ingsw.view.client.gui.setup.LoginView;
 import it.polimi.ingsw.view.client.state.BoardViewModel;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -28,7 +32,7 @@ public class App extends Application {
                 s -> server = s,
                 () -> System.exit(1));
 
-        boardViewModel = new GUIBoardViewModel();
+        boardViewModel = new BoardViewModel();
         LoginView loginView = new LoginView(server, boardViewModel);
         executor.submit(server);
 
