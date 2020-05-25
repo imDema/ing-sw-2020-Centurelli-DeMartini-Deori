@@ -56,12 +56,19 @@ public class App extends Application {
             });
         });
 
-        server.dispatcher().setOnRequestPlacePawnsListener(user -> {
-            GameView gameView = new GameView(server, boardViewModel);
+        server.dispatcher().setOnRequestPlacePawnsListener(firstUser -> {
+            GameView gameView = new GameView(server, boardViewModel, firstUser);
             Platform.runLater(() -> {
                 stage.setTitle("Santorini");
                 stage.setScene(new Scene(gameView, 1200, 600));
             });
+        });
+
+        server.dispatcher().setOnWinListener(user -> {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setContentText(user.getUsername() + " won! Congratulations!");
+            alert.showAndWait();
+            start(stage);
         });
     }
 

@@ -1,6 +1,8 @@
 package it.polimi.ingsw.view.client.gui.game;
 
+import it.polimi.ingsw.controller.messages.ActionIdentifier;
 import it.polimi.ingsw.controller.messages.User;
+import it.polimi.ingsw.model.board.Building;
 import it.polimi.ingsw.model.board.Coordinate;
 import it.polimi.ingsw.view.client.ServerHandler;
 import it.polimi.ingsw.view.client.state.BoardViewModel;
@@ -23,8 +25,16 @@ public class GameViewModel {
     private final IntegerProperty turn = new SimpleIntegerProperty(0);
     private final ObjectProperty<User> currentUser = new SimpleObjectProperty<>();
 
-    //TODO remove this, just for testing
-    private List<Runnable> redrawListeners = new ArrayList<>();
+    private Consumer<Boolean> onPlaceAttemptListener = null;
+    private Runnable requestPlaceListener = null;
+    private Runnable requestWaitListener = null;
+    private Consumer<List<ActionIdentifier>> actionsReadyListener = null;
+
+    private final List<Runnable> redrawListeners = new ArrayList<>();
+
+    public void setOnActionsReadyListener(Consumer<List<ActionIdentifier>> actionsReadyListener) {
+        this.actionsReadyListener = actionsReadyListener;
+    }
 
     public void addRedrawListener(Runnable r) {
         redrawListeners.add(r);
@@ -34,15 +44,16 @@ public class GameViewModel {
         Platform.runLater(() -> redrawListeners.forEach(Runnable::run));
     }
 
-    private Consumer<Boolean> onPlaceAttemptListener = null;
-    private Consumer<User> requestPlaceListener = null;
-
     public void setOnPlaceAttemptListener(Consumer<Boolean> onPlaceAttemptListener) {
         this.onPlaceAttemptListener = onPlaceAttemptListener;
     }
 
-    public void setOnRequestPlaceListener(Consumer<User> requestPlaceListener) {
-        server.dispatcher().setOnRequestPlacePawnsListener(requestPlaceListener::accept);
+    public void setOnRequestPlaceListener(Runnable requestPlaceListener) {
+        this.requestPlaceListener = requestPlaceListener;
+    }
+
+    public void setOnRequestWaitListener(Runnable requestWaitListener) {
+        this.requestWaitListener = requestWaitListener;
     }
 
     public IntegerProperty turnProperty() {
@@ -63,6 +74,46 @@ public class GameViewModel {
 
         server.dispatcher().setOnTurnChangeListener(this::onTurnChange);
         server.dispatcher().setOnPawnPlacedListener(this::onPawnPlaced);
+        server.dispatcher().setOnRequestPlacePawnsListener(this::onRequestPlace);
+        server.dispatcher().setOnMoveListener(this::onMove);
+        server.dispatcher().setOnBuildListener(this::onBuild);
+        server.dispatcher().setOnEliminationListener(this::onElimination);
+        server.dispatcher().setOnActionsReadyListener(this::onActionsReady);
+    }
+
+    private void onActionsReady(User user, List<ActionIdentifier> actionIdentifiers) {
+        if (myUser(user)) {
+            if (actionsReadyListener != null) {
+                actionsReadyListener.accept(actionIdentifiers);
+            }
+        } else {
+            if (requestWaitListener != null) {
+                requestWaitListener.run();
+            }
+        }
+    }
+
+    private void onRequestPlace(User user) {
+        if (requestPlaceListener != null && myUser(user)) {
+            requestPlaceListener.run();
+        }
+    }
+
+    private void onElimination(User user) {
+        boardViewModel.getPlayer(user)
+                .map(PlayerViewModel::getPawns)
+                .ifPresent(l -> l.forEach(boardViewModel::removePawn));
+        requestRedraw();
+    }
+
+    private void onBuild(Building building, Coordinate coordinate) {
+        boardViewModel.build(building, coordinate);
+        requestRedraw();
+    }
+
+    private void onMove(Coordinate c1, Coordinate c2) {
+        boardViewModel.move(c1, c2);
+        requestRedraw();
     }
 
     public void placePawns(Coordinate c1, Coordinate c2) {
@@ -85,5 +136,11 @@ public class GameViewModel {
     private void onTurnChange(User user, int i) {
         turn.set(i + 1);
         currentUser.setValue(user);
+    }
+
+    private boolean myUser(User user) {
+        return boardViewModel.getMyUser()
+                .map(user::equals)
+                .orElse(false);
     }
 }

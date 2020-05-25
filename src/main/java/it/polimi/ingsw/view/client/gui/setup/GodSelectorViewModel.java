@@ -5,10 +5,13 @@ import it.polimi.ingsw.controller.messages.User;
 import it.polimi.ingsw.view.client.ServerHandler;
 import it.polimi.ingsw.view.client.gui.game.PlayerListView;
 import it.polimi.ingsw.view.client.state.BoardViewModel;
+import javafx.application.Platform;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleListProperty;
+import javafx.scene.control.Alert;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 
@@ -45,7 +48,11 @@ public class GodSelectorViewModel {
     }
 
     public void chooseGod(GodIdentifier godId) {
-        User user = boardViewModel.getMyUser().orElseThrow(); // Should never happen
-        server.onChooseGod(user, godId);
+        Optional<User> user = boardViewModel.getMyUser(); // Should never happen
+        if (user.isPresent()) {
+            server.onChooseGod(user.get(), godId);
+        } else {
+            Platform.runLater(() -> new Alert(Alert.AlertType.INFORMATION, "Spectators can't choose gods!"));
+        }
     }
 }

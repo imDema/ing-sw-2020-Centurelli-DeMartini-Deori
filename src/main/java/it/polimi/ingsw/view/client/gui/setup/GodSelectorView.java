@@ -35,7 +35,7 @@ public class GodSelectorView extends FlowPane {
         buttons.clear();
 
         gods.forEach(god -> {
-            Button b = new Button(god.getName());
+            Button b = new Button();
 
             // Load image
             Resources.loadGodCard(this, god.getName())
@@ -44,7 +44,7 @@ public class GodSelectorView extends FlowPane {
                             img.setFitHeight(baseHeight);
                             return img;
                         })
-                        .ifPresent(b::setGraphic);
+                        .ifPresentOrElse(b::setGraphic, () -> b.setText(god.getName()));
 
             b.setOnMouseClicked(e -> {
                 if (e.getButton() == MouseButton.PRIMARY) {
