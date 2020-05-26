@@ -70,8 +70,9 @@ public class CLIBoardView {
         symbols.push(CLI.color("☻", Colors.GREEN));
         symbols.push(CLI.color("☻", Colors.RED));
         symbols.push(CLI.color("☻", Colors.BG_WHITE));
-        symbols.push(CLI.color("☻", Colors.CYAN));
+        symbols.push(CLI.color("☻", Colors.YELLOW));
         symbols.push(CLI.color("☻", Colors.PURPLE));
+        symbols.push(CLI.color("☻", Colors.CYAN));
     }
 
     public String renderCell(CellViewModel cell) {

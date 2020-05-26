@@ -2,24 +2,24 @@ package it.polimi.ingsw.view.client.gui.game.board;
 
 import it.polimi.ingsw.model.board.Coordinate;
 import it.polimi.ingsw.view.client.gui.game.GameView;
-import it.polimi.ingsw.view.client.gui.game.GameViewModel;
+import it.polimi.ingsw.view.client.state.GameViewModel;
 import javafx.scene.input.MouseButton;
 
 public class BoardClickHandlerContext {
     private BoardClickHandlerState state;
     private final GameViewModel gameViewModel;
-    private final GameView parent;
+    private final GameView gameView;
 
     protected GameViewModel getGameViewModel() {
         return gameViewModel;
     }
 
-    protected GameView getParent() {
-        return parent;
+    protected GameView getGameView() {
+        return gameView;
     }
 
-    public BoardClickHandlerContext(GameView parent, GameViewModel gameViewModel) {
-        this.parent = parent;
+    public BoardClickHandlerContext(GameView gameView, GameViewModel gameViewModel) {
+        this.gameView = gameView;
         this.gameViewModel = gameViewModel;
     }
 

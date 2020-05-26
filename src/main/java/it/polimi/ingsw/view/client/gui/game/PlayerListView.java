@@ -3,6 +3,7 @@ package it.polimi.ingsw.view.client.gui.game;
 import it.polimi.ingsw.Resources;
 import it.polimi.ingsw.controller.messages.GodIdentifier;
 import it.polimi.ingsw.controller.messages.User;
+import it.polimi.ingsw.view.client.state.GameViewModel;
 import it.polimi.ingsw.view.client.state.PlayerViewModel;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;

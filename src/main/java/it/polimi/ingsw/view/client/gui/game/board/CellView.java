@@ -15,6 +15,8 @@ public class CellView extends StackPane {
     private final DoubleProperty cellHeightProperty = new SimpleDoubleProperty();
     private final Function<PawnViewModel, ImageView> pawnRenderer;
 
+    private final ImageView highlight;
+
     private final CellViewModel viewModel;
 
     public CellView(CellViewModel viewModel, Function<PawnViewModel, ImageView> pawnRenderer) {
@@ -26,6 +28,13 @@ public class CellView extends StackPane {
 
         minWidthProperty().bind(cellWidthProperty);
         maxWidthProperty().bind(cellWidthProperty);
+
+        highlight = Resources.loadCellHighlight(this);
+
+        highlight.fitHeightProperty().bind(cellHeightProperty);
+        highlight.fitWidthProperty().bind(cellWidthProperty);
+        this.getChildren().add(highlight);
+        highlight.setVisible(false);
     }
 
     public DoubleProperty cellHeightPropertyProperty() {
@@ -55,5 +64,12 @@ public class CellView extends StackPane {
         viewModel.getPawn()
                 .map(this::renderPawn)
                 .ifPresent(this.getChildren()::add);
+
+        this.getChildren().add(highlight);
+        highlight.setVisible(false);
+    }
+
+    public void highlight() {
+        highlight.setVisible(true);
     }
 }

@@ -1,14 +1,10 @@
-package it.polimi.ingsw.view.client.gui.game;
+package it.polimi.ingsw.view.client.state;
 
 import it.polimi.ingsw.controller.messages.ActionIdentifier;
 import it.polimi.ingsw.controller.messages.User;
 import it.polimi.ingsw.model.board.Building;
 import it.polimi.ingsw.model.board.Coordinate;
 import it.polimi.ingsw.view.client.ServerHandler;
-import it.polimi.ingsw.view.client.state.BoardViewModel;
-import it.polimi.ingsw.view.client.state.PawnViewModel;
-import it.polimi.ingsw.view.client.state.PlayerViewModel;
-import javafx.application.Platform;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -26,14 +22,19 @@ public class GameViewModel {
     private final ObjectProperty<User> currentUser = new SimpleObjectProperty<>();
 
     private Consumer<Boolean> onPlaceAttemptListener = null;
-    private Runnable requestPlaceListener = null;
-    private Runnable requestWaitListener = null;
-    private Consumer<List<ActionIdentifier>> actionsReadyListener = null;
+    private Consumer<Boolean> onActionAttemptListener = null;
+    private Runnable onRequestPlaceListener = null;
+    private Runnable onRequestWaitListener = null;
+    private Consumer<List<ActionIdentifier>> onActionsReadyListener = null;
 
     private final List<Runnable> redrawListeners = new ArrayList<>();
 
     public void setOnActionsReadyListener(Consumer<List<ActionIdentifier>> actionsReadyListener) {
-        this.actionsReadyListener = actionsReadyListener;
+        this.onActionsReadyListener = actionsReadyListener;
+    }
+
+    public void setOnActionAttemptListener(Consumer<Boolean> onActionAttemptListener) {
+        this.onActionAttemptListener = onActionAttemptListener;
     }
 
     public void addRedrawListener(Runnable r) {
@@ -41,7 +42,7 @@ public class GameViewModel {
     }
 
     public void requestRedraw() {
-        Platform.runLater(() -> redrawListeners.forEach(Runnable::run));
+        redrawListeners.forEach(Runnable::run);
     }
 
     public void setOnPlaceAttemptListener(Consumer<Boolean> onPlaceAttemptListener) {
@@ -49,11 +50,11 @@ public class GameViewModel {
     }
 
     public void setOnRequestPlaceListener(Runnable requestPlaceListener) {
-        this.requestPlaceListener = requestPlaceListener;
+        this.onRequestPlaceListener = requestPlaceListener;
     }
 
     public void setOnRequestWaitListener(Runnable requestWaitListener) {
-        this.requestWaitListener = requestWaitListener;
+        this.onRequestWaitListener = requestWaitListener;
     }
 
     public IntegerProperty turnProperty() {
@@ -81,21 +82,41 @@ public class GameViewModel {
         server.dispatcher().setOnActionsReadyListener(this::onActionsReady);
     }
 
+    public void placePawns(Coordinate c1, Coordinate c2) {
+        server.dispatcher().setOnResultListener(r -> {
+            if (onPlaceAttemptListener != null) onPlaceAttemptListener.accept(r);
+            server.dispatcher().setOnResultListener(null);
+        });
+        server.onPlacePawns(boardViewModel.getMyUser().orElseThrow(), c1, c2);
+    }
+
+    public void executeAction(ActionIdentifier action, int pawnId, Coordinate target) {
+        server.dispatcher().setOnResultListener(this::onExecuteResult);
+        User myUser = boardViewModel.getMyUser().orElseThrow();
+        server.onExecuteAction(myUser, pawnId, action, target);
+    }
+
+    private void onExecuteResult(boolean result) {
+        if (onActionAttemptListener != null) {
+            onActionAttemptListener.accept(result);
+        }
+    }
+
     private void onActionsReady(User user, List<ActionIdentifier> actionIdentifiers) {
         if (myUser(user)) {
-            if (actionsReadyListener != null) {
-                actionsReadyListener.accept(actionIdentifiers);
+            if (onActionsReadyListener != null) {
+                onActionsReadyListener.accept(actionIdentifiers);
             }
         } else {
-            if (requestWaitListener != null) {
-                requestWaitListener.run();
+            if (onRequestWaitListener != null) {
+                onRequestWaitListener.run();
             }
         }
     }
 
     private void onRequestPlace(User user) {
-        if (requestPlaceListener != null && myUser(user)) {
-            requestPlaceListener.run();
+        if (onRequestPlaceListener != null && myUser(user)) {
+            onRequestPlaceListener.run();
         }
     }
 
@@ -115,15 +136,6 @@ public class GameViewModel {
         boardViewModel.move(c1, c2);
         requestRedraw();
     }
-
-    public void placePawns(Coordinate c1, Coordinate c2) {
-        server.dispatcher().setOnResultListener(r -> {
-            if (onPlaceAttemptListener != null) onPlaceAttemptListener.accept(r);
-            server.dispatcher().setOnResultListener(null);
-        });
-        server.onPlacePawns(boardViewModel.getMyUser().orElseThrow(), c1, c2);
-    }
-
 
     private void onPawnPlaced(User owner, int pawnId, Coordinate coordinate) {
         PlayerViewModel player = boardViewModel.getPlayer(owner).orElseThrow();

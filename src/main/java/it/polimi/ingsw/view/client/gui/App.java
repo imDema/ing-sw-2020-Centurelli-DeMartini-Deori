@@ -40,6 +40,7 @@ public class App extends Application {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle(type);
             alert.setContentText(desc);
+            stage.hide();
             alert.showAndWait();
             start(stage);
         }));
@@ -65,10 +66,14 @@ public class App extends Application {
         });
 
         server.dispatcher().setOnWinListener(user -> {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setContentText(user.getUsername() + " won! Congratulations!");
-            alert.showAndWait();
-            start(stage);
+            server.dispatcher().setOnServerErrorListener(null);
+            Platform.runLater(() -> {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setContentText(user.getUsername() + " won! Congratulations!");
+                stage.hide();
+                alert.showAndWait();
+                start(stage);
+            });
         });
     }
 

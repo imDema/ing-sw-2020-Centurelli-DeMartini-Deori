@@ -71,6 +71,10 @@ public class BoardView extends StackPane {
         cells[c.getX()][c.getY()].updateView();
     }
 
+    public void highlightCell(Coordinate c) {
+        cells[c.getX()][c.getY()].highlight();
+    }
+
     private void initView() {
 
         backgroundImage.setPreserveRatio(true);
@@ -84,7 +88,7 @@ public class BoardView extends StackPane {
         grid.prefWidthProperty().bind(height.multiply(0.6));
         grid.setAlignment(Pos.CENTER);
 
-        grid.setGridLinesVisible(true);
+        // grid.setGridLinesVisible(true); //DEBUG
 
         for (int i = 0; i < SIZE ; i++) {
             for (int j = 0; j < SIZE; j++) {

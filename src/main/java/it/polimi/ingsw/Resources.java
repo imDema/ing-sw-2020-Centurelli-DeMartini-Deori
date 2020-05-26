@@ -72,6 +72,10 @@ public abstract class Resources {
         }
     }
 
+    public static ImageView loadCellHighlight(Object context) {
+        return loadImage(context, "drawable/highlight_0.png");
+    }
+
     private static ImageView loadImage(Object context, String path) {
         InputStream stream = context.getClass().getClassLoader().getResourceAsStream(path);
         if (stream != null) {

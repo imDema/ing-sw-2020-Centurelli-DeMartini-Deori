@@ -20,16 +20,19 @@ public class PlacePawnState implements BoardClickHandlerState {
                 ctx.getGameViewModel().placePawns(coords.get(0), coords.get(1));
                 coords.clear();
             }
-            ctx.getParent().getTestLabel().setText("Selected: " + coords.toString());
+            ctx.getGameView().getTestLabel().setText("Selected: " + coords.toString());
         }
     }
 
     private void onPlaceAttempt(Boolean result, BoardClickHandlerContext ctx) {
         if (result) {
-            ctx.getGameViewModel().requestRedraw();
-            Platform.runLater(() -> ctx.getParent().getTestLabel().setText(""));
+            Platform.runLater(() -> ctx.getGameView().getTestLabel().setText(""));
         } else {
-            Platform.runLater(new Alert(Alert.AlertType.INFORMATION, "Invalid position for workers!")::showAndWait); //TODO remove
+            Platform.runLater(() -> {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION, "Invalid position for workers!");
+                alert.showAndWait();
+            }); //TODO remove
         }
+        ctx.getGameViewModel().requestRedraw();
     }
 }
