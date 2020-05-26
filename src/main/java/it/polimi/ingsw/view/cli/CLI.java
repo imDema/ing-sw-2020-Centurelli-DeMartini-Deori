@@ -6,6 +6,10 @@ public abstract class CLI {
         System.out.flush();
     }
 
+    public static void clientInfo(String message) {
+        System.out.println(color(message, Colors.CYAN));
+    }
+
     public static void log(String message) {
         System.out.println(color("LOG", Colors.BLUE) + ": " + message);
         System.out.flush();
