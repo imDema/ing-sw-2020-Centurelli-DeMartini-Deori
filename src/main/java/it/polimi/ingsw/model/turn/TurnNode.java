@@ -4,22 +4,30 @@ import it.polimi.ingsw.model.player.Player;
 
 class TurnNode {
     private final Player player;
-    private TurnNode nextNode;
+    private TurnNode next;
+    private TurnNode prev;
 
     public TurnNode(Player player) {
         this.player = player;
     }
 
-    public Player getPlayer() {
+    public Player get() {
         return player;
     }
 
-    public TurnNode getNextNode() {
-        return nextNode;
+    public TurnNode getNext() {
+        return next;
+    }
+    public void setNext(TurnNode next) {
+        this.next = next;
     }
 
-    public void setNextNode(TurnNode nextNode) {
-        this.nextNode = nextNode;
+    public TurnNode getPrev() {
+        return prev;
+    }
+
+    public void setPrev(TurnNode prev) {
+        this.prev = prev;
     }
 }
 

@@ -7,6 +7,7 @@ import it.polimi.ingsw.controller.messages.ActionIdentifier;
 import it.polimi.ingsw.controller.messages.GodIdentifier;
 import it.polimi.ingsw.controller.messages.User;
 import it.polimi.ingsw.model.Lobby;
+import it.polimi.ingsw.model.board.Board;
 import it.polimi.ingsw.model.board.Coordinate;
 import it.polimi.ingsw.model.player.God;
 import it.polimi.ingsw.view.events.ClientEventListener;
@@ -21,6 +22,11 @@ public class GameController implements ClientEventListener, OnServerErrorListene
     private final GameCycle gameCycle = new GameCycle(lobby, this);
     private final List<OnServerEventListener> serverEventListeners = new ArrayList<>();
     private OnGameFinishedListener gameFinishedListener = null;
+
+    // Method for testing
+    protected Board getBoard() {
+        return lobby.getGame().getBoard();
+    }
 
     public boolean isGameReady (){
         return lobby.getSize() > 0 && lobby.isGameReady();

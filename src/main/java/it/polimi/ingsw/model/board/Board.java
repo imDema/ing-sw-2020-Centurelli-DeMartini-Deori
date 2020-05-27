@@ -11,6 +11,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * The Board represents the game board, with pawns and buildings.
+ * The board is a square of 5x5 Cells, each one represented by a unique coordinate.
+ */
 public class Board {
     public static final int BOARD_SIZE = 5;
     private OnMoveListener onMoveListener;
@@ -43,6 +47,11 @@ public class Board {
         return cellAt(c).getBuilding();
     }
 
+    /**
+     * @param pawn Is the pawn that will move to the specified coordinate
+     * @param c Is the coordinate where the pawn will move on
+     * @throws InvalidActionException if there is already a pawn in c or c is out of the Board
+     */
     public void movePawn(Pawn pawn, Coordinate c) throws InvalidActionException {
         if (getPawnAt(c).isEmpty()) {
             Coordinate oldC = pawn.getPosition();
@@ -85,6 +94,11 @@ public class Board {
             onBuildListener.onBuild(b, c);
     }
 
+    /**
+     * Add the specified {@link Pawn} on the Board in the {@link Coordinate} c
+     * @throws InvalidActionException if there is another {@link Pawn} in the specified
+     * {@link Coordinate}
+     */
     public void putPawn(Pawn pawn, Coordinate c) throws InvalidActionException {
         if (getPawnAt(c).isEmpty()) {
             cellAt(c).putPawn(pawn);
@@ -93,6 +107,12 @@ public class Board {
             throw new InvalidActionException();
     }
 
+    /**
+     * @param action The action that needs to be checked
+     * @param pawn the pawn that executes the action
+     * @param c the coordinate where the action is executed
+     * @return true if the specified pawn is allowed to execute the action on the specified coordinate
+     */
     public boolean checkAction(Action action, Pawn pawn, Coordinate c) {
         if (!isOnBoard(c))
             return false;
@@ -104,7 +124,12 @@ public class Board {
         return flag && action.checkAllowed(this, pawn, c);
     }
 
-    // returns true if winning action
+    /**
+     * The method calls {@link Action}.execute, the action is supposed to be valid
+     * (a call to {@link Action}.chechAction() needs to be done before)
+     * @param action the action that is executed
+     * @throws InvalidActionException if {@link Action}.execute throws and InvalidActionException
+     */
     public boolean executeAction(Action action, Pawn pawn, Coordinate c) throws InvalidActionException {
         return action.execute(this, pawn, c);
     }
@@ -145,5 +170,19 @@ public class Board {
     public boolean isOnBoard(Coordinate c) {
         return ((c.getX() >= 0) && (c.getX() < BOARD_SIZE)) && ((c.getY() >= 0) && (c.getY() < BOARD_SIZE));
     }
+
+    // Only for testing purposes
+    /*public void printBoard() {
+        for (int i = 0; i < 5; i++) {
+            for (int j = 0; j < 5; j++) {
+                if (cells[i][j].getPawn().isPresent())
+                    System.out.print("  " + cells[i][j].getBuilding().getLevel().toString() + " " + cells[i][j].getPawn().get().getOwner().getUsername() + " " + cells[i][j].getPawn().get().getId() + " ");
+                else
+                    System.out.print("  " + cells[i][j].getBuilding().getLevel().toString() + " " + "free_ _  ");
+            }
+            System.out.println(" ");
+            System.out.println(" ");
+        }
+    }*/
 }
 

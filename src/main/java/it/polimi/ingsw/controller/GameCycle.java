@@ -142,12 +142,7 @@ public class GameCycle implements OnExecuteActionListener, OnCheckActionListener
                         } else {
                             // Check if the player is eliminated and progress
                             if (!canDoAnything(currentPawn, actions)) {
-                                game.elimination(player);
-                                serverEventListeners.forEach(l -> l.onElimination(user));
-                                if (game.getPlayerNumber() == 1) {
-                                    User winner = lobby.getUser(game.getPlayers().get(0)).orElseThrow();
-                                    serverEventListeners.forEach(l -> l.onWin(winner));
-                                }
+                                elimination(user);
                             } else {
                                 onActionsReady(player, actions);
                             }
@@ -178,12 +173,7 @@ public class GameCycle implements OnExecuteActionListener, OnCheckActionListener
             onActionsReady(currentPlayer, actions);
 
             if (!canDoAnything){
-                game.elimination(currentPlayer);
-                serverEventListeners.forEach(l -> l.onElimination(user.get()));
-                if (game.getPlayerNumber() == 1) {
-                    User winner = lobby.getUser(game.getPlayers().get(0)).orElseThrow();
-                    serverEventListeners.forEach(l -> l.onWin(winner));
-                }
+                elimination(user.get());
             }
         } else {
             serverEventListeners.forEach(l -> l.onServerError("Error retrieving user", "No user matches current player"));
@@ -200,5 +190,19 @@ public class GameCycle implements OnExecuteActionListener, OnCheckActionListener
             }
         }
         return false;
+    }
+
+    private void elimination(User user) {
+        Optional<Player> player = lobby.getPlayer(user);
+        player.ifPresent(p -> {
+            game.elimination(p);
+            serverEventListeners.forEach(l -> l.onElimination(user));
+            game.nextTurn();
+            startTurn();
+            if (game.getPlayerNumber() == 1) {
+                User winner = lobby.getUser(game.getPlayers().get(0)).orElseThrow();
+                serverEventListeners.forEach(l -> l.onWin(winner));
+            }
+        });
     }
 }

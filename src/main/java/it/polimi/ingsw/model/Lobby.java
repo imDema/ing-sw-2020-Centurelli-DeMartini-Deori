@@ -124,6 +124,6 @@ public class Lobby {
     }
 
     public boolean isGameReady() {
-        return isGameFull() && readyUsers == size;
+        return /*isGameFull() &&*/ readyUsers == size && size > 0;
     }
 }

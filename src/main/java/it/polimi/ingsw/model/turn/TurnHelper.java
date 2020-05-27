@@ -3,53 +3,51 @@ package it.polimi.ingsw.model.turn;
 import it.polimi.ingsw.model.player.Player;
 
 public class TurnHelper {
-    private TurnNode head;
-    private TurnNode tail;
-    private TurnNode current;
-
-    public TurnHelper() {
-        head = null;
-        tail = null;
-    }
+    private TurnNode current = null;
+    private int size = 0;
 
     public Player current() {
-        return current.getPlayer();
+        return current.get();
     }
 
     public void add(Player player) {
-        TurnNode newNode = new TurnNode(player);
-        if (head == null) {
-            head = newNode;
-            current = head;
+        if (current == null) {
+            current = new TurnNode(player);
+            current.setNext(current);
+            current.setPrev(current);
         } else {
-            tail.setNextNode(newNode);
+            TurnNode last = current.getPrev();
+            TurnNode newNode = new TurnNode(player);
+            last.setNext(newNode);
+            newNode.setPrev(last);
+            newNode.setNext(current);
+            current.setPrev(newNode);
         }
-        tail = newNode;
-        tail.setNextNode(head);
+        size += 1;
     }
 
     public void remove(Player player) {
-        TurnNode currentNode = head;
-        if (head != null) {
-            if (currentNode.getPlayer().equals(player)) {
-               head = head.getNextNode();
-               tail.setNextNode(head);
-            } else {
-                do {
-                    TurnNode nextNode = currentNode.getNextNode();
-                    if (nextNode.getPlayer().equals(player)) {
-                        if(current.getPlayer().equals(player))
-                            current = current.getNextNode();
-                        currentNode.setNextNode(nextNode.getNextNode());
-                        break;
-                    }
-                    currentNode.setNextNode(currentNode);
-                } while (currentNode != head);
-            }
+        if (current.get().equals(player)) {
+            current = current.getPrev();
+            size -= 1;
+        }
+        removeRecursive(current, player, 0);
+    }
+
+    private void removeRecursive(TurnNode node, Player player, int iteration) {
+        if (node.get().equals(player)) {
+            TurnNode prev = node.getPrev();
+            TurnNode next = node.getNext();
+
+            prev.setNext(next);
+            next.setPrev(prev);
+            size -= 1;
+        } else if (iteration <= size) {
+            removeRecursive(node.getNext(), player, iteration + 1);
         }
     }
 
     public void next() {
-        current = current.getNextNode();
+        current = current.getNext();
     }
 }
