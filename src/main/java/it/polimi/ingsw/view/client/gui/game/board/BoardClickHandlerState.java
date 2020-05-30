@@ -5,4 +5,5 @@ import javafx.scene.input.MouseButton;
 
 public interface BoardClickHandlerState {
     void handleClick(BoardClickHandlerContext ctx, MouseButton btn, Coordinate c);
+    void initState(BoardClickHandlerContext ctx);
 }

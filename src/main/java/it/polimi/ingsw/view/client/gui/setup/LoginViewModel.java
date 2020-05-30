@@ -11,6 +11,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 public class LoginViewModel {
     private final ServerHandler server;
@@ -18,6 +19,7 @@ public class LoginViewModel {
 
     private BiConsumer<Boolean, String> onLoginAttemptListener = null;
     private BiConsumer<Boolean, String> onSetSizeAttemptListener = null;
+    private Consumer<Integer> onSizeSetListener = null;
     private OnUserJoinedListener onUserJoinedListener = null;
 
     private final StringProperty username = new SimpleStringProperty("");
@@ -43,6 +45,10 @@ public class LoginViewModel {
         this.onSetSizeAttemptListener = listener;
     }
 
+    public void setOnSizeSetListener(Consumer<Integer> onSizeSetListener) {
+        this.onSizeSetListener = onSizeSetListener;
+    }
+
     public LoginViewModel(ServerHandler server, BoardViewModel boardViewModel) {
         this.server = server;
         this.boardViewModel = boardViewModel;
@@ -50,6 +56,11 @@ public class LoginViewModel {
             boardViewModel.addPlayer(new PlayerViewModel(u));
             if (onUserJoinedListener != null) {
                 onUserJoinedListener.onUserJoined(u);
+            }
+        });
+        server.dispatcher().setOnSizeSelectedListener(size -> {
+            if (onSizeSetListener != null) {
+                onSizeSetListener.accept(size);
             }
         });
     }

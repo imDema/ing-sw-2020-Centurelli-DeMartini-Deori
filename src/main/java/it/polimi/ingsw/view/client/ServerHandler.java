@@ -6,16 +6,17 @@ import it.polimi.ingsw.controller.messages.User;
 import it.polimi.ingsw.model.board.Coordinate;
 import it.polimi.ingsw.serialization.Serializer;
 import it.polimi.ingsw.view.cli.CLI;
-import it.polimi.ingsw.view.events.ClientEventListener;
+import it.polimi.ingsw.view.events.OnClientEventListener;
 import it.polimi.ingsw.view.messages.*;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
-public class ServerHandler implements Runnable, ClientEventListener {
+public class ServerHandler implements Runnable, OnClientEventListener {
     private final Scanner socketIn;
     private final PrintWriter socketOut;
     private final Socket socket;
@@ -99,6 +100,20 @@ public class ServerHandler implements Runnable, ClientEventListener {
     @Override
     public boolean onExecuteAction(User user, int pawnId, ActionIdentifier actionIdentifier, Coordinate coordinate) {
         Message message = new ExecuteActionMessage(user, pawnId, actionIdentifier, coordinate);
+        sendMessage(message);
+        return true;
+    }
+
+    @Override
+    public boolean onSelectGods(User user, List<GodIdentifier> selectedGods) {
+        Message message = new SelectGodsMessage(user, selectedGods);
+        sendMessage(message);
+        return true;
+    }
+
+    @Override
+    public boolean onChooseFirstPlayer(User self, User firstPlayer) {
+        Message message = new ChooseFirstPlayerMessage(self, firstPlayer);
         sendMessage(message);
         return true;
     }

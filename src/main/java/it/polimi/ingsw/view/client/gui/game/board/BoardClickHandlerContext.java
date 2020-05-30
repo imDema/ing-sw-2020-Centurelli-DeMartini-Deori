@@ -25,6 +25,7 @@ public class BoardClickHandlerContext {
 
     public void setState(BoardClickHandlerState state) {
         this.state = state;
+        state.initState(this);
     }
 
     public void handleClick(MouseButton btn, Coordinate c) {

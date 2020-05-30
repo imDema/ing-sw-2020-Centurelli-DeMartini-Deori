@@ -6,6 +6,7 @@ public enum MessageId {
     BUILD,
     CHECK_ACTION,
     CHOOSE_GOD,
+    CHOOSE_FIRST_PLAYER,
     ELIMINATION,
     EXECUTE_ACTION,
     GOD_CHOSEN,
@@ -15,8 +16,10 @@ public enum MessageId {
     PLACE_PAWNS,
     REQUEST_PLACE_PAWNS,
     RESULT,
+    SELECT_GODS,
     SELECT_PLAYER_NUMBER,
     SERVER_ERROR,
+    SIZE_SELECTED,
     TURN_CHANGE,
     USER_JOINED,
     WIN

@@ -69,7 +69,7 @@ public class CellView extends StackPane {
         highlight.setVisible(false);
     }
 
-    public void highlight() {
-        highlight.setVisible(true);
+    public void highlight(boolean on) {
+        highlight.setVisible(on);
     }
 }

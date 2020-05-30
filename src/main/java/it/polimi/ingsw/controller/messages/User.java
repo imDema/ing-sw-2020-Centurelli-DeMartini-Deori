@@ -28,7 +28,7 @@ public class User {
 
     @Override
     public String toString() {
-        return "User {username: \"" + username + "\"}";
+        return "User: \"" + username + "\"";
     }
 
     public boolean matches(Player player) {

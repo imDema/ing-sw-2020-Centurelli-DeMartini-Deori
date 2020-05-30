@@ -4,14 +4,11 @@ import it.polimi.ingsw.controller.events.OnServerEventListener;
 import it.polimi.ingsw.controller.messages.ActionIdentifier;
 import it.polimi.ingsw.controller.messages.GodIdentifier;
 import it.polimi.ingsw.controller.messages.User;
-import it.polimi.ingsw.model.action.*;
 import it.polimi.ingsw.model.board.Board;
 import it.polimi.ingsw.model.board.Building;
 import it.polimi.ingsw.model.board.Coordinate;
 import it.polimi.ingsw.model.board.InvalidActionException;
 import it.polimi.ingsw.model.player.God;
-import it.polimi.ingsw.model.player.Pawn;
-import it.polimi.ingsw.model.player.Player;
 import it.polimi.ingsw.view.messages.MessageDispatcher;
 import org.junit.jupiter.api.Test;
 
@@ -20,8 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class GameControllerTest {
     List<GodIdentifier> availableGods = null;
@@ -46,6 +42,11 @@ public class GameControllerTest {
         MessageDispatcher dispatcher = new MessageDispatcher();
         gameController.addServerEventsListener(new OnServerEventListener() {
 
+
+            @Override
+            public void onSizeSelected(int size) {
+                dispatcher.onSizeSelected(size);
+            }
 
             @Override
             public void onGodsAvailable(List<GodIdentifier> gods) {
@@ -103,6 +104,8 @@ public class GameControllerTest {
         });
 
         dispatcher.setOnGodsAvailableListener(gods -> availableGods = gods);
+
+        initCoordinateList();
         dispatcher.setOnRequestPlacePawnsListener(user -> {
             Coordinate c1 = coordinateList.remove(0);
             Coordinate c2 = coordinateList.remove(0);
@@ -127,16 +130,30 @@ public class GameControllerTest {
         assertTrue(gameController.onAddUser(u3));
         assertFalse(gameController.onAddUser(u4));
 
-        GodIdentifier pan = availableGods.stream().filter(g -> g.getName().equals("Pan")).findFirst().get();
+
+        List<GodIdentifier> selectedGods = new ArrayList<>();
+        selectedGods.add(availableGods.stream().filter(g -> g.getName().equals("Pan")).findFirst().orElseThrow());
+        selectedGods.add(availableGods.stream().filter(g -> g.getName().equals("Athena")).findFirst().orElseThrow());
+
+        assertFalse(gameController.onSelectGods(u1, selectedGods));
+        selectedGods.add(availableGods.stream().filter(g -> g.getName().equals("Apollo")).findFirst().orElseThrow());
+
+        assertTrue(gameController.onSelectGods(u3, selectedGods));
+        assertEquals(3, availableGods.size());
+
+        GodIdentifier pan = availableGods.stream().filter(g -> g.getName().equals("Pan")).findFirst().orElseThrow();
+        assertFalse(gameController.onChooseGod(u3, pan));
         assertTrue(gameController.onChooseGod(u1, pan));
         assertFalse(gameController.onChooseGod(u1, pan));
 
-        GodIdentifier athena = availableGods.stream().filter(g -> g.getName().equals("Athena")).findFirst().get();
+        GodIdentifier athena = availableGods.stream().filter(g -> g.getName().equals("Athena")).findFirst().orElseThrow();
+        assertFalse(gameController.onChooseGod(u3, athena));
         assertTrue(gameController.onChooseGod(u2, athena));
         assertFalse(gameController.onChooseGod(u3, athena));
 
-        initCoordinateList();
-        gameController.onChooseGod(u3, availableGods.get(0));
+        assertFalse(gameController.onChooseFirstPlayer(u2, u3));
+        assertFalse(gameController.onChooseFirstPlayer(u3, u3));
+        assertTrue(gameController.onChooseFirstPlayer(u3, u1));
 
         // Default coordinates set for u1,u2,u3
         // 1) (2-1) (1-3)

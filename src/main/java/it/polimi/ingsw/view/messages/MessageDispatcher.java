@@ -13,6 +13,7 @@ import it.polimi.ingsw.view.events.*;
 import java.util.List;
 
 public class MessageDispatcher {
+    // Server messages
     private OnGodsAvailableListener godsAvailableListener = null;
     private OnGodChosenListener godChosenListener = null;
     private OnActionsReadyListener actionsReadyListener = null;
@@ -26,12 +27,15 @@ public class MessageDispatcher {
     private OnMoveListener moveListener = null;
     private OnBuildListener buildListener = null;
     private OnPawnPlacedListener pawnPlacedListener = null;
-
+    private OnSizeSelectedListener sizeSelectedListener = null;
+    // Client messages
     private OnAddUserListener addUserListener = null;
     private OnCheckActionListener checkActionListener = null;
     private OnChooseGodListener chooseGodListener = null;
+    private OnChooseFirstPlayerListener chooseFirstPlayerListener = null;
     private OnExecuteActionListener executeActionListener = null;
     private OnPlacePawnsListener placePawnsListener = null;
+    private OnSelectGodsListener selectGodsListener = null;
     private OnSelectPlayerNumberListener selectPlayerNumberListener = null;
 
     public void setOnGodsAvailableListener(OnGodsAvailableListener godsAvailableListener) {
@@ -86,6 +90,10 @@ public class MessageDispatcher {
         this.pawnPlacedListener = pawnPlacedListener;
     }
 
+    public void setOnSizeSelectedListener(OnSizeSelectedListener sizeSelectedListener) {
+        this.sizeSelectedListener = sizeSelectedListener;
+    }
+
     public void setOnAddUserListener(OnAddUserListener addUserListener) {
         this.addUserListener = addUserListener;
     }
@@ -104,6 +112,14 @@ public class MessageDispatcher {
 
     public void setOnPlacePawnsListener(OnPlacePawnsListener placePawnsListener) {
         this.placePawnsListener = placePawnsListener;
+    }
+
+    public void setOnSelectGodsListener(OnSelectGodsListener selectGodsListener) {
+        this.selectGodsListener = selectGodsListener;
+    }
+
+    public void setOnChooseFirstPlayerListener(OnChooseFirstPlayerListener chooseFirstPlayerListener) {
+        this.chooseFirstPlayerListener = chooseFirstPlayerListener;
     }
 
     public void setOnSelectPlayerNumberListener(OnSelectPlayerNumberListener selectPlayerNumberListener) {
@@ -126,12 +142,14 @@ public class MessageDispatcher {
         // resultListener = serverEventListener;
     }
 
-    public void setOnClientEventListener(ClientEventListener clientEventListener) {
+    public void setOnClientEventListener(OnClientEventListener clientEventListener) {
         addUserListener = clientEventListener;
         checkActionListener = clientEventListener;
         chooseGodListener = clientEventListener;
+        chooseFirstPlayerListener = clientEventListener;
         executeActionListener = clientEventListener;
         placePawnsListener = clientEventListener;
+        selectGodsListener = clientEventListener;
         selectPlayerNumberListener = clientEventListener;
     }
 
@@ -162,6 +180,14 @@ public class MessageDispatcher {
     public boolean onGodsAvailable(List<GodIdentifier> gods) {
         if (godsAvailableListener != null) {
             godsAvailableListener.onGodsAvailable(gods);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean onSizeSelected(int size) {
+        if (sizeSelectedListener != null) {
+            sizeSelectedListener.onSizeSelected(size);
             return true;
         }
         return false;
@@ -270,6 +296,20 @@ public class MessageDispatcher {
     public boolean onPlacePawns(User user, Coordinate c1, Coordinate c2) {
         if (placePawnsListener != null) {
             return placePawnsListener.onPlacePawns(user, c1, c2);
+        }
+        return false;
+    }
+
+    public boolean onSelectGods(User user, List<GodIdentifier> selectedGods) {
+        if (selectGodsListener != null) {
+            return selectGodsListener.onSelectGods(user, selectedGods);
+        }
+        return false;
+    }
+
+    public boolean onChooseFirstPlayer(User self, User firstPlayer) {
+        if (chooseFirstPlayerListener != null) {
+            return chooseFirstPlayerListener.onChooseFirstPlayer(self, firstPlayer);
         }
         return false;
     }

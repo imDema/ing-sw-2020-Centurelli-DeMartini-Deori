@@ -7,6 +7,7 @@ import it.polimi.ingsw.model.board.Coordinate;
 import it.polimi.ingsw.model.board.InvalidActionException;
 import it.polimi.ingsw.model.player.God;
 import it.polimi.ingsw.model.player.Player;
+import it.polimi.ingsw.model.turn.CircularList;
 import it.polimi.ingsw.serialization.Serializer;
 
 import java.util.*;
@@ -19,34 +20,60 @@ public class Lobby {
     private int size = 0;
     private final List<User> users = new ArrayList<>();
     private final Map<User, Player> userPlayerMap = new HashMap<>();
-    private List<God> availableGods = null;
+    private final Map<Player, User> playerUserMap = new HashMap<>();
     private int readyUsers = 0;
+    private boolean choseFirstPlayer = false;
+    private User challenger = null;
+    private List<God> allGods = null;
+    private List<God> availableGods = null;
 
     public Game getGame() {
         return game;
     }
 
-    public Optional<User> getUserToSetUp() {
-        if (readyUsers < size) {
-            User user = users.get(readyUsers);
-            return Optional.of(user);
-        } else {
-            return Optional.empty();
+    public boolean setChallenger(User challenger) {
+        if(users.contains(challenger)) {
+            this.challenger = challenger;
+            return true;
         }
+        return false;
     }
 
-    public int getUserNumber() {
-        return users.size();
+    public boolean setFirstUser(User user) {
+        CircularList<Player> playerTurnList = game.getPlayerTurnList();
+        for(int i = 0; i < size; i++) {
+            if (user.matches(playerTurnList.current())) {
+                choseFirstPlayer = true;
+                return true;
+            } else {
+                playerTurnList.next();
+            }
+        }
+        return false;
+    }
+
+    public boolean choseFirstPlayer() {
+        return choseFirstPlayer;
+    }
+
+    public Optional<User> getChallenger() {
+        return Optional.ofNullable(challenger);
+    }
+
+    public List<User> getUsers() {
+        return users;
     }
 
     public Optional<User> getUser(Player player) {
-        return users.stream()
-                .filter(u -> u.matches(player))
-                .findFirst();
+        return Optional.ofNullable(playerUserMap.get(player));
     }
 
     public Optional<Player> getPlayer(User user) {
         return Optional.ofNullable(userPlayerMap.get(user));
+    }
+
+    public int getPlayerNumber() {
+        return game.getPlayerNumber();
     }
 
     public boolean addUser(User user) {
@@ -56,6 +83,19 @@ public class Lobby {
             return true;
         }
         return false;
+    }
+
+    public Optional<User> getUserToSetUp() {
+        if (readyUsers < size) {
+            Player p = game.getPlayerTurnList().current();
+            User user = playerUserMap.get(p);
+            if (p == null) {
+                throw new IllegalStateException();
+            }
+            return Optional.of(user);
+        } else {
+            return Optional.empty();
+        }
     }
 
     public boolean setUpUserPawns (User user, Coordinate c1, Coordinate c2) {
@@ -76,20 +116,19 @@ public class Lobby {
             board.removePawn(player.getPawn(0));
             return false;
         }
+        game.getPlayerTurnList().next();
         readyUsers += 1;
 
         return true;
     }
 
     public boolean chooseGod(User user, God god) {
-        boolean duplicate = game.getPlayers().stream()
-                .anyMatch(user::matches);
-
-        if (users.contains(user) && !duplicate && availableGods.contains(god)) {
+        if (users.contains(user) && availableGods.contains(god)) {
             Player player = new Player(user, god);
             game.addPlayer(player);
             availableGods.remove(god);
             userPlayerMap.put(user, player);
+            playerUserMap.put(player, user);
             return true;
         }
         return false;
@@ -106,17 +145,24 @@ public class Lobby {
         }
     }
 
+    public void setAvailableGods(List<God> availableGods) {
+        this.availableGods = availableGods;
+    }
+
     public List<God> getAvailableGods() {
         return availableGods;
     }
 
-    public void loadGods() {
-        String config = Resources.loadGodConfig(this);
-        availableGods = Serializer.deserializeGodList(config);
+    public List<God> getAllGods() {
+        if (allGods == null) {
+            String config = Resources.loadGodConfig(this);
+            allGods = Serializer.deserializeGodList(config);
+        }
+        return allGods;
     }
 
     public boolean isLobbyFull() {
-        return getUserNumber() == size;
+        return users.size() == size;
     }
 
     public boolean isGameFull() {
@@ -124,6 +170,6 @@ public class Lobby {
     }
 
     public boolean isGameReady() {
-        return /*isGameFull() &&*/ readyUsers == size && size > 0;
+        return size > 0 && readyUsers == size;
     }
 }

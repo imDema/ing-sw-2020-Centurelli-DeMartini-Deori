@@ -2,20 +2,20 @@ package it.polimi.ingsw.model;
 
 import it.polimi.ingsw.model.board.Board;
 import it.polimi.ingsw.model.player.Player;
-import it.polimi.ingsw.model.turn.TurnHelper;
+import it.polimi.ingsw.model.turn.CircularList;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class Game {
-    private List<Player> players = new ArrayList<>();
-    private Board board = new Board();
+    private final List<Player> players = new ArrayList<>();
+    private final Board board = new Board();
+    private final CircularList<Player> playerTurnList = new CircularList<>();
     private int turn = 0;
-    private TurnHelper turnHelper = new TurnHelper();
 
     public void addPlayer(Player player) {
         players.add(player);
-        addPlayerToTurnManager(player);
+        playerTurnList.add(player);
     }
 
     public Board getBoard() {
@@ -27,7 +27,7 @@ public class Game {
     }
 
     public List<Player> getPlayers (){
-        return List.copyOf(players); // Returns copy to prevent external mutations
+        return List.copyOf(players);
     }
 
     public int getTurn() {
@@ -44,20 +44,20 @@ public class Game {
     }
 
     public void nextTurn() {
-        turn++;
-        turnHelper.next();
+        turn += 1;
+        playerTurnList.next();
         board.tickCheckEffect();
     }
 
-    public Player getCurrentPlayer() {
-        return turnHelper.current();
+    protected CircularList<Player> getPlayerTurnList() {
+        return playerTurnList;
     }
 
-    public void addPlayerToTurnManager(Player player) {
-        turnHelper.add(player);
+    public Player getCurrentPlayer() {
+        return playerTurnList.current();
     }
 
     public void removeFromTurnManager(Player player) {
-        turnHelper.remove(player);
+        playerTurnList.remove(player);
     }
 }

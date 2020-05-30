@@ -7,6 +7,7 @@ import it.polimi.ingsw.view.client.gui.game.board.*;
 import it.polimi.ingsw.view.client.state.BoardViewModel;
 import it.polimi.ingsw.view.client.state.GameViewModel;
 import javafx.application.Platform;
+import javafx.geometry.Pos;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
@@ -29,8 +30,8 @@ public class GameView extends BorderPane {
         return buttonBar;
     }
 
-    public void highlight(Coordinate c) {
-        boardView.highlightCell(c);
+    public void highlight(Coordinate c, boolean on) {
+        boardView.highlightCell(c, on);
     }
 
     public GameView(ServerHandler server, BoardViewModel boardViewModel, User firstUser) {
@@ -64,6 +65,8 @@ public class GameView extends BorderPane {
     private void initView() {
         boardView.boardHeightProperty().bind(heightProperty().multiply(0.8));
 
+        setAlignment(testLabel, Pos.CENTER);
+        setAlignment(buttonBar, Pos.CENTER);
         this.setLeft(playerListView);
         this.setTop(testLabel);
         this.setCenter(boardView);

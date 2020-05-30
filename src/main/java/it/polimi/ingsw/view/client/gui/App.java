@@ -52,7 +52,7 @@ public class App extends Application {
         server.dispatcher().setOnGodsAvailableListener(gods -> {
             GodSelectorView godSelector = new GodSelectorView(server, boardViewModel, gods);
             Platform.runLater(() -> {
-                stage.setTitle("Choose your god");
+                stage.setTitle("Choose the gods if you are worthy to be the challenger!");
                 stage.setScene(new Scene(godSelector, 1200, 600));
             });
         });

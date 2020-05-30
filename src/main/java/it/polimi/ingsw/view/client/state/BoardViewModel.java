@@ -7,12 +7,13 @@ import it.polimi.ingsw.model.board.Coordinate;
 import java.util.*;
 
 public class BoardViewModel {
-
     private final int BOARD_SIZE = 5;
     private final CellViewModel[][] cells;
     private final List<PawnViewModel> pawns = new ArrayList<>();
     private final Map<User, PlayerViewModel> userPlayerViewMap = new HashMap<>();
     private User myUser = null;
+    private boolean isChallenger = false;
+    private int size = 0;
 
     public BoardViewModel() {
         cells = new CellViewModel[BOARD_SIZE][BOARD_SIZE];
@@ -21,12 +22,28 @@ public class BoardViewModel {
                 cells[i][j] = new CellViewModel();
     }
 
+    public int getSize() {
+        return size;
+    }
+
+    public void setSize(int size) {
+        this.size = size;
+    }
+
     public Optional<User> getMyUser() {
         return Optional.ofNullable(myUser);
     }
 
     public void setMyUser(User user) {
         myUser = user;
+    }
+
+    public boolean isChallenger() {
+        return isChallenger;
+    }
+
+    public void setIsChallenger(boolean isChallenger) {
+        this.isChallenger = isChallenger;
     }
 
     public List<PawnViewModel> getPawns() {

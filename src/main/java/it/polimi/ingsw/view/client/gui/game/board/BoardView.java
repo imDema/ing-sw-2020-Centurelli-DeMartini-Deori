@@ -71,8 +71,8 @@ public class BoardView extends StackPane {
         cells[c.getX()][c.getY()].updateView();
     }
 
-    public void highlightCell(Coordinate c) {
-        cells[c.getX()][c.getY()].highlight();
+    public void highlightCell(Coordinate c, boolean on) {
+        cells[c.getX()][c.getY()].highlight(on);
     }
 
     private void initView() {

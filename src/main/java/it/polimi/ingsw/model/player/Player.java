@@ -4,10 +4,9 @@ import it.polimi.ingsw.controller.messages.User;
 import it.polimi.ingsw.model.action.Action;
 
 public class Player {
-
-    private String username;
-    private Pawn[] pawns = new Pawn[2];
-    private God god;
+    private final String username;
+    private final Pawn[] pawns = new Pawn[2];
+    private final God god;
 
     public Action[] nextStep(Action action) {
         if (action.equals(Action.start))
@@ -28,6 +27,11 @@ public class Player {
 
     public God getGod() {
         return god;
+    }
+
+    @Override
+    public int hashCode() {
+        return username.hashCode();
     }
 
     @Override

@@ -5,6 +5,7 @@ import it.polimi.ingsw.model.board.Coordinate;
 import it.polimi.ingsw.model.player.God;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -16,8 +17,6 @@ public class LobbyTest {
         Lobby lobby = new Lobby();
         lobby.setSize(3);
         List<God> godList;
-
-        lobby.loadGods();
 
         String username1 = "Name1";
         String username2 = "Name2";
@@ -44,7 +43,16 @@ public class LobbyTest {
         assertFalse(lobby.addUser(user3));
         assertFalse(lobby.addUser(user4));
 
-        assertEquals(3,lobby.getUserNumber());
+        assertEquals(3,lobby.getUsers().size());
+
+        List<God> allGods = lobby.getAllGods();
+
+        List<God> selected = new ArrayList<>();
+        selected.add(allGods.get(0));
+        selected.add(allGods.get(2));
+        selected.add(allGods.get(4));
+
+        lobby.setAvailableGods(selected);
 
         godList = lobby.getAvailableGods();
         lobby.chooseGod(user1, godList.get(0));
@@ -53,7 +61,7 @@ public class LobbyTest {
         lobby.chooseGod(user2, godList.get(1));
 
         godList = lobby.getAvailableGods();
-        lobby.chooseGod(user3, godList.get(2));
+        lobby.chooseGod(user3, godList.get(0));
 
         assertTrue(lobby.isGameFull());
 

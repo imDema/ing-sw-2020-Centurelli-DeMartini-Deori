@@ -24,14 +24,21 @@ public class PlacePawnState implements BoardClickHandlerState {
         }
     }
 
+    @Override
+    public void initState(BoardClickHandlerContext ctx) {
+        Platform.runLater(()-> ctx.getGameView().getTestLabel().setText("It's your turn! Place your pawns!"));
+    }
+
     private void onPlaceAttempt(Boolean result, BoardClickHandlerContext ctx) {
         if (result) {
-            Platform.runLater(() -> ctx.getGameView().getTestLabel().setText(""));
+            if (ctx.getGameViewModel().getBoardViewModel().getSize() > 1) { //TODO this may not be needed in final version
+                ctx.setState(new WaitingState());
+            }
         } else {
             Platform.runLater(() -> {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION, "Invalid position for workers!");
                 alert.showAndWait();
-            }); //TODO remove
+            });
         }
         ctx.getGameViewModel().requestRedraw();
     }

@@ -10,14 +10,14 @@ import it.polimi.ingsw.model.Lobby;
 import it.polimi.ingsw.model.board.Board;
 import it.polimi.ingsw.model.board.Coordinate;
 import it.polimi.ingsw.model.player.God;
-import it.polimi.ingsw.view.events.ClientEventListener;
+import it.polimi.ingsw.view.events.OnClientEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class GameController implements ClientEventListener, OnServerErrorListener {
+public class GameController implements OnClientEventListener, OnServerErrorListener {
     private final Lobby lobby = new Lobby();
     private final GameCycle gameCycle = new GameCycle(lobby, this);
     private final List<OnServerEventListener> serverEventListeners = new ArrayList<>();
@@ -38,6 +38,12 @@ public class GameController implements ClientEventListener, OnServerErrorListene
     public void addServerEventsListener(OnServerEventListener onServerEventListener) {
         serverEventListeners.add(onServerEventListener);
         gameCycle.addServerEventListener(onServerEventListener);
+
+        // Notify of lobby state
+        if (lobby.getSize() != 0) {
+            onServerEventListener.onSizeSelected(lobby.getSize());
+        }
+        lobby.getUsers().forEach(onServerEventListener::onUserJoined);
     }
 
     public void removeServerEventsListener(OnServerEventListener onServerEventListener) {
@@ -55,8 +61,6 @@ public class GameController implements ClientEventListener, OnServerErrorListene
     }
 
     private void onGodsAvailable(List<God> gods) {
-        if (lobby.isGameFull()) return;
-
         List<GodIdentifier> godsIds = gods.stream()
                 .map(GodIdentifier::new).collect(Collectors.toList());
         serverEventListeners.forEach(l -> l.onGodsAvailable(godsIds));
@@ -64,14 +68,20 @@ public class GameController implements ClientEventListener, OnServerErrorListene
 
     @Override
     public boolean onAddUser(User user) {
-        if (lobby.getSize() == 0)
-            return false;
-
         synchronized (lobby) {
+            if (lobby.getSize() == 0)
+                return false;
+
             if (lobby.addUser(user)) {
                 serverEventListeners.forEach(l -> l.onUserJoined(user));
-                if (lobby.isLobbyFull())
-                    onGodsAvailable(lobby.getAvailableGods());
+                if (lobby.isLobbyFull()) {
+                    List<God> gods = lobby.getAllGods();
+                    if (gods == null || gods.size() < lobby.getSize()) {
+                        onServerError("Error retrieving gods", "An error occurred while loading God data from the configuration files");
+                        return false;
+                    }
+                    onGodsAvailable(gods);
+                }
                 return true;
             } else {
                 return false;
@@ -81,11 +91,14 @@ public class GameController implements ClientEventListener, OnServerErrorListene
 
     @Override
     public boolean onChooseGod(User user, GodIdentifier god) {
-        if (lobby.getSize() == 0)
-            return false;
-
         synchronized (lobby) {
-            if (lobby.isGameFull()) return false;
+            if (lobby.getSize() == 0)
+                return false;
+
+            Optional<User> challenger = lobby.getChallenger();
+            if (challenger.isEmpty() || lobby.isGameFull() || (user.equals(challenger.get()) && lobby.getSize() > 1) ||
+                lobby.getPlayer(user).isPresent())
+                return false;
 
             Optional<God> g = lobby.getAvailableGods().stream()
                     .filter(god::matches)
@@ -93,11 +106,15 @@ public class GameController implements ClientEventListener, OnServerErrorListene
             if (g.isPresent() && lobby.chooseGod(user, g.get())) {
                 serverEventListeners.forEach(l -> l.onGodChosen(user, god));
 
-                if (lobby.isGameFull()) {
-                    serverEventListeners.forEach(l -> l.onRequestPlacePawns(lobby.getUserToSetUp().orElseThrow()));
-                } else {
-                    onGodsAvailable(lobby.getAvailableGods());
+                if (lobby.getPlayerNumber() == lobby.getSize() - 1) {
+                    God lastGod = lobby.getAvailableGods().get(0);
+                    if (!lobby.chooseGod(challenger.get(), lastGod)) {
+                        onServerError("Error assigning last god to challenger", "Could not assign the last god to the challenger");
+                        return false;
+                    }
+                    serverEventListeners.forEach(l -> l.onGodChosen(challenger.get(), new GodIdentifier(lastGod)));
                 }
+                onGodsAvailable(lobby.getAvailableGods());
                 return true;
             }
             return false;
@@ -106,12 +123,11 @@ public class GameController implements ClientEventListener, OnServerErrorListene
 
     @Override
     public boolean onPlacePawns(User user, Coordinate c1, Coordinate c2) {
-        if (lobby.getSize() == 0)
-            return false;
-
         synchronized (lobby) {
-            Optional<User> u = lobby.getUserToSetUp();
-            if (!lobby.isGameFull() || !(u.isPresent() && u.get().equals(user)))
+            if (lobby.getSize() == 0)
+                return false;
+
+            if (!lobby.isGameFull() || !lobby.choseFirstPlayer() || !(lobby.getUserToSetUp().map(user::equals).orElse(false)))
                 return false;
 
             if (lobby.setUpUserPawns(user, c1, c2)) {
@@ -149,16 +165,57 @@ public class GameController implements ClientEventListener, OnServerErrorListene
 
     @Override
     public boolean onSelectPlayerNumber(int size) {
-        if (lobby.getSize() == 0 && size >= 1 && size <=3) {
-            lobby.setSize(size);
-
-            lobby.loadGods();
-            if (lobby.getAvailableGods() == null || lobby.getAvailableGods().size() < lobby.getSize()) {
-                serverEventListeners.forEach(l -> l.onServerError("Error retrieving gods", "An error occurred while loading God data from the configuration files"));
+        synchronized (lobby) {
+            if (lobby.getSize() == 0 && size >= 1 && size <= 3) {
+                lobby.setSize(size);
+                serverEventListeners.forEach(l -> l.onSizeSelected(size));
+                return true;
+            } else {
+                return false;
             }
-            return true;
-        } else {
+        }
+    }
+
+    private List<God> getCorrespondingGods(List<GodIdentifier> selectedGods) {
+        List<God> gods = new ArrayList<>();
+        for (GodIdentifier id : selectedGods) {
+            lobby.getAllGods().stream()
+                    .filter(g -> id.getName().equals(g.getName()))
+                    .findAny()
+                    .ifPresent(gods::add);
+        }
+        return gods;
+    }
+
+    @Override
+    public boolean onSelectGods(User user, List<GodIdentifier> selectedGods) {
+        synchronized (lobby) {
+            if (isLobbyFull() && lobby.getChallenger().isEmpty()) {
+                List<God> gods = getCorrespondingGods(selectedGods);
+                if (gods.size() == selectedGods.size() && gods.size() == lobby.getSize() && lobby.setChallenger(user)) {
+                    lobby.setAvailableGods(gods);
+                    serverEventListeners.forEach(l -> l.onGodsAvailable(selectedGods));
+                    return true;
+                }
+            }
             return false;
+        }
+    }
+
+    @Override
+    public boolean onChooseFirstPlayer(User self, User firstPlayer) {
+        synchronized (lobby) {
+            if (!lobby.isGameFull() || lobby.choseFirstPlayer() ||
+                    !lobby.getChallenger().map(self::equals).orElse(false) ||
+                    (self.equals(firstPlayer) && lobby.getSize() > 1)) {
+                return false;
+            }
+            if (lobby.setFirstUser(firstPlayer)) {
+                serverEventListeners.forEach(l -> l.onRequestPlacePawns(lobby.getUserToSetUp().orElseThrow()));
+                return true;
+            } else {
+                return false;
+            }
         }
     }
 
@@ -171,4 +228,5 @@ public class GameController implements ClientEventListener, OnServerErrorListene
             gameFinishedListener = null; // Prevent re triggering game finish
         }
     }
+
 }

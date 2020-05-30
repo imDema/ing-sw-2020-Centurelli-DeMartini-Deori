@@ -161,6 +161,12 @@ public class ClientHandler implements Runnable, OnServerEventListener {
         sendMessage(message);
     }
 
+    @Override
+    public void onSizeSelected(int size) {
+        Message message = new SizeSelectedMessage(size);
+        sendMessage(message);
+    }
+
     private void logMessageProcessed(Message msg, boolean result) {
         CLI.log(CLI.mark(result) + " " + (user != null ? user.getUsername() : "") + "/" + msg.getSerializationId());
     }

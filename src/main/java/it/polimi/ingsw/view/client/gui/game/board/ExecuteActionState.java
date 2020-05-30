@@ -36,13 +36,14 @@ public class ExecuteActionState implements BoardClickHandlerState {
                         selectedPawn = p;
                         Platform.runLater(() -> {
                             setLabel(ctx, "Selected pawn " + p.getId());
-                            ctx.getGameView().highlight(c);
+                            ctx.getGameView().highlight(c, true);
                         });
                     }
                 });
             }
         } else {
             if (btn == MouseButton.PRIMARY) {
+                Coordinate oldTarget = target;
                 target = c;
                 ctx.getGameView().getButtonBar().getButtons().clear();
                 for (ActionIdentifier a : actions) {
@@ -50,15 +51,24 @@ public class ExecuteActionState implements BoardClickHandlerState {
                     button.setOnMouseClicked(click -> onButtonClick(ctx, click, a));
                     ctx.getGameView().getButtonBar().getButtons().add(button);
                 }
-            } else if (btn == MouseButton.SECONDARY) {
                 Platform.runLater(() -> {
-                    ctx.getGameViewModel().requestRedraw();
-                    setLabel(ctx, "");
+                    ctx.getGameView().highlight(selectedPawn.getPosition(), true);
+                    ctx.getGameView().highlight(target, true);
+                    if (oldTarget != null && !oldTarget.equals(target)) {
+                        ctx.getGameView().highlight(oldTarget, false);
+                    }
                 });
+            } else if (btn == MouseButton.SECONDARY) {
                 target = null;
                 selectedPawn = null;
+                resetView(ctx);
             }
         }
+    }
+
+    @Override
+    public void initState(BoardClickHandlerContext ctx) {
+        resetView(ctx);
     }
 
     private void onButtonClick(BoardClickHandlerContext ctx, MouseEvent mouseEvent, ActionIdentifier action) {
@@ -72,15 +82,25 @@ public class ExecuteActionState implements BoardClickHandlerState {
         if (result) {
             Platform.runLater(() -> {
                 ctx.getGameView().getButtonBar().getButtons().clear();
-                ctx.getGameView().highlight(selectedPawn.getPosition());
+                ctx.getGameView().highlight(selectedPawn.getPosition(), false);
             });
         } else {
+            selectedPawn = null;
+            target = null;
             Platform.runLater(() -> {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setContentText("Invalid action!");
                 alert.showAndWait();
             });
+            resetView(ctx);
         }
+    }
+
+    private void resetView(BoardClickHandlerContext ctx) {
+        Platform.runLater(() -> {
+            ctx.getGameViewModel().requestRedraw();
+            setLabel(ctx, "It's your turn! Click on a Worker, then on a cell and choose your move!");
+        });
     }
 
     private void setLabel(BoardClickHandlerContext ctx, String text) {

@@ -17,6 +17,7 @@ class MessageSerializer implements JsonSerializer<Message>, JsonDeserializer<Mes
             new SimpleImmutableEntry<>(MessageId.BUILD, BuildMessage.class),
             new SimpleImmutableEntry<>(MessageId.CHECK_ACTION, CheckActionMessage.class),
             new SimpleImmutableEntry<>(MessageId.CHOOSE_GOD, ChooseGodMessage.class),
+            new SimpleImmutableEntry<>(MessageId.CHOOSE_FIRST_PLAYER, ChooseFirstPlayerMessage.class),
             new SimpleImmutableEntry<>(MessageId.ELIMINATION, EliminationMessage.class),
             new SimpleImmutableEntry<>(MessageId.EXECUTE_ACTION, ExecuteActionMessage.class),
             new SimpleImmutableEntry<>(MessageId.GOD_CHOSEN, GodChosenMessage.class),
@@ -26,8 +27,10 @@ class MessageSerializer implements JsonSerializer<Message>, JsonDeserializer<Mes
             new SimpleImmutableEntry<>(MessageId.PLACE_PAWNS, PlacePawnsMessage.class),
             new SimpleImmutableEntry<>(MessageId.REQUEST_PLACE_PAWNS, RequestPlacePawnsMessage.class),
             new SimpleImmutableEntry<>(MessageId.RESULT, ResultMessage.class),
+            new SimpleImmutableEntry<>(MessageId.SELECT_GODS, SelectGodsMessage.class),
             new SimpleImmutableEntry<>(MessageId.SELECT_PLAYER_NUMBER, SelectPlayerNumberMessage.class),
             new SimpleImmutableEntry<>(MessageId.SERVER_ERROR, ServerErrorMessage.class),
+            new SimpleImmutableEntry<>(MessageId.SIZE_SELECTED, SizeSelectedMessage.class),
             new SimpleImmutableEntry<>(MessageId.TURN_CHANGE, TurnChangeMessage.class),
             new SimpleImmutableEntry<>(MessageId.USER_JOINED, UserJoinedMessage.class),
             new SimpleImmutableEntry<>(MessageId.WIN, WinMessage.class)

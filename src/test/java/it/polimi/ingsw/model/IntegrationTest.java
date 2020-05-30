@@ -22,7 +22,6 @@ public class IntegrationTest {
         // Init lobby
         Lobby lobby = new Lobby();
         lobby.setSize(3);
-        lobby.loadGods();
 
         // Init players
         User u1 = new User("user_1");
@@ -33,15 +32,20 @@ public class IntegrationTest {
         lobby.addUser(u2);
         lobby.addUser(u3);
 
-        List<God> gods = lobby.getAvailableGods();
+        List<God> gods = lobby.getAllGods();
         assertTrue(gods.size() > 0);
-        lobby.chooseGod(u1, gods.get(0));
+
+        lobby.setAvailableGods(gods.subList(1, 4));
+
+        gods = lobby.getAvailableGods();
+        assertTrue(gods.size() > 0);
+        lobby.chooseGod(u1, gods.get(1));
 
         gods = lobby.getAvailableGods();
         lobby.chooseGod(u2, gods.get(1));
 
         gods = lobby.getAvailableGods();
-        lobby.chooseGod(u3, gods.get(2));
+        lobby.chooseGod(u3, gods.get(0));
 
 
         // Place pawns at starting positions
