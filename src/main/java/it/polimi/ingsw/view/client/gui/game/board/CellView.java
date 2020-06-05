@@ -1,8 +1,8 @@
 package it.polimi.ingsw.view.client.gui.game.board;
 
 import it.polimi.ingsw.Resources;
-import it.polimi.ingsw.view.client.state.CellViewModel;
-import it.polimi.ingsw.view.client.state.PawnViewModel;
+import it.polimi.ingsw.view.client.controls.CellViewState;
+import it.polimi.ingsw.view.client.controls.PawnViewState;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.image.ImageView;
@@ -13,14 +13,14 @@ import java.util.function.Function;
 public class CellView extends StackPane {
     private final DoubleProperty cellWidthProperty = new SimpleDoubleProperty();
     private final DoubleProperty cellHeightProperty = new SimpleDoubleProperty();
-    private final Function<PawnViewModel, ImageView> pawnRenderer;
+    private final Function<PawnViewState, ImageView> pawnRenderer;
 
     private final ImageView highlight;
 
-    private final CellViewModel viewModel;
+    private final CellViewState viewState;
 
-    public CellView(CellViewModel viewModel, Function<PawnViewModel, ImageView> pawnRenderer) {
-        this.viewModel = viewModel;
+    public CellView(CellViewState viewState, Function<PawnViewState, ImageView> pawnRenderer) {
+        this.viewState = viewState;
         this.pawnRenderer = pawnRenderer;
 
         minHeightProperty().bind(cellHeightProperty);
@@ -45,7 +45,7 @@ public class CellView extends StackPane {
         return cellWidthProperty;
     }
 
-    private ImageView renderPawn(PawnViewModel pawn) {
+    private ImageView renderPawn(PawnViewState pawn) {
         ImageView pawnView = pawnRenderer.apply(pawn);
         pawnView.fitHeightProperty().bind(cellHeightProperty);
         pawnView.fitWidthProperty().bind(cellWidthProperty);
@@ -54,14 +54,14 @@ public class CellView extends StackPane {
 
     public void updateView() {
         this.getChildren().clear();
-        ImageView building = Resources.loadBuilding(this, viewModel.getBuilding());
+        ImageView building = Resources.loadBuilding(this, viewState.getBuilding());
 
         building.fitHeightProperty().bind(cellHeightProperty);
         building.fitWidthProperty().bind(cellWidthProperty);
 
         this.getChildren().add(building);
 
-        viewModel.getPawn()
+        viewState.getPawn()
                 .map(this::renderPawn)
                 .ifPresent(this.getChildren()::add);
 

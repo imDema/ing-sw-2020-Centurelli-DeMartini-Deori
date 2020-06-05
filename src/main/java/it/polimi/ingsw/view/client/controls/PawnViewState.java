@@ -1,14 +1,15 @@
-package it.polimi.ingsw.view.client.state;
+package it.polimi.ingsw.view.client.controls;
 
 import it.polimi.ingsw.model.board.Coordinate;
 
-public class PawnViewModel {
-    private final PlayerViewModel owner;
+public class PawnViewState {
+    private final PlayerViewState owner;
     private final int id;
     private Coordinate position;
 
-    public PlayerViewModel getOwner() {
-        return owner;
+    public PawnViewState(PlayerViewState owner, int id) {
+        this.owner = owner;
+        this.id = id;
     }
 
     public int getId() {
@@ -23,8 +24,7 @@ public class PawnViewModel {
         this.position = position;
     }
 
-    public PawnViewModel(PlayerViewModel owner, int id) {
-        this.owner = owner;
-        this.id = id;
+    public PlayerViewState getOwner() {
+        return owner;
     }
 }

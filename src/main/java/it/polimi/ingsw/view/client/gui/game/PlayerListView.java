@@ -3,8 +3,8 @@ package it.polimi.ingsw.view.client.gui.game;
 import it.polimi.ingsw.Resources;
 import it.polimi.ingsw.controller.messages.GodIdentifier;
 import it.polimi.ingsw.controller.messages.User;
-import it.polimi.ingsw.view.client.state.GameViewModel;
-import it.polimi.ingsw.view.client.state.PlayerViewModel;
+import it.polimi.ingsw.view.client.controls.GameControl;
+import it.polimi.ingsw.view.client.controls.PlayerViewState;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -19,24 +19,28 @@ import java.util.List;
 public class PlayerListView extends VBox {
     private final double cardBaseHeight = 200.0;
 
-    private final GameViewModel gameViewModel;
+    private final GameControl gameControl;
     private final List<Label> labels = new ArrayList<>();
 
 
-    public PlayerListView(GameViewModel gameViewModel) {
-        this.gameViewModel = gameViewModel;
+    public PlayerListView(GameControl gameControl) {
+        this.gameControl = gameControl;
         initView();
-        bindViewModel();
+        bindGameControl();
     }
 
     private void initView() {
-        for (PlayerViewModel p : gameViewModel.getBoardViewModel().getPlayers()) {
+        for (PlayerViewState p : gameControl.getBoardViewState().getPlayers()) {
             this.getChildren().add(playerView(p.getUser(), p.getGod()));
         }
     }
 
-    private void bindViewModel() {
-        gameViewModel.currentUserProperty().addListener((o,oldV,newV) -> highlight(newV));
+    private void bindGameControl() {
+        gameControl.setOnTurnChangeListener(this::onTurnChange);
+    }
+
+    private void onTurnChange(Integer integer, User user) {
+        highlight(user);
     }
 
     private void highlight(User user) {

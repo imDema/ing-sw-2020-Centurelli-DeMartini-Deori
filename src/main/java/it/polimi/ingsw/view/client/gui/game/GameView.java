@@ -3,9 +3,9 @@ package it.polimi.ingsw.view.client.gui.game;
 import it.polimi.ingsw.controller.messages.User;
 import it.polimi.ingsw.model.board.Coordinate;
 import it.polimi.ingsw.view.client.ServerHandler;
+import it.polimi.ingsw.view.client.controls.BoardViewState;
+import it.polimi.ingsw.view.client.controls.GameControl;
 import it.polimi.ingsw.view.client.gui.game.board.*;
-import it.polimi.ingsw.view.client.state.BoardViewModel;
-import it.polimi.ingsw.view.client.state.GameViewModel;
 import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.control.ButtonBar;
@@ -13,7 +13,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 
 public class GameView extends BorderPane {
-    private final GameViewModel gameViewModel;
+    private final GameControl gameControl;
 
     private final BoardClickHandlerContext boardClickHandler;
 
@@ -34,13 +34,13 @@ public class GameView extends BorderPane {
         boardView.highlightCell(c, on);
     }
 
-    public GameView(ServerHandler server, BoardViewModel boardViewModel, User firstUser) {
-        this.gameViewModel = new GameViewModel(server, boardViewModel);
-        this.boardView = new BoardView(boardViewModel);
-        this.playerListView = new PlayerListView(gameViewModel);
-        this.boardClickHandler = new BoardClickHandlerContext(this, gameViewModel);
+    public GameView(ServerHandler server, BoardViewState boardViewState, User firstUser) {
+        this.gameControl = new GameControl(server, boardViewState);
+        this.boardView = new BoardView(boardViewState);
+        this.playerListView = new PlayerListView(gameControl);
+        this.boardClickHandler = new BoardClickHandlerContext(this, gameControl);
 
-        if (gameViewModel.getBoardViewModel().getMyUser().map(firstUser::equals).orElse(false)) {
+        if (gameControl.getBoardViewState().getMyUser().map(firstUser::equals).orElse(false)) {
             boardClickHandler.setState(new PlacePawnState());
         } else {
             boardClickHandler.setState(new WaitingState());
@@ -48,17 +48,17 @@ public class GameView extends BorderPane {
 
 
         initView();
-        bindViewModel();
+        bindViewState();
     }
 
-    private void bindViewModel() {
+    private void bindViewState() {
         boardView.setOnCellClick(boardClickHandler::handleClick);
-        gameViewModel.addRedrawListener(() -> Platform.runLater(boardView::updateView));
-        gameViewModel.setOnRequestPlaceListener(() ->
+        gameControl.addRedrawListener(() -> Platform.runLater(boardView::updateView));
+        gameControl.setOnRequestPlaceListener(() ->
                 boardClickHandler.setState(new PlacePawnState()));
-        gameViewModel.setOnRequestWaitListener(() ->
+        gameControl.setOnRequestWaitListener(() ->
                 boardClickHandler.setState(new WaitingState()));
-        gameViewModel.setOnActionsReadyListener(actions ->
+        gameControl.setOnActionsReadyListener(actions ->
                 boardClickHandler.setState(new ExecuteActionState(actions)));
     }
 

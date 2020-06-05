@@ -1,37 +1,21 @@
-package it.polimi.ingsw.view.client.gui.setup;
+package it.polimi.ingsw.view.client.controls;
 
 import it.polimi.ingsw.controller.events.OnUserJoinedListener;
 import it.polimi.ingsw.controller.messages.User;
 import it.polimi.ingsw.view.client.ServerHandler;
-import it.polimi.ingsw.view.client.state.BoardViewModel;
-import it.polimi.ingsw.view.client.state.PlayerViewModel;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-public class LoginViewModel {
+public class LoginControl {
     private final ServerHandler server;
-    private final BoardViewModel boardViewModel;
+    private final BoardViewState boardViewState;
 
     private BiConsumer<Boolean, String> onLoginAttemptListener = null;
     private BiConsumer<Boolean, String> onSetSizeAttemptListener = null;
     private Consumer<Integer> onSizeSetListener = null;
     private OnUserJoinedListener onUserJoinedListener = null;
 
-    private final StringProperty username = new SimpleStringProperty("");
-    private final IntegerProperty size = new SimpleIntegerProperty(3);
-
-    public StringProperty usernameProperty() {
-        return username;
-    }
-
-    public IntegerProperty sizeProperty() {
-        return size;
-    }
 
     public void setOnUserJoinedListener(OnUserJoinedListener onUserJoinedListener) {
         this.onUserJoinedListener = onUserJoinedListener;
@@ -49,11 +33,11 @@ public class LoginViewModel {
         this.onSizeSetListener = onSizeSetListener;
     }
 
-    public LoginViewModel(ServerHandler server, BoardViewModel boardViewModel) {
+    public LoginControl(ServerHandler server, BoardViewState boardViewState) {
         this.server = server;
-        this.boardViewModel = boardViewModel;
+        this.boardViewState = boardViewState;
         server.dispatcher().setOnUserJoinedListener(u -> {
-            boardViewModel.addPlayer(new PlayerViewModel(u));
+            boardViewState.addPlayer(new PlayerViewState(u));
             if (onUserJoinedListener != null) {
                 onUserJoinedListener.onUserJoined(u);
             }
@@ -65,12 +49,12 @@ public class LoginViewModel {
         });
     }
 
-    public void login() {
-        if (boardViewModel.getMyUser().isEmpty()) {
-            final User user = new User(usernameProperty().get());
+    public void login(String username) {
+        if (boardViewState.getMyUser().isEmpty()) {
+            final User user = new User(username);
             server.dispatcher().setOnResultListener(r -> {
                 if (r) {
-                    boardViewModel.setMyUser(user);
+                    boardViewState.setMyUser(user);
                     onLoginAttemptListener.accept(true, "Successfully logged in");
                 } else {
                     onLoginAttemptListener.accept(false, "");
@@ -82,8 +66,7 @@ public class LoginViewModel {
         }
     }
 
-    public void setSize() {
-        final int size = sizeProperty().get();
+    public void setSize(int size) {
         server.dispatcher().setOnResultListener(r -> {
             if (r) {
                 onSetSizeAttemptListener.accept(true, "Successfully set player number");

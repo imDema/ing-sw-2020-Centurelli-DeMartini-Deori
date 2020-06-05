@@ -1,4 +1,4 @@
-package it.polimi.ingsw.view.client.cli.phaseManager;
+package it.polimi.ingsw.view.client.cli.state;
 
 public class WaitingState implements InputHandlerState {
     @Override

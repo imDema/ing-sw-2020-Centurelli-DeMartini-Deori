@@ -16,8 +16,8 @@ public class PlacePawnState implements BoardClickHandlerState {
         if (btn == MouseButton.PRIMARY) {
             coords.add(c);
             if (coords.size() == 2) {
-                ctx.getGameViewModel().setOnPlaceAttemptListener(r -> onPlaceAttempt(r,ctx));
-                ctx.getGameViewModel().placePawns(coords.get(0), coords.get(1));
+                ctx.getGameControl().setOnPlaceAttemptListener(r -> onPlaceAttempt(r,ctx));
+                ctx.getGameControl().placePawns(coords.get(0), coords.get(1));
                 coords.clear();
             }
             ctx.getGameView().getTestLabel().setText("Selected: " + coords.toString());
@@ -31,7 +31,7 @@ public class PlacePawnState implements BoardClickHandlerState {
 
     private void onPlaceAttempt(Boolean result, BoardClickHandlerContext ctx) {
         if (result) {
-            if (ctx.getGameViewModel().getBoardViewModel().getSize() > 1) { //TODO this may not be needed in final version
+            if (ctx.getGameControl().getBoardViewState().getSize() > 1) { //TODO this may not be needed in final version
                 ctx.setState(new WaitingState());
             }
         } else {
@@ -40,6 +40,6 @@ public class PlacePawnState implements BoardClickHandlerState {
                 alert.showAndWait();
             });
         }
-        ctx.getGameViewModel().requestRedraw();
+        ctx.getGameControl().requestRedraw();
     }
 }

@@ -2,9 +2,9 @@ package it.polimi.ingsw.view.client.gui.game.board;
 
 import it.polimi.ingsw.Resources;
 import it.polimi.ingsw.model.board.Coordinate;
-import it.polimi.ingsw.view.client.state.BoardViewModel;
-import it.polimi.ingsw.view.client.state.PawnViewModel;
-import it.polimi.ingsw.view.client.state.PlayerViewModel;
+import it.polimi.ingsw.view.client.controls.BoardViewState;
+import it.polimi.ingsw.view.client.controls.PawnViewState;
+import it.polimi.ingsw.view.client.controls.PlayerViewState;
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -22,14 +22,14 @@ import java.util.function.BiConsumer;
 public class BoardView extends StackPane {
     private final int SIZE = 5;
 
-    private final BoardViewModel boardViewModel;
+    private final BoardViewState boardViewState;
     private final ImageView backgroundImage = Resources.loadBoardBackground(this);
     private final ImageView foregroundImage = Resources.loadBoardForeground(this);
 
     private final GridPane grid = new GridPane();
     private final CellView[][] cells = new CellView[SIZE][SIZE];
 
-    private final Map<PlayerViewModel, Image> pawnImageMap = new HashMap<>();
+    private final Map<PlayerViewState, Image> pawnImageMap = new HashMap<>();
 
     private final DoubleProperty height = new SimpleDoubleProperty(600);
 
@@ -43,14 +43,14 @@ public class BoardView extends StackPane {
         this.cellClickListener = onCellClickListener;
     }
 
-    public BoardView(BoardViewModel boardViewModel) {
-        this.boardViewModel = boardViewModel;
+    public BoardView(BoardViewState boardViewState) {
+        this.boardViewState = boardViewState;
         initView();
-        bindViewModel();
+        bindViewState();
     }
 
-    private ImageView renderPawn(PawnViewModel pawn) {
-        PlayerViewModel player = pawn.getOwner();
+    private ImageView renderPawn(PawnViewState pawn) {
+        PlayerViewState player = pawn.getOwner();
         Image img = pawnImageMap.get(player);
         if (img == null) {
             img = Resources.loadPawn(this,  pawnImageMap.size()).orElseThrow();
@@ -92,13 +92,13 @@ public class BoardView extends StackPane {
 
         for (int i = 0; i < SIZE ; i++) {
             for (int j = 0; j < SIZE; j++) {
-                CellView cell = new CellView(boardViewModel.cellAt(new Coordinate(i,j)), this::renderPawn);
+                CellView cell = new CellView(boardViewState.cellAt(new Coordinate(i,j)), this::renderPawn);
                 cell.cellHeightPropertyProperty().bind(grid.prefHeightProperty().divide(5.0));
                 cell.cellWidthPropertyProperty().bind(grid.prefWidthProperty().divide(5.0));
 
                 final int ii = i, jj = j;
                 cell.setOnMouseClicked(click -> onBoardClick(click.getButton(), ii, jj));
-                grid.add(cell, i, j);
+                grid.add(cell, i, 4 - j);
                 cells[i][j] = cell;
             }
         }
@@ -120,7 +120,7 @@ public class BoardView extends StackPane {
         }
     }
 
-    private void bindViewModel() {
+    private void bindViewState() {
 
     }
 }

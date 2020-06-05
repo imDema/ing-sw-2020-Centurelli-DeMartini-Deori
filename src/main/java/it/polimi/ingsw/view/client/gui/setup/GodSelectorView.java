@@ -4,7 +4,8 @@ import it.polimi.ingsw.Resources;
 import it.polimi.ingsw.controller.messages.GodIdentifier;
 import it.polimi.ingsw.controller.messages.User;
 import it.polimi.ingsw.view.client.ServerHandler;
-import it.polimi.ingsw.view.client.state.BoardViewModel;
+import it.polimi.ingsw.view.client.controls.BoardViewState;
+import it.polimi.ingsw.view.client.controls.GodSelectorControl;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -20,21 +21,21 @@ public class GodSelectorView extends FlowPane {
     private final double baseHeight = 270.0;
     private final List<GodIdentifier> selectedGods = new ArrayList<>();
 
-    private final GodSelectorViewModel godSelectorViewModel;
+    private final GodSelectorControl godSelectorControl;
 
     List<Button> buttons = new ArrayList<>();
 
-    public GodSelectorView(ServerHandler server, BoardViewModel boardViewModel, List<GodIdentifier> gods) {
-        godSelectorViewModel = new GodSelectorViewModel(server, boardViewModel);
+    public GodSelectorView(ServerHandler server, BoardViewState boardViewState, List<GodIdentifier> gods) {
+        godSelectorControl = new GodSelectorControl(server, boardViewState);
         generateSelectButtons(gods);
         bindEvents();
         this.setPrefSize(600,300);
     }
 
     private void bindEvents() {
-        godSelectorViewModel.setOnGodsAvailable(g -> Platform.runLater(() -> generateChooseButtons(g)));
-        godSelectorViewModel.setOnChooseFirstPlayer(this::chooseFirstPlayer);
-        godSelectorViewModel.setOnWaitForChallenger(this::waitForChallenger);
+        godSelectorControl.setOnGodsAvailable(g -> Platform.runLater(() -> generateChooseButtons(g)));
+        godSelectorControl.setOnChooseFirstPlayer(this::chooseFirstPlayer);
+        godSelectorControl.setOnWaitForChallenger(this::waitForChallenger);
     }
 
     private void waitForChallenger() {
@@ -54,7 +55,7 @@ public class GodSelectorView extends FlowPane {
                     ChooseFirstDialog dialog = new ChooseFirstDialog(users);
                     first = dialog.showAndWait();
                 }
-            } while (!godSelectorViewModel.chooseFirstPlayer(first.get()));
+            } while (!godSelectorControl.chooseFirstPlayer(first.get()));
         });
     }
 
@@ -65,8 +66,8 @@ public class GodSelectorView extends FlowPane {
                 if (e.getButton() == MouseButton.PRIMARY) {
                     selectedGods.add(god);
                     b.setDisable(true);
-                    if (selectedGods.size() == godSelectorViewModel.getLobbySize()) {
-                        boolean res = godSelectorViewModel.selectGods(selectedGods);
+                    if (selectedGods.size() == godSelectorControl.getLobbySize()) {
+                        boolean res = godSelectorControl.selectGods(selectedGods);
                         if (!res) Platform.runLater(() -> {
                             Alert alert = new Alert(Alert.AlertType.INFORMATION, "Cannot select gods");
                             alert.showAndWait();
@@ -89,7 +90,7 @@ public class GodSelectorView extends FlowPane {
             Button b = godButton(god);
             b.setOnMouseClicked(e -> {
                 if (e.getButton() == MouseButton.PRIMARY) {
-                    boolean res = godSelectorViewModel.chooseGod(god);
+                    boolean res = godSelectorControl.chooseGod(god);
                     if (!res) Platform.runLater(() -> {
                         Alert alert = new Alert(Alert.AlertType.INFORMATION, "Spectators can't choose gods!");
                         alert.showAndWait();

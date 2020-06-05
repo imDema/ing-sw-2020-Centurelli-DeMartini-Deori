@@ -4,10 +4,10 @@ import it.polimi.ingsw.controller.messages.User;
 import it.polimi.ingsw.model.board.Coordinate;
 import it.polimi.ingsw.view.cli.CLI;
 import it.polimi.ingsw.view.cli.Colors;
-import it.polimi.ingsw.view.client.state.BoardViewModel;
-import it.polimi.ingsw.view.client.state.CellViewModel;
-import it.polimi.ingsw.view.client.state.PawnViewModel;
-import it.polimi.ingsw.view.client.state.PlayerViewModel;
+import it.polimi.ingsw.view.client.controls.BoardViewState;
+import it.polimi.ingsw.view.client.controls.CellViewState;
+import it.polimi.ingsw.view.client.controls.PawnViewState;
+import it.polimi.ingsw.view.client.controls.PlayerViewState;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,19 +20,19 @@ public class CLIBoardView {
     private final String divisorRow;
     private final String lastRow;
     private final String letterRow;
-    private final BoardViewModel boardViewModel = new BoardViewModel();
-    private final Map<PlayerViewModel, String> playerSymbolMap = new HashMap<>();
+    private final BoardViewState boardViewState = new BoardViewState();
+    private final Map<PlayerViewState, String> playerSymbolMap = new HashMap<>();
     private final Stack<String> symbols= new Stack<>();
     // ╔ ╗ ║ ╚  ╝ ═ ╦ ╩ ╬ ╣ ╠
 
-    public BoardViewModel getViewModel() {
-        return boardViewModel;
+    public BoardViewState getBoardViewState() {
+        return boardViewState;
     }
 
     public void newPlayer(User user) {
-        PlayerViewModel player = new PlayerViewModel(user);
+        PlayerViewState player = new PlayerViewState(user);
         playerSymbolMap.put(player, symbols.pop());
-        boardViewModel.addPlayer(player);
+        boardViewState.addPlayer(player);
     }
 
     public CLIBoardView() {
@@ -75,7 +75,7 @@ public class CLIBoardView {
         symbols.push(CLI.color("☻", Colors.CYAN));
     }
 
-    public String renderCell(CellViewModel cell) {
+    public String renderCell(CellViewState cell) {
         if(cell.getBuilding().hasDome()) {
             return "▓▓" + CLI.color("███", Colors.BLUE) + "▓▓,▓" +
                     CLI.color("█████", Colors.BLUE) + "▓,▓▓" +
@@ -110,7 +110,7 @@ public class CLIBoardView {
                 bot;
     }
 
-    public String renderPawn(PawnViewModel pawn) {
+    public String renderPawn(PawnViewState pawn) {
             return playerSymbolMap.get(pawn.getOwner()) + pawn.getId();
     }
 
@@ -122,8 +122,8 @@ public class CLIBoardView {
             StringBuilder line2 = new StringBuilder().append((char)(i + 1 + '0')).append("║"); // format i to number starting from 1
             StringBuilder line3 = new StringBuilder(" ║");
             for(int j = 0; j < BOARD_SIZE; j++) {
-                Coordinate c = new Coordinate(i,j);
-                String s = renderCell(boardViewModel.cellAt(c));
+                Coordinate c = new Coordinate(j,i);
+                String s = renderCell(boardViewState.cellAt(c));
                 String[] array = s.split(",");
                 line1.append(array[0]).append("║");
                 line2.append(array[1]).append("║");

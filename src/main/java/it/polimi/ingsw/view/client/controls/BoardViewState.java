@@ -1,4 +1,4 @@
-package it.polimi.ingsw.view.client.state;
+package it.polimi.ingsw.view.client.controls;
 
 import it.polimi.ingsw.controller.messages.User;
 import it.polimi.ingsw.model.board.Building;
@@ -6,20 +6,20 @@ import it.polimi.ingsw.model.board.Coordinate;
 
 import java.util.*;
 
-public class BoardViewModel {
+public class BoardViewState {
     private final int BOARD_SIZE = 5;
-    private final CellViewModel[][] cells;
-    private final List<PawnViewModel> pawns = new ArrayList<>();
-    private final Map<User, PlayerViewModel> userPlayerViewMap = new HashMap<>();
+    private final CellViewState[][] cells;
+    private final List<PawnViewState> pawns = new ArrayList<>();
+    private final Map<User, PlayerViewState> userPlayerViewMap = new HashMap<>();
     private User myUser = null;
     private boolean isChallenger = false;
     private int size = 0;
 
-    public BoardViewModel() {
-        cells = new CellViewModel[BOARD_SIZE][BOARD_SIZE];
+    public BoardViewState() {
+        cells = new CellViewState[BOARD_SIZE][BOARD_SIZE];
         for (int i = 0; i < BOARD_SIZE; i++)
             for (int j = 0; j < BOARD_SIZE; j++)
-                cells[i][j] = new CellViewModel();
+                cells[i][j] = new CellViewState();
     }
 
     public int getSize() {
@@ -46,13 +46,13 @@ public class BoardViewModel {
         this.isChallenger = isChallenger;
     }
 
-    public List<PawnViewModel> getPawns() {
+    public List<PawnViewState> getPawns() {
         return pawns;
     }
 
     public void move(Coordinate c1, Coordinate c2) {
-        final CellViewModel cell1 = cellAt(c1);
-        final CellViewModel cell2 = cellAt(c2);
+        final CellViewState cell1 = cellAt(c1);
+        final CellViewState cell2 = cellAt(c2);
         cell1.getPawn().ifPresent(p1 -> {
             p1.setPosition(c2);
             cell1.removePawn();
@@ -66,12 +66,12 @@ public class BoardViewModel {
     }
 
 
-    public void removePawn(PawnViewModel pawn) {
+    public void removePawn(PawnViewState pawn) {
         Coordinate c = pawn.getPosition();
         cellAt(c).removePawn();
     }
 
-    public void putPawn(PawnViewModel pawn, Coordinate c) {
+    public void putPawn(PawnViewState pawn, Coordinate c) {
         cellAt(c).putPawn(pawn);
         pawn.setPosition(c);
     }
@@ -80,23 +80,24 @@ public class BoardViewModel {
         cellAt(c).setBuilding(building);
     }
 
-    public CellViewModel cellAt(Coordinate c) {
+    public CellViewState cellAt(Coordinate c) {
         return cells[c.getX()][c.getY()];
     }
 
-    public Optional<PlayerViewModel> getPlayer(User user) {
+    public Optional<PlayerViewState> getPlayer(User user) {
         return Optional.ofNullable(userPlayerViewMap.get(user));
     }
 
-    public Collection<PlayerViewModel> getPlayers() {
+    public Collection<PlayerViewState> getPlayers() {
         return userPlayerViewMap.values();
     }
 
-    public void addPawn(PawnViewModel pawn) {
+    public void addPawn(PawnViewState pawn) {
         pawns.add(pawn);
     }
 
-    public void addPlayer(PlayerViewModel player) {
+    public void addPlayer(PlayerViewState player) {
         userPlayerViewMap.put(player.getUser(), player);
+        size ++;
     }
 }

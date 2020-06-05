@@ -1,10 +1,8 @@
-package it.polimi.ingsw.view.client.gui.setup;
+package it.polimi.ingsw.view.client.controls;
 
 import it.polimi.ingsw.controller.messages.GodIdentifier;
 import it.polimi.ingsw.controller.messages.User;
 import it.polimi.ingsw.view.client.ServerHandler;
-import it.polimi.ingsw.view.client.state.BoardViewModel;
-import it.polimi.ingsw.view.client.state.PlayerViewModel;
 
 import java.util.List;
 import java.util.Optional;
@@ -12,16 +10,19 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 
-public class GodSelectorViewModel {
+public class GodSelectorControl {
     private final ServerHandler server;
-    private final BoardViewModel boardViewModel;
+    private final BoardViewState boardViewState;
 
     private Consumer<List<GodIdentifier>> godsAvailableListener = null;
     private Consumer<List<User>> chooseFirstPlayerListener = null;
     private Runnable waitForChallengerListener = null;
 
-    public int getLobbySize() {
-        return boardViewModel.getPlayers().size();
+    public GodSelectorControl(ServerHandler server, BoardViewState boardViewState) {
+        this.server = server;
+        this.boardViewState = boardViewState;
+        server.dispatcher().setOnGodChosenListener(this::onGodChosen);
+        server.dispatcher().setOnGodsAvailableListener(this::onGodsAvailable);
     }
 
     public void setOnChooseFirstPlayer(Consumer<List<User>> chooseFirstPlayerListener) {
@@ -36,21 +37,18 @@ public class GodSelectorViewModel {
         this.godsAvailableListener = godsAvailableListener;
     }
 
-    public GodSelectorViewModel(ServerHandler server, BoardViewModel boardViewModel) {
-        this.server = server;
-        this.boardViewModel = boardViewModel;
-        server.dispatcher().setOnGodChosenListener(this::onGodChosen);
-        server.dispatcher().setOnGodsAvailableListener(this::onGodsAvailable);
+    public int getLobbySize() {
+        return boardViewState.getPlayers().size();
     }
 
     private void onGodsAvailable(List<GodIdentifier> godIdentifiers) {
         if (godIdentifiers.size() > 0 && godsAvailableListener != null) {
             godsAvailableListener.accept(godIdentifiers);
         } else {
-            if (boardViewModel.isChallenger() && chooseFirstPlayerListener != null) {
-                User myUser = boardViewModel.getMyUser().orElseThrow();
-                List<User> others = boardViewModel.getPlayers().stream()
-                        .map(PlayerViewModel::getUser)
+            if (boardViewState.isChallenger() && chooseFirstPlayerListener != null) {
+                User myUser = boardViewState.getMyUser().orElseThrow();
+                List<User> others = boardViewState.getPlayers().stream()
+                        .map(PlayerViewState::getUser)
                         .filter(user -> !user.equals(myUser))
                         .collect(Collectors.toList());
                 if (others.size() >= 2) {
@@ -67,15 +65,15 @@ public class GodSelectorViewModel {
     }
 
     private void onGodChosen(User user, GodIdentifier godIdentifier) {
-        boardViewModel.getPlayer(user).ifPresent(u -> u.setGod(godIdentifier));
+        boardViewState.getPlayer(user).ifPresent(u -> u.setGod(godIdentifier));
     }
 
     public boolean selectGods(List<GodIdentifier> selectedGods) {
-        Optional<User> user = boardViewModel.getMyUser();
+        Optional<User> user = boardViewState.getMyUser();
         if (user.isPresent()) {
             server.dispatcher().setOnResultListener(r -> {
                 if (r) {
-                    boardViewModel.setIsChallenger(true);
+                    boardViewState.setIsChallenger(true);
                 }
             });
             server.onSelectGods(user.get(), selectedGods);
@@ -86,7 +84,7 @@ public class GodSelectorViewModel {
     }
 
     public boolean chooseGod(GodIdentifier godId) {
-        Optional<User> user = boardViewModel.getMyUser();
+        Optional<User> user = boardViewState.getMyUser();
         if (user.isPresent()) {
             server.onChooseGod(user.get(), godId);
             return true;
@@ -96,7 +94,7 @@ public class GodSelectorViewModel {
     }
 
     public boolean chooseFirstPlayer(User user) {
-        Optional<User> self = boardViewModel.getMyUser();
+        Optional<User> self = boardViewState.getMyUser();
         if (self.isPresent()) {
             server.onChooseFirstPlayer(self.get(), user);
             return true;

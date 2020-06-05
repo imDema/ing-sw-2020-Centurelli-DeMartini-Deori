@@ -1,4 +1,4 @@
-package it.polimi.ingsw.view.client.cli.phaseManager;
+package it.polimi.ingsw.view.client.cli.state;
 
 import it.polimi.ingsw.model.board.Coordinate;
 import it.polimi.ingsw.view.cli.CLI;
@@ -15,8 +15,8 @@ public class PlacePawnState implements InputHandlerState {
             Optional<Coordinate> c1 = CLIClient.decodeCoordinate(tokens[0]);
             Optional<Coordinate> c2 = CLIClient.decodeCoordinate(tokens[1]);
             if (c1.isPresent() && c2.isPresent()) {
-                ctx.getViewModel().setOnPlaceAttemptListener(this::onPlaceAttempt);
-                ctx.getViewModel().placePawns(c1.get(), c2.get());
+                ctx.getGameControl().setOnPlaceAttemptListener(this::onPlaceAttempt);
+                ctx.getGameControl().placePawns(c1.get(), c2.get());
             } else {
                 System.out.println("Invalid coordinate format!");
                 printUsage();

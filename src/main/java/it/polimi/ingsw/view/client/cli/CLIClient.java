@@ -8,10 +8,10 @@ import it.polimi.ingsw.view.cli.CLI;
 import it.polimi.ingsw.view.cli.Colors;
 import it.polimi.ingsw.view.client.ProxyController;
 import it.polimi.ingsw.view.client.ServerHandler;
-import it.polimi.ingsw.view.client.cli.phaseManager.*;
-import it.polimi.ingsw.view.client.state.GameViewModel;
-import it.polimi.ingsw.view.client.state.PawnViewModel;
-import it.polimi.ingsw.view.client.state.PlayerViewModel;
+import it.polimi.ingsw.view.client.cli.state.*;
+import it.polimi.ingsw.view.client.controls.GameControl;
+import it.polimi.ingsw.view.client.controls.PawnViewState;
+import it.polimi.ingsw.view.client.controls.PlayerViewState;
 
 import java.io.IOException;
 import java.util.List;
@@ -21,7 +21,7 @@ import java.util.Scanner;
 public class CLIClient {
     private final ProxyController proxyController;
     private final CLIBoardView cliBoardView = new CLIBoardView();
-    private GameViewModel gameViewModel;
+    private GameControl gameControl;
     private InputHandlerContext inputHandler;
 
     private boolean running = true;
@@ -38,7 +38,7 @@ public class CLIClient {
                 int number = Integer.parseInt(s.substring(1)) - 1;
                 if (letter >= 0 && letter <= 5 &&
                         number >= 0 && number <= 5) {
-                    return Optional.of(new Coordinate(number, letter));
+                    return Optional.of(new Coordinate(letter, number));
                 }
             } catch (NumberFormatException e) {
                 return Optional.empty();
@@ -57,36 +57,36 @@ public class CLIClient {
             return;
         }
 
-        gameViewModel = new GameViewModel(serverHandler, cliBoardView.getViewModel());
-        inputHandler = new InputHandlerContext(gameViewModel, serverHandler);
+        gameControl = new GameControl(serverHandler, cliBoardView.getBoardViewState());
+        inputHandler = new InputHandlerContext(gameControl);
+        inputHandler.setState(new LoginState(serverHandler, cliBoardView));
+
 
         Thread controllerThread = new Thread(serverHandler);
         controllerThread.start();
         Scanner input = new Scanner(System.in);
 
-        inputHandler.setState(new LoginState());
 
         serverHandler.dispatcher().setOnGodsAvailableListener(gods ->
-                inputHandler.setState(new ChooseGodState(serverHandler,gods))
+                inputHandler.setState(new ChooseGodState(serverHandler, cliBoardView.getBoardViewState(), gods))
         );
 
-        gameViewModel.setOnRequestPlaceListener(() -> {
+        gameControl.setOnRequestPlaceListener(() -> {
             CLI.clientInfo("You must place your pawns");
             inputHandler.setState(new PlacePawnState());
         });
 
-        gameViewModel.setOnRequestWaitListener(() ->
+        gameControl.setOnRequestWaitListener(() ->
                 inputHandler.setState(new WaitingState()));
 
-        gameViewModel.setOnActionsReadyListener(this::onActionsReady);
+        gameControl.setOnActionsReadyListener(this::onActionsReady);
 
-        gameViewModel.addRedrawListener(this::print);
+        gameControl.addRedrawListener(this::print);
 
         serverHandler.dispatcher().setOnEliminationListener(this::onElimination);
         serverHandler.dispatcher().setOnWinListener(this::onWin);
         serverHandler.dispatcher().setOnServerErrorListener(this::onServerError);
         serverHandler.dispatcher().setOnTurnChangeListener(this::onTurnChange);
-        serverHandler.dispatcher().setOnUserJoinedListener(this::onUserJoined);
         serverHandler.dispatcher().setOnGodChosenListener(this::onGodChosen);
 
         // Start handling inputs
@@ -118,22 +118,22 @@ public class CLIClient {
 
     private void onElimination(User user) {
         CLI.clientInfo( user.getUsername() + " eliminated");
-        for (PawnViewModel pawn : cliBoardView.getViewModel().getPawns()) {
+        for (PawnViewState pawn : cliBoardView.getBoardViewState().getPawns()) {
             if (pawn.getOwner().getUser().equals(user))
-                cliBoardView.getViewModel().removePawn(pawn);
+                cliBoardView.getBoardViewState().removePawn(pawn);
         }
     }
 
     private void onGodChosen(User user, GodIdentifier god) {
         CLI.clientInfo(user.getUsername() + " chose " + god.getName());
 
-        cliBoardView.getViewModel().getPlayer(user)
+        cliBoardView.getBoardViewState().getPlayer(user)
                 .ifPresentOrElse(
                         p -> p.setGod(god),
                         () -> {
-                            PlayerViewModel player = new PlayerViewModel(user);
+                            PlayerViewState player = new PlayerViewState(user);
                             player.setGod(god);
-                            cliBoardView.getViewModel().addPlayer(player);
+                            cliBoardView.getBoardViewState().addPlayer(player);
                         });
     }
 
@@ -144,11 +144,6 @@ public class CLIClient {
 
     private void onTurnChange(User currentUser, int turn) {
         CLI.clientInfo("Turn " + (turn + 1) + ", current player " + currentUser.getUsername());
-    }
-
-    private void onUserJoined(User user) {
-        cliBoardView.newPlayer(user);
-        CLI.clientInfo("User " + user.getUsername() + " joined\n");
     }
 
     private void onWin(User user) {

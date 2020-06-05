@@ -1,7 +1,8 @@
 package it.polimi.ingsw.view.client.gui.setup;
 
 import it.polimi.ingsw.view.client.ServerHandler;
-import it.polimi.ingsw.view.client.state.BoardViewModel;
+import it.polimi.ingsw.view.client.controls.BoardViewState;
+import it.polimi.ingsw.view.client.controls.LoginControl;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
@@ -11,7 +12,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 
 public class LoginView extends HBox {
-    private final LoginViewModel loginViewModel;
+    private final LoginControl loginControl;
 
     // Controls
     private final ComboBox<Integer> sizeComboBox = new ComboBox<>();
@@ -19,24 +20,23 @@ public class LoginView extends HBox {
     private final Button loginButton = new Button("Login");
     private final ListView<String> usersListView = new ListView<>();
 
-    public LoginView(ServerHandler server, BoardViewModel boardViewModel) {
-        loginViewModel = new LoginViewModel(server, boardViewModel);
+    public LoginView(ServerHandler server, BoardViewState boardViewState) {
+        loginControl = new LoginControl(server, boardViewState);
 
         initView();
-        bindViewModel();
+        bindViewState();
     }
 
-    private void bindViewModel() {
-        usernameTextField.textProperty().bindBidirectional(loginViewModel.usernameProperty());
-        loginViewModel.sizeProperty().bind(sizeComboBox.valueProperty());
-
-        loginViewModel.setOnUserJoinedListener(u ->
+    private void bindViewState() {
+        loginControl.setOnUserJoinedListener(u ->
                 Platform.runLater(() -> usersListView.getItems().add(u.getUsername()))
         );
 
-        loginViewModel.setOnSizeSetListener(size -> {
-            sizeComboBox.setValue(size);
-            sizeComboBox.setDisable(true);
+        loginControl.setOnSizeSetListener(size -> {
+            Platform.runLater(()-> {
+                sizeComboBox.setValue(size);
+                sizeComboBox.setDisable(true);
+            });
         });
     }
 
@@ -69,7 +69,7 @@ public class LoginView extends HBox {
     }
 
     private void login() {
-        loginViewModel.setOnLoginAttempt((r, msg) -> {
+        loginControl.setOnLoginAttempt((r, msg) -> {
             if (!r) {
                 Platform.runLater(()->
                         new Alert(Alert.AlertType.INFORMATION, msg)
@@ -78,8 +78,8 @@ public class LoginView extends HBox {
             }
         });
         if (!sizeComboBox.isDisabled()) {
-            loginViewModel.setSize();
+            loginControl.setSize(sizeComboBox.getValue());
         }
-        loginViewModel.login();
+        loginControl.login(usernameTextField.getText());
     }
 }

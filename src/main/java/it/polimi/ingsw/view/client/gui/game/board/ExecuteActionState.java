@@ -2,8 +2,8 @@ package it.polimi.ingsw.view.client.gui.game.board;
 
 import it.polimi.ingsw.controller.messages.ActionIdentifier;
 import it.polimi.ingsw.model.board.Coordinate;
-import it.polimi.ingsw.view.client.state.BoardViewModel;
-import it.polimi.ingsw.view.client.state.PawnViewModel;
+import it.polimi.ingsw.view.client.controls.BoardViewState;
+import it.polimi.ingsw.view.client.controls.PawnViewState;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -14,7 +14,7 @@ import java.util.List;
 
 public class ExecuteActionState implements BoardClickHandlerState {
     private final List<ActionIdentifier> actions;
-    private PawnViewModel selectedPawn = null;
+    private PawnViewState selectedPawn = null;
     private Coordinate target = null;
 
     public ExecuteActionState(List<ActionIdentifier> actions) {
@@ -23,7 +23,7 @@ public class ExecuteActionState implements BoardClickHandlerState {
 
     @Override
     public void handleClick(BoardClickHandlerContext ctx, MouseButton btn, Coordinate c) {
-        BoardViewModel board = ctx.getGameViewModel().getBoardViewModel();
+        BoardViewState board = ctx.getGameControl().getBoardViewState();
 
         if(selectedPawn == null) {
             if (btn == MouseButton.PRIMARY) {
@@ -73,8 +73,8 @@ public class ExecuteActionState implements BoardClickHandlerState {
 
     private void onButtonClick(BoardClickHandlerContext ctx, MouseEvent mouseEvent, ActionIdentifier action) {
         if(mouseEvent.getButton() == MouseButton.PRIMARY) {
-            ctx.getGameViewModel().setOnActionAttemptListener(r -> onExecuteAttempt(ctx, r));
-            ctx.getGameViewModel().executeAction(action, selectedPawn.getId(), target);
+            ctx.getGameControl().setOnActionAttemptListener(r -> onExecuteAttempt(ctx, r));
+            ctx.getGameControl().executeAction(action, selectedPawn.getId(), target);
         }
     }
 
@@ -98,7 +98,7 @@ public class ExecuteActionState implements BoardClickHandlerState {
 
     private void resetView(BoardClickHandlerContext ctx) {
         Platform.runLater(() -> {
-            ctx.getGameViewModel().requestRedraw();
+            ctx.getGameControl().requestRedraw();
             setLabel(ctx, "It's your turn! Click on a Worker, then on a cell and choose your move!");
         });
     }

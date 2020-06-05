@@ -1,4 +1,4 @@
-package it.polimi.ingsw.view.client.state;
+package it.polimi.ingsw.view.client.controls;
 
 import it.polimi.ingsw.controller.messages.GodIdentifier;
 import it.polimi.ingsw.controller.messages.User;
@@ -6,21 +6,21 @@ import it.polimi.ingsw.controller.messages.User;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PlayerViewModel {
+public class PlayerViewState {
     private final User user;
-    private final List<PawnViewModel> pawns = new ArrayList<>();
+    private final List<PawnViewState> pawns = new ArrayList<>();
     private GodIdentifier god;
 
 
-    public PlayerViewModel(User user) {
+    public PlayerViewState(User user) {
         this.user = user;
     }
 
-    public List<PawnViewModel> getPawns() {
+    public List<PawnViewState> getPawns() {
         return pawns;
     }
 
-    public PawnViewModel getPawn(int id){
+    public PawnViewState getPawn(int id){
         return pawns.get(id);
     }
 
@@ -36,7 +36,7 @@ public class PlayerViewModel {
         this.god = god;
     }
 
-    public void addPawn(PawnViewModel pawn) {
+    public void addPawn(PawnViewState pawn) {
         pawns.add(pawn);
     }
 }

@@ -1,15 +1,15 @@
-package it.polimi.ingsw.view.client.state;
+package it.polimi.ingsw.view.client.controls;
 
 import it.polimi.ingsw.model.board.Building;
 
 import java.util.Optional;
 
-public class CellViewModel {
+public class CellViewState {
     private boolean hasPawn = false;
-    private PawnViewModel pawn = null;
+    private PawnViewState pawn = null;
     private Building building = new Building();
 
-    public Optional<PawnViewModel> getPawn() {
+    public Optional<PawnViewState> getPawn() {
         if (hasPawn) {
             return Optional.of(pawn);
         } else {
@@ -17,7 +17,7 @@ public class CellViewModel {
         }
     }
 
-    public void putPawn(PawnViewModel pawn) {
+    public void putPawn(PawnViewState pawn) {
         this.pawn = pawn;
         this.hasPawn = true;
     }

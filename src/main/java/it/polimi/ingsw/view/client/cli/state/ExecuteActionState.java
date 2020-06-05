@@ -1,4 +1,4 @@
-package it.polimi.ingsw.view.client.cli.phaseManager;
+package it.polimi.ingsw.view.client.cli.state;
 
 import it.polimi.ingsw.controller.messages.ActionIdentifier;
 import it.polimi.ingsw.model.board.Coordinate;
@@ -34,8 +34,8 @@ public class ExecuteActionState implements InputHandlerState {
                 findAction(actionId)
                     .ifPresentOrElse(
                             a -> { //TODO move elsewhere
-                                ctx.getViewModel().setOnActionAttemptListener(this::onActionAttempt);
-                                ctx.getViewModel().executeAction(a, pawnId, target.get());
+                                ctx.getGameControl().setOnActionAttemptListener(this::onActionAttempt);
+                                ctx.getGameControl().executeAction(a, pawnId, target.get());
                             },
                             () -> CLI.error("Use an action from the supplied list\n")
                     );
