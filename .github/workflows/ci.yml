@@ -9,8 +9,7 @@ on:
     branches: [ master ]
 
 jobs:
-  build:
-
+  test:
     runs-on: ubuntu-latest
 
     steps:
@@ -23,3 +22,9 @@ jobs:
       run: mvn test-compile
     - name: Run tests
       run: mvn test
+    - name: Package
+      run: mvn package
+    - uses: actions/upload-artifact@v2
+      with:
+        name: AM8.jar
+        path: shade/AM8.jar
