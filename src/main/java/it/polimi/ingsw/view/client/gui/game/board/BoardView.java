@@ -6,8 +6,6 @@ import it.polimi.ingsw.view.client.controls.BoardViewState;
 import it.polimi.ingsw.view.client.controls.PawnViewState;
 import it.polimi.ingsw.view.client.controls.PlayerViewState;
 import javafx.application.Platform;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleDoubleProperty;
 import javafx.geometry.Pos;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -31,13 +29,7 @@ public class BoardView extends StackPane {
 
     private final Map<PlayerViewState, Image> pawnImageMap = new HashMap<>();
 
-    private final DoubleProperty height = new SimpleDoubleProperty(600);
-
     private BiConsumer<MouseButton, Coordinate> cellClickListener = null;
-
-    public DoubleProperty boardHeightProperty() {
-        return height;
-    }
 
     public void setOnCellClick(BiConsumer<MouseButton, Coordinate> onCellClickListener) {
         this.cellClickListener = onCellClickListener;
@@ -76,16 +68,18 @@ public class BoardView extends StackPane {
     }
 
     private void initView() {
+        this.prefHeightProperty().bind(this.prefWidthProperty().multiply(0.5625));
 
         backgroundImage.setPreserveRatio(true);
-        backgroundImage.fitHeightProperty().bind(height);
+        backgroundImage.fitHeightProperty().bind(this.heightProperty());
+//        backgroundImage.fitWidthProperty().bind(widthProperty());
 
         foregroundImage.setPreserveRatio(true);
-        foregroundImage.fitHeightProperty().bind(height);
+        foregroundImage.fitHeightProperty().bind(this.heightProperty());
+//        foregroundImage.fitWidthProperty().bind(widthProperty().multiply(0.5625));
 
-
-        grid.prefHeightProperty().bind(height.multiply(0.6));
-        grid.prefWidthProperty().bind(height.multiply(0.6));
+        grid.prefHeightProperty().bind(this.heightProperty().multiply(0.6));
+        grid.prefWidthProperty().bind(grid.prefHeightProperty());
         grid.setAlignment(Pos.CENTER);
 
         // grid.setGridLinesVisible(true); //DEBUG
@@ -93,8 +87,7 @@ public class BoardView extends StackPane {
         for (int i = 0; i < SIZE ; i++) {
             for (int j = 0; j < SIZE; j++) {
                 CellView cell = new CellView(boardViewState.cellAt(new Coordinate(i,j)), this::renderPawn);
-                cell.cellHeightPropertyProperty().bind(grid.prefHeightProperty().divide(5.0));
-                cell.cellWidthPropertyProperty().bind(grid.prefWidthProperty().divide(5.0));
+                cell.cellWidthPropertyProperty().bind(grid.prefHeightProperty().divide(5.0));
 
                 final int ii = i, jj = j;
                 cell.setOnMouseClicked(click -> onBoardClick(click.getButton(), ii, jj));
@@ -105,9 +98,6 @@ public class BoardView extends StackPane {
 
         this.setAlignment(Pos.CENTER);
         this.getChildren().addAll(backgroundImage, foregroundImage, grid);
-
-        this.prefHeightProperty().bind(height);
-        this.prefWidthProperty().bind(height);
     }
 
     private void onBoardClick(MouseButton button, int i, int j) {

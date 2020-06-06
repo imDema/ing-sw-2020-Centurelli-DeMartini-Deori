@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 
 public class Program {
-    private boolean clientGUI = false;
+    private boolean cliMode = false;
     private boolean serverMode = false;
     private String ip = null;
     private Integer port = null;
@@ -17,23 +17,24 @@ public class Program {
         Program program = new Program();
         Iterator<String> arguments = Arrays.stream(args).iterator();
 
-        if (program.loadConfig(arguments)) {
-            program.startConfig();
+        if (program.parseConfig(arguments)) {
+            program.start();
         } else {
             System.out.println(
-                    "Usage: java -jar AM8-1.0-SNAPSHOT.jar [-g|--gui] [-s|--server] [IP PORT]\n" +
+                    "Usage: java -jar AM8-1.0-SNAPSHOT.jar [--cli|--server IP PORT] [--gods JSON]\n" +
                     "\n" +
                     "Launching in server or cli mode requires specifying IP and PORT\n" +
-                    "By default the application is launched in cli mode\n" +
+                    "By default the application is launched in graphical mode\n" +
                     "\n" +
-                    "-s, --server:    Launch the application in server mode using ip_address and port_number as the server’s parameters\n" +
-                    "-g, --gui:       Launch the application in client mode with a Graphic User Interface (GUI)\n" +
-                    "-h, --help:      Display this help message\n" +
-                    "Example: java -jar AM8-1.0-SNAPSHOT.jar 127.0.0.1 5000");
+                    "-c, --cli:         Launch the application in client mode with a Command Line Interface\n" +
+                    "-s, --server:      Start in server mode binding on tcp://IP:PORT\n" +
+                    "-g, --gods JSON:   Load god configuration from JSON file (server side)" +
+                    "-h, --help:        Display this help message\n" +
+                    "Example: java -jar AM8-1.0-SNAPSHOT.jar -c 127.0.0.1 5000");
         }
     }
 
-    private boolean loadConfig(Iterator<String> arguments) {
+    private boolean parseConfig(Iterator<String> arguments) {
         String argument;
         // loading arguments
         while (arguments.hasNext()) {
@@ -41,7 +42,17 @@ public class Program {
 
             switch (argument) {
                 case "-s", "--server" -> serverMode = true;
-                case "-g", "--gui" -> clientGUI = true;
+                case "-c", "--cli" -> cliMode = true;
+                case "-g", "--gods" -> {
+                    if (!arguments.hasNext()) {
+                        System.err.println("----------------");
+                        System.err.println("ERROR: Missing parameter for option -g or --gods");
+                        System.err.println("----------------");
+                        return false;
+                    } else {
+                        Resources.setGodConfigFile(arguments.next());
+                    }
+                }
                 case "-h", "--help" -> {
                     return false;
                 }
@@ -66,7 +77,7 @@ public class Program {
                 }
             }
         }
-        if ((!serverMode && clientGUI ) || (ip != null && port != null)) {
+        if (!(serverMode || cliMode) || (ip != null && port != null)) {
             return true;
         } else {
             System.err.println("----------------");
@@ -76,16 +87,15 @@ public class Program {
         }
     }
 
-    // This method is executed only if the arguments match a valid configuration
-    private void startConfig() {
+    private void start() {
         if (serverMode) {
             Server server = new Server(ip, port);
             server.start();
-        } else if (clientGUI) {
-            App.main();
-        } else {
+        } else if (cliMode) {
             CLIClient cliClient = new CLIClient(ip, port);
             cliClient.startClient();
+        } else {
+            App.main();
         }
     }
 }

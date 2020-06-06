@@ -1,5 +1,6 @@
 package it.polimi.ingsw.model;
 
+import com.google.gson.JsonSyntaxException;
 import it.polimi.ingsw.Resources;
 import it.polimi.ingsw.controller.messages.User;
 import it.polimi.ingsw.model.board.Board;
@@ -9,6 +10,7 @@ import it.polimi.ingsw.model.player.God;
 import it.polimi.ingsw.model.player.Player;
 import it.polimi.ingsw.model.turn.CircularList;
 import it.polimi.ingsw.serialization.Serializer;
+import it.polimi.ingsw.view.cli.CLI;
 
 import java.util.*;
 
@@ -155,8 +157,17 @@ public class Lobby {
 
     public List<God> getAllGods() {
         if (allGods == null) {
-            String config = Resources.loadGodConfig(this);
-            allGods = Serializer.deserializeGodList(config);
+            try {
+                String config = Resources.loadGodConfig(this);
+                allGods = Serializer.deserializeGodList(config);
+            } catch (JsonSyntaxException e) {
+                if (Resources.usingCustomConfig()) {
+                    CLI.error("Invalid configuration json, falling back to default");
+                    Resources.setGodConfigFile(null);
+                    String config = Resources.loadGodConfig(this);
+                    allGods = Serializer.deserializeGodList(config);
+                }
+            }
         }
         return allGods;
     }

@@ -16,7 +16,7 @@ public class LoginView extends HBox {
 
     // Controls
     private final ComboBox<Integer> sizeComboBox = new ComboBox<>();
-    private final TextField usernameTextField = new TextField();
+    private final TextField usernameTextField = new TextField("Test"); //TODO change default
     private final Button loginButton = new Button("Login");
     private final ListView<String> usersListView = new ListView<>();
 
@@ -32,12 +32,10 @@ public class LoginView extends HBox {
                 Platform.runLater(() -> usersListView.getItems().add(u.getUsername()))
         );
 
-        loginControl.setOnSizeSetListener(size -> {
-            Platform.runLater(()-> {
-                sizeComboBox.setValue(size);
-                sizeComboBox.setDisable(true);
-            });
-        });
+        loginControl.setOnSizeSetListener(size -> Platform.runLater(()-> {
+            sizeComboBox.setValue(size);
+            sizeComboBox.setDisable(true);
+        }));
     }
 
     private void initView() {
@@ -55,7 +53,7 @@ public class LoginView extends HBox {
         }));
 
         sizeComboBox.getItems().addAll(1,2,3);
-        sizeComboBox.setValue(1);
+        sizeComboBox.setValue(1); //TODO change default
 
         GridPane gp = new GridPane();
         gp.add(new Label("Username"), 0, 0); gp.add(usernameTextField, 1, 0);

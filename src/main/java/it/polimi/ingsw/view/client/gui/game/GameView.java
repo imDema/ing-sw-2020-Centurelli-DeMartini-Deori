@@ -8,11 +8,11 @@ import it.polimi.ingsw.view.client.controls.GameControl;
 import it.polimi.ingsw.view.client.gui.game.board.*;
 import javafx.application.Platform;
 import javafx.geometry.Pos;
-import javafx.scene.control.ButtonBar;
 import javafx.scene.control.Label;
-import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
 
-public class GameView extends BorderPane {
+public class GameView extends AnchorPane {
     private final GameControl gameControl;
 
     private final BoardClickHandlerContext boardClickHandler;
@@ -20,13 +20,13 @@ public class GameView extends BorderPane {
     private final BoardView boardView;
     private final PlayerListView playerListView;
     private final Label testLabel = new Label();
-    private final ButtonBar buttonBar = new ButtonBar();
+    private final HBox buttonBar = new HBox();
 
     public Label getTestLabel() {
         return testLabel;
     }
 
-    public ButtonBar getButtonBar() {
+    public HBox getButtonBar() {
         return buttonBar;
     }
 
@@ -63,13 +63,29 @@ public class GameView extends BorderPane {
     }
 
     private void initView() {
-        boardView.boardHeightProperty().bind(heightProperty().multiply(0.8));
+        buttonBar.setSpacing(10.0);
 
-        setAlignment(testLabel, Pos.CENTER);
-        setAlignment(buttonBar, Pos.CENTER);
-        this.setLeft(playerListView);
-        this.setTop(testLabel);
-        this.setCenter(boardView);
-        this.setBottom(buttonBar);
+        setTopAnchor(testLabel, 8.0);
+        setLeftAnchor(testLabel, 8.0);
+        setRightAnchor(testLabel, 8.0);
+        testLabel.setAlignment(Pos.CENTER);
+        testLabel.setStyle("-fx-font-size: 16pt;");
+
+        setTopAnchor(boardView, 0.0);
+        setBottomAnchor(boardView, 0.0);
+        setLeftAnchor(boardView, 0.0);
+        setRightAnchor(boardView, 0.0);
+
+        setBottomAnchor(buttonBar, 8.0);
+        setLeftAnchor(buttonBar, 8.0);
+        setRightAnchor(buttonBar, 8.0);
+        buttonBar.setAlignment(Pos.CENTER);
+        buttonBar.setStyle("-fx-font-size: 24pt;");
+
+        setLeftAnchor(playerListView, 8.0);
+        playerListView.cardHeightProperty().setValue(300);
+        playerListView.prefWidthProperty().bind(widthProperty().multiply(0.125));
+
+        this.getChildren().addAll(boardView,testLabel,buttonBar,playerListView);
     }
 }

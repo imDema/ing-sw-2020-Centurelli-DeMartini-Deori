@@ -1,16 +1,48 @@
 package it.polimi.ingsw;
 
 import it.polimi.ingsw.model.board.Building;
+import it.polimi.ingsw.view.cli.CLI;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.Optional;
 import java.util.Scanner;
 
 public abstract class Resources {
+    private static String godConfigPath = null;
+    private static boolean customConfig = false;
+
+    public static void setGodConfigFile(String path) {
+        if (path != null) {
+            godConfigPath = path;
+            customConfig = true;
+        } else {
+            godConfigPath = null;
+            customConfig = false;
+        }
+    }
+
+    public static boolean usingCustomConfig() {
+        return customConfig;
+    }
+
     public static String loadGodConfig(Object context) {
-        InputStream config = context.getClass().getClassLoader().getResourceAsStream("config/gods.json");
+        InputStream config;
+        if (customConfig) {
+            try{
+                config = new FileInputStream(godConfigPath);
+            } catch (FileNotFoundException e) {
+                CLI.error("File not found: \"" + godConfigPath + "\" falling back to default configuration");
+                config = context.getClass().getClassLoader().getResourceAsStream("config/gods.json");
+            }
+        } else {
+            config = context.getClass().getClassLoader().getResourceAsStream("config/gods.json");
+        }
+
+
         if (config != null) {
             Scanner scanner = new Scanner(config);
             scanner.useDelimiter(""); // Read to end
@@ -20,7 +52,7 @@ public abstract class Resources {
             }
             return sb.toString();
         } else {
-            System.err.println("ERROR: Could not load \"config/gods.json\" from resources");
+            CLI.error("ERROR: Could not load god configuration");
             return "";
         }
     }

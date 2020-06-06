@@ -264,7 +264,7 @@
             {
               "description": "Move",
               "family": "MOVE",
-              "effects": ["MOVE", "FORBID_MOVE_BACK"],
+              "effects": ["FORBID_MOVE_BACK", "MOVE"],
               "checks": ["NEIGHBOUR", "MAX_ONE_LEVEL_ABOVE", "NO_DOME", "NOT_OCCUPIED"]
             }
           ]

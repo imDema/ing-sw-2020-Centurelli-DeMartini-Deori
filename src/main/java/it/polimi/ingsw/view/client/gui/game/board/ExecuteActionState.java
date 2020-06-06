@@ -45,13 +45,13 @@ public class ExecuteActionState implements BoardClickHandlerState {
             if (btn == MouseButton.PRIMARY) {
                 Coordinate oldTarget = target;
                 target = c;
-                ctx.getGameView().getButtonBar().getButtons().clear();
-                for (ActionIdentifier a : actions) {
-                    Button button = new Button(a.getDescription().replace('_', ' '));
-                    button.setOnMouseClicked(click -> onButtonClick(ctx, click, a));
-                    ctx.getGameView().getButtonBar().getButtons().add(button);
-                }
                 Platform.runLater(() -> {
+                    ctx.getGameView().getButtonBar().getChildren().clear();
+                    for (ActionIdentifier a : actions) {
+                        Button button = new Button(a.getDescription().replace('_', ' '));
+                        button.setOnMouseClicked(click -> onButtonClick(ctx, click, a));
+                        ctx.getGameView().getButtonBar().getChildren().add(button);
+                    }
                     ctx.getGameView().highlight(selectedPawn.getPosition(), true);
                     ctx.getGameView().highlight(target, true);
                     if (oldTarget != null && !oldTarget.equals(target)) {
@@ -81,7 +81,7 @@ public class ExecuteActionState implements BoardClickHandlerState {
     private void onExecuteAttempt(BoardClickHandlerContext ctx, Boolean result) {
         if (result) {
             Platform.runLater(() -> {
-                ctx.getGameView().getButtonBar().getButtons().clear();
+                ctx.getGameView().getButtonBar().getChildren().clear();
                 ctx.getGameView().highlight(selectedPawn.getPosition(), false);
             });
         } else {
@@ -100,6 +100,7 @@ public class ExecuteActionState implements BoardClickHandlerState {
         Platform.runLater(() -> {
             ctx.getGameControl().requestRedraw();
             setLabel(ctx, "It's your turn! Click on a Worker, then on a cell and choose your move!");
+            ctx.getGameView().getButtonBar().getChildren().clear();
         });
     }
 

@@ -12,7 +12,6 @@ import java.util.function.Function;
 
 public class CellView extends StackPane {
     private final DoubleProperty cellWidthProperty = new SimpleDoubleProperty();
-    private final DoubleProperty cellHeightProperty = new SimpleDoubleProperty();
     private final Function<PawnViewState, ImageView> pawnRenderer;
 
     private final ImageView highlight;
@@ -23,22 +22,18 @@ public class CellView extends StackPane {
         this.viewState = viewState;
         this.pawnRenderer = pawnRenderer;
 
-        minHeightProperty().bind(cellHeightProperty);
-        maxHeightProperty().bind(cellHeightProperty);
+        minHeightProperty().bind(cellWidthProperty);
+        maxHeightProperty().bind(cellWidthProperty);
 
         minWidthProperty().bind(cellWidthProperty);
         maxWidthProperty().bind(cellWidthProperty);
 
         highlight = Resources.loadCellHighlight(this);
 
-        highlight.fitHeightProperty().bind(cellHeightProperty);
+        highlight.fitHeightProperty().bind(cellWidthProperty);
         highlight.fitWidthProperty().bind(cellWidthProperty);
         this.getChildren().add(highlight);
         highlight.setVisible(false);
-    }
-
-    public DoubleProperty cellHeightPropertyProperty() {
-        return cellHeightProperty;
     }
 
     public DoubleProperty cellWidthPropertyProperty() {
@@ -47,7 +42,7 @@ public class CellView extends StackPane {
 
     private ImageView renderPawn(PawnViewState pawn) {
         ImageView pawnView = pawnRenderer.apply(pawn);
-        pawnView.fitHeightProperty().bind(cellHeightProperty);
+        pawnView.fitHeightProperty().bind(cellWidthProperty);
         pawnView.fitWidthProperty().bind(cellWidthProperty);
         return pawnView;
     }
@@ -56,17 +51,17 @@ public class CellView extends StackPane {
         this.getChildren().clear();
         ImageView building = Resources.loadBuilding(this, viewState.getBuilding());
 
-        building.fitHeightProperty().bind(cellHeightProperty);
+        building.fitHeightProperty().bind(cellWidthProperty);
         building.fitWidthProperty().bind(cellWidthProperty);
 
         this.getChildren().add(building);
 
+        this.getChildren().add(highlight);
+        highlight.setVisible(false);
+
         viewState.getPawn()
                 .map(this::renderPawn)
                 .ifPresent(this.getChildren()::add);
-
-        this.getChildren().add(highlight);
-        highlight.setVisible(false);
     }
 
     public void highlight(boolean on) {

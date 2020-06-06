@@ -5,6 +5,8 @@ import it.polimi.ingsw.controller.messages.GodIdentifier;
 import it.polimi.ingsw.controller.messages.User;
 import it.polimi.ingsw.view.client.controls.GameControl;
 import it.polimi.ingsw.view.client.controls.PlayerViewState;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -17,11 +19,14 @@ import java.util.List;
 
 
 public class PlayerListView extends VBox {
-    private final double cardBaseHeight = 200.0;
-
     private final GameControl gameControl;
     private final List<Label> labels = new ArrayList<>();
 
+    private final DoubleProperty cardHeight = new SimpleDoubleProperty();
+
+    public DoubleProperty cardHeightProperty() {
+        return cardHeight;
+    }
 
     public PlayerListView(GameControl gameControl) {
         this.gameControl = gameControl;
@@ -45,19 +50,21 @@ public class PlayerListView extends VBox {
 
     private void highlight(User user) {
         labels.stream()
-                .peek(l -> l.setStyle("-fx-underline: false;"))
+                .peek(l -> l.setStyle("-fx-font-size: 16pt;"))
                 .filter(l -> l.getText().equals(user.getUsername()))
-                .forEach(l -> l.setStyle("-fx-underline: true;"));
+                .forEach(l -> l.setStyle("-fx-font-size: 16pt; -fx-underline: true;"));
     }
 
     private Node playerView(User user, GodIdentifier god) {
         ImageView godView = Resources.loadGodCard(this, god.getName())
                 .orElse(Resources.loadGodCard(this));
         godView.setPreserveRatio(true);
-        godView.setFitHeight(cardBaseHeight);
+        godView.fitHeightProperty().bind(cardHeightProperty());
+        godView.fitWidthProperty().bind(prefWidthProperty());
 
         Label playerName = new Label(user.getUsername());
-        labels.add(playerName); // TODO: Change this
+        playerName.setStyle("-fx-font-size: 16pt;");
+        labels.add(playerName);
 
         VBox playerView = new VBox(godView, playerName);
 

@@ -59,9 +59,13 @@ public class App extends Application {
 
         server.dispatcher().setOnRequestPlacePawnsListener(firstUser -> {
             GameView gameView = new GameView(server, boardViewState, firstUser);
+            Scene scene = new Scene(gameView, 1280, 720);
+
             Platform.runLater(() -> {
                 stage.setTitle("Santorini");
-                stage.setScene(new Scene(gameView, 1200, 600));
+                stage.setScene(scene);
+                stage.setMinHeight(400);
+                stage.setMinWidth(600);
             });
         });
 
