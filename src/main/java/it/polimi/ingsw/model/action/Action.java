@@ -5,6 +5,12 @@ import it.polimi.ingsw.model.player.Pawn;
 
 import java.util.Arrays;
 
+/**
+ * The Action class represents the abstraction of an Action in the game, each action
+ * can have multiple effects and restrictions (the restrictions are represented with
+ * the Check class), each action also have a unique description that synthesizes the
+ * effects of the action
+ */
 public class Action {
     public static final Action start = new Action("Start turn", ActionFamily.NONE, new Effect[0], new Check[0]);
     public static final Action endTurn = new Action("End turn", ActionFamily.NONE, new Effect[0], new Check[0]);
@@ -28,6 +34,14 @@ public class Action {
         return description;
     }
 
+    /**
+     * Execute the specified Action on a given Coordinate
+     * @param board The board on which the action is executed
+     * @param pawn The pawn selected by the player that executes this action
+     * @param coordinate The coordinate where the player wants to execute this action
+     * @return true if the player that executes this action wins by executing it
+     * @throws InvalidActionException if the chosen action can't be executed
+     */
     public boolean execute(Board board, Pawn pawn, Coordinate coordinate) throws InvalidActionException {
         boolean win = false;
         for (Effect effect : effects) {
@@ -38,8 +52,10 @@ public class Action {
         return win;
     }
 
-
-    /// Checks if all conditions are verified
+    /**
+     * Checks if the action matches all its checks on the given set of board,pawn,coordinate
+     * @return true if the action is valid, false otherwise
+     */
     public boolean checkAllowed(Board board, Pawn pawn, Coordinate coordinate) {
         return Arrays.stream(checks).allMatch(l -> l.isAllowed(board,pawn,coordinate));
     }

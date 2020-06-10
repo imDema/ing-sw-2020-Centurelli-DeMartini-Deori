@@ -5,6 +5,11 @@ import it.polimi.ingsw.model.action.Action;
 import java.util.Arrays;
 import java.util.Optional;
 
+/**
+ * The StepSequence class represent the abstraction of a sequence of Actions made by steps.
+ * The sequence takes trace of the current step, it's the state of the sequence.
+ * Given a state, the next step can be reached by calling the method next() if the state isn't the last step
+ */
 public class StepSequence {
     private int state = 0;
     private final Action[][] steps;
@@ -18,6 +23,10 @@ public class StepSequence {
         }
     }
 
+    /**
+     *
+     * @return the Action that corresponds to the current state
+     */
     public Optional<Action[]> peek() {
         if (state < steps.length) {
             return Optional.of(steps[state]);

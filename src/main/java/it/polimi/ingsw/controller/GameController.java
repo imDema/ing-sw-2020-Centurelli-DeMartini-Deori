@@ -17,6 +17,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * The GameController class implements the controller that handles the events from the
+ * setup phase of the game, such as the connection of the clients to the lobby and the
+ * phase of choosing the gods and starts the game once the setup phase is completed
+ */
 public class GameController implements OnClientEventListener, OnServerErrorListener {
     private final Lobby lobby = new Lobby();
     private final GameCycle gameCycle = new GameCycle(lobby, this);
@@ -35,6 +40,9 @@ public class GameController implements OnClientEventListener, OnServerErrorListe
         return lobby.getSize() > 0 && lobby.isLobbyFull();
     }
 
+    /**
+     * Add the given listener to handle events from the server
+     */
     public void addServerEventsListener(OnServerEventListener onServerEventListener) {
         serverEventListeners.add(onServerEventListener);
         gameCycle.addServerEventListener(onServerEventListener);
@@ -66,6 +74,11 @@ public class GameController implements OnClientEventListener, OnServerErrorListe
         serverEventListeners.forEach(l -> l.onGodsAvailable(godsIds));
     }
 
+    /**
+     * Adds the user to the lobby if the lobby isn't full
+     * @param user The user that is added to the lobby
+     * @return true if the user is successfully added to the lobby
+     */
     @Override
     public boolean onAddUser(User user) {
         synchronized (lobby) {
@@ -89,6 +102,11 @@ public class GameController implements OnClientEventListener, OnServerErrorListe
         }
     }
 
+    /**
+     * Give the selected god to a specific user and remove the selected god from the
+     * available gods
+     * @return true if the god is available for the user
+     */
     @Override
     public boolean onChooseGod(User user, GodIdentifier god) {
         synchronized (lobby) {
@@ -121,6 +139,11 @@ public class GameController implements OnClientEventListener, OnServerErrorListe
         }
     }
 
+    /**
+     * Place the user's pawns on the selected coordinates if the coordinates are both
+     * free and on the board
+     * @return true if the pawns are placed correctly
+     */
     @Override
     public boolean onPlacePawns(User user, Coordinate c1, Coordinate c2) {
         synchronized (lobby) {
@@ -163,6 +186,9 @@ public class GameController implements OnClientEventListener, OnServerErrorListe
         }
     }
 
+    /**
+     * Select the number of players that will play the game
+     */
     @Override
     public boolean onSelectPlayerNumber(int size) {
         synchronized (lobby) {
@@ -219,7 +245,11 @@ public class GameController implements OnClientEventListener, OnServerErrorListe
         }
     }
 
-    // Broadcast fatal error
+    /**
+     * Broadcast a fatal error
+     * @param type Type of the error
+     * @param description Error description
+     */
     @Override
     public void onServerError(String type, String description) {
         serverEventListeners.forEach(l -> l.onServerError(type, description));

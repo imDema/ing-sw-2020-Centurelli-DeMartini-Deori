@@ -59,6 +59,9 @@ public abstract class Effects {
         return oldLevel != BuildingLevel.LEVEL3 && newLevel == BuildingLevel.LEVEL3;
     };
 
+    /**
+     * Adds a persistent effect to the board, forbids other players to move up
+     */
     public static final Effect forbidMoveUp = (board, pawn, coordinate) -> {
         int levelDifference = board.getBuildingAt(coordinate).getLevelDifference(board.getBuildingAt(pawn.getPosition()));
 
@@ -74,6 +77,9 @@ public abstract class Effects {
         return false;
     };
 
+    /**
+     * Adds a persistent effect to the board, forbids other players to move back on the pawn coordinate
+     */
     public static final Effect forbidMoveBack = (board, pawn, coordinate) -> {
         final Coordinate playerPosition = pawn.getPosition();
         CheckEffect checkEffect = (b, p, c, a) -> !(c.equals(playerPosition) && a.getFamily() == ActionFamily.MOVE);
@@ -81,6 +87,9 @@ public abstract class Effects {
         return false;
     };
 
+    /**
+     * Adds a persistent effect to the board, forbids other players to build on the specified coordinate
+     */
     public static final Effect forbidBuildAtCoordinate = (board, pawn, coordinate) -> {
         final Coordinate position = coordinate;
         CheckEffect checkEffect = (b, p, c, a) -> !c.equals(position) || a.getFamily() != ActionFamily.BUILD;
@@ -88,6 +97,9 @@ public abstract class Effects {
         return false;
     };
 
+    /**
+     * Adds a persistent effect to the board, force other players to build only on the given coordinate
+     */
     public static final Effect forbidBuildAtOtherCoordinates = (board, pawn, coordinate) -> {
         final Coordinate position = coordinate;
         CheckEffect checkEffect = (b, p, c, a) -> c.equals(position) || a.getFamily() != ActionFamily.BUILD;

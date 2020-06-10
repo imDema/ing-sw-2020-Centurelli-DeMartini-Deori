@@ -24,6 +24,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * The GameCycle class implements the controller for the in-game events, such as the start of the turn,
+ * the actions and all the other in-game events.
+ * GameCycle forward the events from the view to the model and vice versa
+ */
 public class GameCycle implements OnExecuteActionListener, OnCheckActionListener, OnMoveListener, OnBuildListener {
     private final Lobby lobby;
     private final Game game;
@@ -55,12 +60,17 @@ public class GameCycle implements OnExecuteActionListener, OnCheckActionListener
         serverEventListeners.remove(onServerEventListener);
     }
 
-    // Forward model events to all listeners
+    /**
+     * Forward model events to all listeners
+     */
     @Override
     public void onBuild(Building building, Coordinate coordinate) {
         serverEventListeners.forEach(l -> l.onBuild(building, coordinate));
     }
 
+    /**
+     * Forward model events to all listeners
+     */
     @Override
     public void onMove(Coordinate from, Coordinate to) {
         serverEventListeners.forEach(l -> l.onMove(from, to));
@@ -89,6 +99,14 @@ public class GameCycle implements OnExecuteActionListener, OnCheckActionListener
         }
     }
 
+    /**
+     * Checks if an action can be executed
+     * @param user The user that wants to execute the action
+     * @param pawnId The pawn selected to execute the action
+     * @param actionIdentifier The actionIdentifier that corresponds to the chosen action
+     * @param coordinate The coordinate where the user wants to execute the action
+     * @return true if the action is executable
+     */
     @Override
     public boolean onCheckAction(User user, int pawnId, ActionIdentifier actionIdentifier, Coordinate coordinate) {
         synchronized (lobby) {
@@ -104,6 +122,18 @@ public class GameCycle implements OnExecuteActionListener, OnCheckActionListener
         }
     }
 
+    /**
+     * When a user wants to execute an action the method checks if the action is allowed,
+     * then the action is executed while checking if it's a winning action or not, in case
+     * an event of Win is launched.
+     * If the action executed was the last of the turn the game goes on to the next turn, otherwise
+     * the user goes one with its next action
+     * @param user The user that wants to execute the action
+     * @param pawnId The pawn selected by the user that wants to execute the action
+     * @param actionIdentifier The ActionIdentifier corresponding to the chosen action
+     * @param coordinate The coordinate where the user wants to execute the action
+     * @return true if the action is executed correctly
+     */
     @Override
     public boolean onExecuteAction(User user, int pawnId, ActionIdentifier actionIdentifier, Coordinate coordinate) {
         synchronized (lobby) {
@@ -160,6 +190,9 @@ public class GameCycle implements OnExecuteActionListener, OnCheckActionListener
         }
     }
 
+    /**
+     * The user's turn starts if it has not been eliminated
+     */
     void startTurn() {
         Player currentPlayer = game.getCurrentPlayer();
         actions = currentPlayer.nextStep(Action.start);
@@ -181,6 +214,9 @@ public class GameCycle implements OnExecuteActionListener, OnCheckActionListener
 
     }
 
+    /**
+     * @return true if the given pawn can execute at least one action
+     */
     private boolean canDoAnything(Pawn pawn, Action[] actions) {
         Coordinate coordinate = pawn.getPosition();
         final Board board = game.getBoard();
@@ -192,6 +228,11 @@ public class GameCycle implements OnExecuteActionListener, OnCheckActionListener
         return false;
     }
 
+    /**
+     * Eliminates the user from the game. If only one user remains in the game,
+     * that is the winner
+     * @param user The user that is eliminated
+     */
     private void elimination(User user) {
         Optional<Player> player = lobby.getPlayer(user);
         player.ifPresent(p -> {

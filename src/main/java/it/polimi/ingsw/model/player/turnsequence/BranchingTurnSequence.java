@@ -5,6 +5,11 @@ import it.polimi.ingsw.model.action.Action;
 import java.util.Arrays;
 import java.util.Optional;
 
+/**
+ * The BranchingTurnSequence is a TurnSequence where the choice of the next step of the sequence isn't
+ * necessarily a deterministic one, each step of the sequence can have multiple next steps,
+ * this kind of TurnSequence contains branches
+ */
 public class BranchingTurnSequence implements TurnSequence {
     private final StepSequence commonSteps;
     private final StepSequence[] branches;
@@ -29,6 +34,13 @@ public class BranchingTurnSequence implements TurnSequence {
         return currentStep;
     }
 
+    /**
+     * Go to the next steps of the sequence based on the last executed action,
+     * if the next step is a branch both of the choices will be available, if the
+     * executed action went into a specific branch the next step of that branch
+     * will be available
+     * @param executedAction is the step of the sequence that was executed
+     */
     @Override
     public void nextStep(Action executedAction) {
         if(!Arrays.asList(currentStep).contains(executedAction))
@@ -65,6 +77,10 @@ public class BranchingTurnSequence implements TurnSequence {
         }
     }
 
+    /**
+     * Starts the sequence, if there aren't common steps and all branches
+     * are empty the method ends the turn and return
+     */
     @Override
     public void start() {
         commonSteps.start();

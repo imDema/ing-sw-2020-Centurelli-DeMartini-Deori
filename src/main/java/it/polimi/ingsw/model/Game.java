@@ -7,6 +7,10 @@ import it.polimi.ingsw.model.turn.CircularList;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The Game class represents the abstraction of a match with tha players that partecipate
+ * and their game turns
+ */
 public class Game {
     private final List<Player> players = new ArrayList<>();
     private final Board board = new Board();
@@ -34,6 +38,12 @@ public class Game {
         return turn;
     }
 
+    /**
+     * Eliminates a player from the game
+     * @param player Is the player that is eliminated
+     * @throws IllegalStateException if the player doesn't exists or the number of players is
+     * less than 0
+     */
     public void elimination(Player player) throws IllegalStateException {
         if (players.size() > 0) {
             players.remove(player);

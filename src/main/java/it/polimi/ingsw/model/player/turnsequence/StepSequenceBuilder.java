@@ -5,7 +5,9 @@ import it.polimi.ingsw.model.action.Action;
 import java.util.ArrayList;
 import java.util.List;
 
-// Mainly for testing purposes
+/**
+ * Mainly for testing purposes,used to build a step sequence from a list of Actions
+ */
 public class StepSequenceBuilder {
     private List<Action[]> sequence = new ArrayList<>();
     public StepSequenceBuilder addStep(Action[] actions) {

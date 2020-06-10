@@ -1,5 +1,9 @@
 package it.polimi.ingsw.model.turn;
 
+/**
+ * The Node class implements a node of a linked list of generic type,
+ * each node is linked to the next and the previous node
+ */
 class Node<T> {
     private final T player;
     private Node<T> next;

@@ -126,7 +126,7 @@ public class Board {
 
     /**
      * The method calls {@link Action}.execute, the action is supposed to be valid
-     * (a call to {@link Action}.chechAction() needs to be done before)
+     * (a call to {@link Action}.checkAction() needs to be done before)
      * @param action the action that is executed
      * @throws InvalidActionException if {@link Action}.execute throws and InvalidActionException
      */
@@ -134,7 +134,9 @@ public class Board {
         return action.execute(this, pawn, c);
     }
 
-    // Ticks down one turn from all active check effects
+    /**
+     * Ticks down one turn from all active check effects
+     */
     public void tickCheckEffect() {
         activeCheckEffects = activeCheckEffects.stream()
                 .peek(ActiveEffect::tickTurn)
@@ -142,6 +144,10 @@ public class Board {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Adds a persistent CheckEffect to the board for the specified number of turns
+     * @param duration is the duration of the persistent effect measured in turns
+     */
     public void addCheckEffect(int duration, CheckEffect check) {
         activeCheckEffects.add(new ActiveEffect(duration, check));
     }
@@ -171,18 +177,5 @@ public class Board {
         return ((c.getX() >= 0) && (c.getX() < BOARD_SIZE)) && ((c.getY() >= 0) && (c.getY() < BOARD_SIZE));
     }
 
-    // Only for testing purposes
-    /*public void printBoard() {
-        for (int i = 0; i < 5; i++) {
-            for (int j = 0; j < 5; j++) {
-                if (cells[i][j].getPawn().isPresent())
-                    System.out.print("  " + cells[i][j].getBuilding().getLevel().toString() + " " + cells[i][j].getPawn().get().getOwner().getUsername() + " " + cells[i][j].getPawn().get().getId() + " ");
-                else
-                    System.out.print("  " + cells[i][j].getBuilding().getLevel().toString() + " " + "free_ _  ");
-            }
-            System.out.println(" ");
-            System.out.println(" ");
-        }
-    }*/
 }
 

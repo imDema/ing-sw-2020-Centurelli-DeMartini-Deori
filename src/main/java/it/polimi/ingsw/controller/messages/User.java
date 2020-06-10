@@ -2,6 +2,10 @@ package it.polimi.ingsw.controller.messages;
 
 import it.polimi.ingsw.model.player.Player;
 
+/**
+ * The user class represents the abstraction of a client that connects to the lobby
+ * to play a game
+ */
 public class User {
     private final String username;
 

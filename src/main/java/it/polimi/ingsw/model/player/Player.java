@@ -3,6 +3,10 @@ package it.polimi.ingsw.model.player;
 import it.polimi.ingsw.controller.messages.User;
 import it.polimi.ingsw.model.action.Action;
 
+/**
+ * The Player class represents a player of the game, each player has a
+ * username, a god card and two pawns
+ */
 public class Player {
     private final String username;
     private final Pawn[] pawns = new Pawn[2];

@@ -2,6 +2,11 @@ package it.polimi.ingsw.controller.messages;
 
 import it.polimi.ingsw.model.player.God;
 
+/**
+ * The GodIdentifier class it's a 1:1 correspondence to a god.
+ * This class allows to get a god without containing
+ * all the information required for a real god
+ */
 public class GodIdentifier {
     private final String name;
     private final String description;

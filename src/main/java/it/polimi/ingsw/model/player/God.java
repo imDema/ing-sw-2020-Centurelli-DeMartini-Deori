@@ -2,6 +2,11 @@ package it.polimi.ingsw.model.player;
 
 import it.polimi.ingsw.model.player.turnsequence.TurnSequence;
 
+/**
+ * The God class represents the abstraction of the God cards in the game,
+ * each god has a name and a description, the description explains the custom
+ * effects the god can have
+ */
 public class God {
     final private String name;
     final private String description;

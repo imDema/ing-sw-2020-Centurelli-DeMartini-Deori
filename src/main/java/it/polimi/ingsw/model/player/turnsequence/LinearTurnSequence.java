@@ -4,6 +4,10 @@ import it.polimi.ingsw.model.action.Action;
 
 import java.util.Arrays;
 
+/**
+ * The LinearTurnSequence is a TurnSequence where the choice of the next step of the sequence is
+ * a deterministic choice, given a step of the sequence the next step is unique, there aren't branches
+ */
 public class LinearTurnSequence implements TurnSequence {
     final StepSequence sequence;
     private Action[] currentStep = new Action[]{};

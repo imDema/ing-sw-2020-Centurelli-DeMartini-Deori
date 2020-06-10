@@ -1,5 +1,9 @@
 package it.polimi.ingsw.model.turn;
 
+/**
+ * The CircularList class implements a circular linked list of generic type T,
+ * the elements can be added and removed and the current element is tracked
+ */
 public class CircularList<T> {
     private Node<T> current = null;
     private int size = 0;

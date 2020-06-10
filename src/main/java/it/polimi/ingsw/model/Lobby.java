@@ -14,6 +14,12 @@ import it.polimi.ingsw.view.cli.CLI;
 
 import java.util.*;
 
+/**
+ * The Lobby class represents the abstraction of a game lobby, is the place where
+ * the users connect before the game starts.
+ * The lobby has a size, which is the max number of users that will play the game
+ * and starts the game when all the users are ready
+ */
 public class Lobby {
     public final int PAWN_N = 2;
     public final int MAX_NAME_LENGTH = 16;
@@ -41,6 +47,12 @@ public class Lobby {
         return false;
     }
 
+    /**
+     * Set the user that will start the game with the first turn and create
+     * the order between the other users
+     * @param user The user of the first turn
+     * @return true if the user is chosen correctly
+     */
     public boolean setFirstUser(User user) {
         CircularList<Player> playerTurnList = game.getPlayerTurnList();
         for(int i = 0; i < size; i++) {
@@ -100,6 +112,10 @@ public class Lobby {
         }
     }
 
+    /**
+     * Set the position of the pawns of the user on the board at the beginning of the game
+     * @return true if the pawns are placed correctly
+     */
     public boolean setUpUserPawns (User user, Coordinate c1, Coordinate c2) {
         if (!getUserToSetUp().map(user::equals).orElse(false))
             return false;
@@ -140,8 +156,10 @@ public class Lobby {
         return size;
     }
 
+    /**
+     * Sets the size of the lobby, allowed only once
+     */
     public void setSize(int size) {
-        // Only allow setting size once
         if (this.size == 0) {
             this.size = size;
         }
