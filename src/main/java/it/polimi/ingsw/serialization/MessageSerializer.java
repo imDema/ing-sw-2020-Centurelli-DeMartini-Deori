@@ -24,6 +24,7 @@ class MessageSerializer implements JsonSerializer<Message>, JsonDeserializer<Mes
             new SimpleImmutableEntry<>(MessageId.GODS_AVAILABLE, GodsAvailableMessage.class),
             new SimpleImmutableEntry<>(MessageId.MOVE, MoveMessage.class),
             new SimpleImmutableEntry<>(MessageId.PAWN_PLACED, PawnPlacedMessage.class),
+            new SimpleImmutableEntry<>(MessageId.PING, PingMessage.class),
             new SimpleImmutableEntry<>(MessageId.PLACE_PAWNS, PlacePawnsMessage.class),
             new SimpleImmutableEntry<>(MessageId.REQUEST_PLACE_PAWNS, RequestPlacePawnsMessage.class),
             new SimpleImmutableEntry<>(MessageId.RESULT, ResultMessage.class),

@@ -83,7 +83,7 @@ public class GameView extends AnchorPane {
         buttonBar.setStyle("-fx-font-size: 24pt;");
 
         setLeftAnchor(playerListView, 8.0);
-        playerListView.cardHeightProperty().setValue(300);
+        playerListView.prefHeightProperty().bind(heightProperty());
         playerListView.prefWidthProperty().bind(widthProperty().multiply(0.125));
 
         this.getChildren().addAll(boardView,testLabel,buttonBar,playerListView);

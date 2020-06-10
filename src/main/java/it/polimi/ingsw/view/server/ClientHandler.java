@@ -14,20 +14,23 @@ import it.polimi.ingsw.view.messages.*;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Scanner;
+import java.util.*;
 
 public class ClientHandler implements Runnable, OnServerEventListener {
+    private final int MISSED_PING_THRESH = 3;
+    private final long PING_PERIOD = 5000;
+
     private final Scanner socketIn;
     private final PrintWriter socketOut;
     private final Socket socket;
     private final GameController controller;
     private final MessageDispatcher dispatcher = new MessageDispatcher();
+    private final Timer timer = new Timer();
 
     private boolean running = true;
     private boolean loggedIn = false;
     private User user = null;
+    private int missedPings = 0;
 
     public ClientHandler(Scanner socketIn, PrintWriter socketOut, GameController controller, Socket socket) {
         this.socket = socket;
@@ -51,21 +54,22 @@ public class ClientHandler implements Runnable, OnServerEventListener {
      */
     @Override
     public void run() {
+        setupPing();
         while (running) {
             try {
                 Message message = Serializer.deserializeMessage(socketIn.nextLine());
 
                 // Process message
                 boolean result = message.visit(dispatcher);
-
                 // Save login information in client handler on successful login
                 if(message.getSerializationId() == MessageId.ADD_USER && result) {
                     loggedIn = true;
                     user = ((AddUserMessage)message).getUser();
                 }
-
                 // Send result
-                sendMessage(new ResultMessage(result));
+                if(message.getSerializationId() != MessageId.PING) {
+                    sendMessage(new ResultMessage(result));
+                }
                 logMessageProcessed(message, result);
 
             } catch (NoSuchElementException e) {
@@ -75,6 +79,36 @@ public class ClientHandler implements Runnable, OnServerEventListener {
                 break;
             }
         }
+        dispose();
+    }
+
+    private void setupPing() {
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                sendPing();
+            }
+        }, 5000, PING_PERIOD);
+        dispatcher.setOnPingListener(() -> missedPings = 0);
+    }
+
+    private void sendPing() {
+        if (missedPings >= MISSED_PING_THRESH) {
+            if (running && loggedIn) {
+                controller.onServerError("Connection to user ", user + " has been lost.");
+            } else if (running) {
+                sendMessage(new ServerErrorMessage("Failed to respond to pings", "You will be disconnected"));
+            }
+            running = false;
+            socketIn.close();
+        }
+
+        sendMessage(new PingMessage());
+        missedPings += 1;
+    }
+
+    private void dispose() {
+        timer.cancel();
         controller.removeServerEventsListener(this);
         socketOut.close();
         socketIn.close();
@@ -85,7 +119,6 @@ public class ClientHandler implements Runnable, OnServerEventListener {
             e.printStackTrace();
         }
     }
-
 
     @Override
     public void onActionsReady(User user, List<ActionIdentifier> actions) {
@@ -171,7 +204,7 @@ public class ClientHandler implements Runnable, OnServerEventListener {
         CLI.log(CLI.mark(result) + " " + (user != null ? user.getUsername() : "") + "/" + msg.getSerializationId());
     }
 
-    public void sendMessage(Message message) {
+    private void sendMessage(Message message) {
         String serialized = Serializer.serializeMessage(message);
         synchronized (socketOut) {
             socketOut.println(serialized);

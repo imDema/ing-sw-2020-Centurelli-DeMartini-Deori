@@ -1,8 +1,11 @@
 package it.polimi.ingsw.serialization;
 
-import com.google.gson.*;
-import it.polimi.ingsw.model.action.Checks;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
 import it.polimi.ingsw.model.action.Check;
+import it.polimi.ingsw.model.action.Checks;
 
 import java.lang.reflect.Type;
 import java.util.AbstractMap.SimpleImmutableEntry;
@@ -11,6 +14,7 @@ import java.util.Map;
 class CheckDeserializer implements JsonDeserializer<Check> {
 
     enum CheckId {
+        NO_ALLY,
         NOT_OCCUPIED,
         NEIGHBOUR,
         MAX_ONE_LEVEL_ABOVE,
@@ -23,6 +27,7 @@ class CheckDeserializer implements JsonDeserializer<Check> {
     }
 
     private final Map<CheckId, Check> map = Map.ofEntries(
+            new SimpleImmutableEntry<>(CheckId.NO_ALLY, Checks.noAlly),
             new SimpleImmutableEntry<>(CheckId.NOT_OCCUPIED, Checks.notOccupied),
             new SimpleImmutableEntry<>(CheckId.NEIGHBOUR, Checks.neighbour),
             new SimpleImmutableEntry<>(CheckId.MAX_ONE_LEVEL_ABOVE, Checks.maxOneLevelAbove),

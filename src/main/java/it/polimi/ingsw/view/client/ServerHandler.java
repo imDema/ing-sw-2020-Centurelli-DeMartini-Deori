@@ -29,12 +29,18 @@ public class ServerHandler implements Runnable, OnClientEventListener {
         this.socket = socket;
     }
 
+    /**
+     * Get the {@link MessageDispatcher} for this server handler, when a message from the server is received
+     * it is converted into an event through this dispatcher, its listener can be set to handle the events.
+     * @return this server handler's {@link MessageDispatcher}
+     */
     public MessageDispatcher dispatcher() {
         return dispatcher;
     }
 
     @Override
     public void run() {
+         dispatcher.setOnPingListener(() -> sendMessage(new PingMessage()));
         while (running) {
             try {
                 Message message = Serializer.deserializeMessage(socketIn.nextLine());
@@ -56,6 +62,9 @@ public class ServerHandler implements Runnable, OnClientEventListener {
         }
     }
 
+    /**
+     * Stop the {@link ServerHandler} as soon as possible
+     */
     public void stop() {
         running = false;
         socketOut.close();
@@ -118,7 +127,10 @@ public class ServerHandler implements Runnable, OnClientEventListener {
         return true;
     }
 
-    public void sendMessage(Message message ){
+    /**
+     * Serialize the message and send it through the outgoing socket
+     */
+    private void sendMessage(Message message){
         String serialized = Serializer.serializeMessage(message);
         synchronized (socketOut){
             socketOut.println(serialized);

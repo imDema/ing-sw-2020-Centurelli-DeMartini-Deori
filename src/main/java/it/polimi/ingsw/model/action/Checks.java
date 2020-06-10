@@ -4,7 +4,10 @@ import it.polimi.ingsw.model.board.BuildingLevel;
 import it.polimi.ingsw.model.board.Coordinate;
 
 public abstract class Checks {
-    public static final Check notOccupied = (b, p, c) -> !b.getPawnAt(c).isPresent();
+    public static final Check notOccupied = (b, p, c) -> b.getPawnAt(c).isEmpty();
+
+    public static final Check noAlly = (b, p, c) ->
+            b.getPawnAt(c).map(p2 -> !p2.getOwner().equals(p.getOwner())).orElse(true);
 
     public static final Check neighbour = (b, p, c) -> c.isNeighbour(p.getPosition());
 
@@ -32,7 +35,8 @@ public abstract class Checks {
         int y1 = c.getY() + (c.getY() - p.getPosition().getY());
         Coordinate destination = new Coordinate(x1, y1);
 
-        return b.isOnBoard(destination) && notOccupied.isAllowed(b, null, destination) && noDome.isAllowed(b, null, destination);
+        return b.isOnBoard(destination) &&
+                notOccupied.isAllowed(b, null, destination) &&
+                noDome.isAllowed(b, null, destination);
     }).orElse(true);
-
 }

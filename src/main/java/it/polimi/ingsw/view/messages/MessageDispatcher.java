@@ -38,6 +38,8 @@ public class MessageDispatcher {
     private OnSelectGodsListener selectGodsListener = null;
     private OnSelectPlayerNumberListener selectPlayerNumberListener = null;
 
+    private Runnable pingListener = null;
+
     public void setOnGodsAvailableListener(OnGodsAvailableListener godsAvailableListener) {
         this.godsAvailableListener = godsAvailableListener;
     }
@@ -92,6 +94,10 @@ public class MessageDispatcher {
 
     public void setOnSizeSelectedListener(OnSizeSelectedListener sizeSelectedListener) {
         this.sizeSelectedListener = sizeSelectedListener;
+    }
+
+    public void setOnPingListener(Runnable pingListener) {
+        this.pingListener = pingListener;
     }
 
     public void setOnAddUserListener(OnAddUserListener addUserListener) {
@@ -317,6 +323,14 @@ public class MessageDispatcher {
     public boolean onSelectPlayerNumber(int size) {
         if (selectPlayerNumberListener != null) {
             return selectPlayerNumberListener.onSelectPlayerNumber(size);
+        }
+        return false;
+    }
+
+    public boolean onPing() {
+        if (pingListener != null) {
+            pingListener.run();
+            return true;
         }
         return false;
     }

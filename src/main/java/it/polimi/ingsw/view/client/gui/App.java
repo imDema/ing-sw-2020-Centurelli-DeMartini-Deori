@@ -37,6 +37,7 @@ public class App extends Application {
         executor.submit(server);
 
         server.dispatcher().setOnServerErrorListener((type, desc) -> Platform.runLater(() -> {
+            server.stop();
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle(type);
             alert.setContentText(desc);

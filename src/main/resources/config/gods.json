@@ -12,7 +12,7 @@
                 "description": "Move",
                 "family": "MOVE",
                 "effects": ["SWAP_PAWNS"],
-                "checks": ["NEIGHBOUR", "MAX_ONE_LEVEL_ABOVE", "NO_DOME"]
+                "checks": ["NEIGHBOUR", "MAX_ONE_LEVEL_ABOVE", "NO_DOME", "NO_ALLY"]
               }
             ], [
               {
@@ -44,7 +44,7 @@
               "description": "Move",
               "family": "MOVE",
               "effects": ["PUSH_PAWN", "MOVE"],
-              "checks": ["NEIGHBOUR", "MAX_ONE_LEVEL_ABOVE", "NO_DOME", "CAN_PUSH"]
+              "checks": ["NEIGHBOUR", "MAX_ONE_LEVEL_ABOVE", "NO_DOME", "CAN_PUSH", "NO_ALLY"]
             }
           ], [
             {

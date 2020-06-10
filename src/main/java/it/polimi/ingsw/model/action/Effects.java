@@ -63,7 +63,9 @@ public abstract class Effects {
      * Adds a persistent effect to the board, forbids other players to move up
      */
     public static final Effect forbidMoveUp = (board, pawn, coordinate) -> {
-        int levelDifference = board.getBuildingAt(coordinate).getLevelDifference(board.getBuildingAt(pawn.getPosition()));
+        Building oldB = board.getBuildingAt(pawn.getPosition());
+        Building newB = board.getBuildingAt(coordinate);
+        int levelDifference = oldB.getLevelDifference(newB);
 
         if (levelDifference == 1){
             CheckEffect checkEffect = (b, p, c, a) ->

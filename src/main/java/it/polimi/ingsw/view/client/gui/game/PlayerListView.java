@@ -5,8 +5,6 @@ import it.polimi.ingsw.controller.messages.GodIdentifier;
 import it.polimi.ingsw.controller.messages.User;
 import it.polimi.ingsw.view.client.controls.GameControl;
 import it.polimi.ingsw.view.client.controls.PlayerViewState;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleDoubleProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -21,12 +19,6 @@ import java.util.List;
 public class PlayerListView extends VBox {
     private final GameControl gameControl;
     private final List<Label> labels = new ArrayList<>();
-
-    private final DoubleProperty cardHeight = new SimpleDoubleProperty();
-
-    public DoubleProperty cardHeightProperty() {
-        return cardHeight;
-    }
 
     public PlayerListView(GameControl gameControl) {
         this.gameControl = gameControl;
@@ -59,7 +51,11 @@ public class PlayerListView extends VBox {
         ImageView godView = Resources.loadGodCard(this, god.getName())
                 .orElse(Resources.loadGodCard(this));
         godView.setPreserveRatio(true);
-        godView.fitHeightProperty().bind(cardHeightProperty());
+        godView.fitHeightProperty().bind(
+                prefHeightProperty()
+                    .divide(gameControl.getBoardViewState().getSize())
+                    .multiply(0.70)
+        );
         godView.fitWidthProperty().bind(prefWidthProperty());
 
         Label playerName = new Label(user.getUsername());
