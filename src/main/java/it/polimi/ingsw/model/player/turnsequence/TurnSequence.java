@@ -3,13 +3,19 @@ package it.polimi.ingsw.model.player.turnsequence;
 import it.polimi.ingsw.model.action.Action;
 
 /**
- * The TurnSequence interface represents the abstraction of the Actions that a player
- * can execute during its turn, any action corresponds to a step in the sequence,
- * the turn progress in time when nextStep() its called.
- * Calling getStep() shows the available actions in the current phase of the turn
+ * A player's sequence of steps during a turn.
  */
 public interface TurnSequence {
+    /**
+     * Get the actions available to the player in this phase of the turn
+     * @return array of available actions
+     */
     Action[] getStep();
+
+    /**
+     * Advance the turn to the next phase.
+     * @param executedAction The action that has been executed in the current phase
+     */
     void nextStep(Action executedAction);
     void start();
 }

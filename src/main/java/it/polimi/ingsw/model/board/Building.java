@@ -1,32 +1,24 @@
 package it.polimi.ingsw.model.board;
 
 /**
- * The Building class represents the abstraction of a Building on the cells of the board
- *  The levels are represented through {@link BuildingLevel}
- * The levels of the buildings in the game starts from LEVEL0 which is
- * the default building level on every coordinate where no one has built yet
- * and the level goes up until LEVEL3 which is the maximum building level in the game.
- * The level is represented by an inner field called BuildingLevel
- * On top of LEVEL3 each building can have a dome, represented by the inner field dome:
- * dome == true if there is the dome
+ * Model representation of a building on the board.
+ * @see BuildingLevel
  */
 public class Building {
     private BuildingLevel level = BuildingLevel.LEVEL0;
     private boolean dome = false;
 
-
     public BuildingLevel getLevel() {
         return level;
     }
-
 
     public boolean hasDome() {
         return dome;
     }
 
     /**
-     * Build a dome on top of the building on which it's called if there isn't one already
-     * @throws InvalidActionException when trying to build a dome when there is already one
+     * Build a dome on top of the building.
+     * @throws InvalidActionException if the building already has a dome
      */
     public void buildDome() throws InvalidActionException {
         if (!dome) {
@@ -37,8 +29,8 @@ public class Building {
     }
 
     /**
-     * buildBlock() increase the level of the building on which it's called by 1 every time it's called
-     * @throws InvalidActionException if the building has already reached the maximum level (LEVEL3)
+     * Build a new block on the building increasing its {@link BuildingLevel} by one.
+     * @throws InvalidActionException if the building is already at the maximum level (LEVEL3)
      */
     public void buildBlock() throws InvalidActionException {
         switch (level) {
@@ -56,6 +48,7 @@ public class Building {
 
     /**
      * @return the level difference between b and this building relative to this building
+     * @param b Building to compare to
      */
     public int getLevelDifference(Building b) {
         return b.level.height - this.level.height;

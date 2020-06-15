@@ -6,9 +6,10 @@ import java.util.Arrays;
 import java.util.Optional;
 
 /**
- * The BranchingTurnSequence is a TurnSequence where the choice of the next step of the sequence isn't
- * necessarily a deterministic one, each step of the sequence can have multiple next steps,
- * this kind of TurnSequence contains branches
+ * {@link TurnSequence} that can branches once depending on the executed actions.
+ * The sequence can start with some common steps, when all are executed the next step returns actions
+ * from the first step of both branches, the sequence will then continue on the branch containing the
+ * executed action.
  */
 public class BranchingTurnSequence implements TurnSequence {
     private final StepSequence commonSteps;

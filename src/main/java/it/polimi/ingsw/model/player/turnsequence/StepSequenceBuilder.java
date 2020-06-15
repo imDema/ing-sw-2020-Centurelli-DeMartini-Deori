@@ -6,14 +6,25 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Mainly for testing purposes,used to build a step sequence from a list of Actions
+ * Builder class for {@link StepSequence}
  */
 public class StepSequenceBuilder {
-    private List<Action[]> sequence = new ArrayList<>();
+    private final List<Action[]> sequence = new ArrayList<>();
+
+    /**
+     * Add a step to the tail of the sequence
+     * @param actions step to add
+     * @return this
+     */
     public StepSequenceBuilder addStep(Action[] actions) {
         sequence.add(actions);
         return this;
     }
+
+    /**
+     * Build the {@link StepSequence} and return it
+     * @return The built StepSequence
+     */
     public StepSequence build() {
         Action[][] array = new Action[sequence.size()][];
         for (int i = 0; i < sequence.size(); i++) {

@@ -18,7 +18,7 @@ import java.util.concurrent.Executors;
 
 
 public class App extends Application {
-    protected static ExecutorService executor = Executors.newCachedThreadPool();
+    protected static final ExecutorService executor = Executors.newCachedThreadPool();
 
     private ServerHandler server;
     private BoardViewState boardViewState;

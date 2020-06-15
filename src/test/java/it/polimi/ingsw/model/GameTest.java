@@ -3,9 +3,6 @@ package it.polimi.ingsw.model;
 import it.polimi.ingsw.model.player.Player;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
@@ -21,10 +18,6 @@ public class GameTest {
         Player player2 = new Player(username2, null);
         Player player3 = new Player(username3, null);
 
-        List<Player> playersInGame = new ArrayList<>();
-        playersInGame.add(player1);
-        playersInGame.add(player2);
-        playersInGame.add(player3);
         Game game = new Game();
         game.addPlayer(player1);
         game.addPlayer(player2);

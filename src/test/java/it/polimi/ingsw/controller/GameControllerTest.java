@@ -21,9 +21,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class GameControllerTest {
     List<GodIdentifier> availableGods = null;
-    List<Coordinate> coordinateList = new ArrayList<>();
+    final List<Coordinate> coordinateList = new ArrayList<>();
     List<God> gods = new ArrayList<>();
-    Map<User, GodIdentifier> usersGods = new HashMap<>();
+    final Map<User, GodIdentifier> usersGods = new HashMap<>();
     List<ActionIdentifier> availableActions = new ArrayList<>();
     boolean flag = false;
     boolean gameEnded = false;
@@ -112,11 +112,11 @@ public class GameControllerTest {
             gameController.onPlacePawns(user, c1, c2);
         });
         dispatcher.setOnActionsReadyListener((u,l) -> {
-            System.out.println("Actions available for user " + u.getUsername());
+//            System.out.println("Actions available for user " + u.getUsername());
             availableActions = l;
         });
-        dispatcher.setOnGodChosenListener((u,g) -> usersGods.put(u, g));
-        dispatcher.setOnTurnChangeListener((u,t) -> System.out.println(u.getUsername()+" turn"));
+        dispatcher.setOnGodChosenListener(usersGods::put);
+//        dispatcher.setOnTurnChangeListener((u,t) -> System.out.println(u.getUsername()+" turn"));
 
         gameController.onSelectPlayerNumber(3);
         User u1 = new User("User1");

@@ -3,8 +3,7 @@ package it.polimi.ingsw.model.board;
 import it.polimi.ingsw.model.action.CheckEffect;
 
 /**
- * ActiveEffect represents a persistent effect on the board for a limited number of
- * turns, every player in the game is affected by this effect.
+ * Persistent effect that restricts the allowed actions for a number of turns
  */
 public class ActiveEffect {
     private int duration;
@@ -15,6 +14,10 @@ public class ActiveEffect {
         this.effect = effect;
     }
 
+    /**
+     * Get the remaining duration of the effect
+     * @return number of turns remaining
+     */
     public int getDuration() {
         return duration;
     }

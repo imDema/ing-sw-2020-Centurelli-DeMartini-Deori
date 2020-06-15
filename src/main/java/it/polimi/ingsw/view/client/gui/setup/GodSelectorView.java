@@ -10,6 +10,7 @@ import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.Tooltip;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.FlowPane;
 
@@ -23,7 +24,7 @@ public class GodSelectorView extends FlowPane {
 
     private final GodSelectorControl godSelectorControl;
 
-    List<Button> buttons = new ArrayList<>();
+    final List<Button> buttons = new ArrayList<>();
 
     public GodSelectorView(ServerHandler server, BoardViewState boardViewState, List<GodIdentifier> gods) {
         godSelectorControl = new GodSelectorControl(server, boardViewState);
@@ -114,6 +115,8 @@ public class GodSelectorView extends FlowPane {
                     return img;
                 })
                 .ifPresentOrElse(b::setGraphic, () -> b.setText(god.getName()));
+
+        b.setTooltip(new Tooltip(god.getDescription()));
         return b;
     }
 }

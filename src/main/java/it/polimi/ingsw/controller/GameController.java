@@ -9,6 +9,8 @@ import it.polimi.ingsw.controller.messages.User;
 import it.polimi.ingsw.model.Lobby;
 import it.polimi.ingsw.model.board.Board;
 import it.polimi.ingsw.model.board.Coordinate;
+import it.polimi.ingsw.model.board.events.OnBuildListener;
+import it.polimi.ingsw.model.board.events.OnMoveListener;
 import it.polimi.ingsw.model.player.God;
 import it.polimi.ingsw.view.events.OnClientEventListener;
 
@@ -18,9 +20,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * The GameController class implements the controller that handles the events from the
- * setup phase of the game, such as the connection of the clients to the lobby and the
- * phase of choosing the gods and starts the game once the setup phase is completed
+ * Main controller class, handles the lobby and game setup, then forwards to a {@link GameCycle}
  */
 public class GameController implements OnClientEventListener, OnServerErrorListener {
     private final Lobby lobby = new Lobby();
@@ -28,20 +28,30 @@ public class GameController implements OnClientEventListener, OnServerErrorListe
     private final List<OnServerEventListener> serverEventListeners = new ArrayList<>();
     private OnGameFinishedListener gameFinishedListener = null;
 
-    // Method for testing
+    // For testing
     protected Board getBoard() {
         return lobby.getGame().getBoard();
     }
 
+    /**
+     * Returns true if all players have chosen a god and placed their pawns
+     * @return true if all players have chosen a god and placed their pawns
+     */
     public boolean isGameReady (){
         return lobby.getSize() > 0 && lobby.isGameReady();
     }
+
+    /**
+     * Returns true if the lobby contains the maximum number of players
+     * @return true if the lobby contains the maximum number of players
+     */
     public boolean isLobbyFull (){
         return lobby.getSize() > 0 && lobby.isLobbyFull();
     }
 
     /**
-     * Add the given listener to handle events from the server
+     * Add a {@link OnServerEventListener} that will be notified with changes to the model and requests
+     * @param onServerEventListener listener
      */
     public void addServerEventsListener(OnServerEventListener onServerEventListener) {
         serverEventListeners.add(onServerEventListener);
@@ -57,15 +67,17 @@ public class GameController implements OnClientEventListener, OnServerErrorListe
     public void removeServerEventsListener(OnServerEventListener onServerEventListener) {
         serverEventListeners.remove(onServerEventListener);
         gameCycle.removeServerEventsListener(onServerEventListener);
-        if (serverEventListeners.size() == 0 && gameFinishedListener != null) {
-            gameFinishedListener.onGameFinished(this);
-            gameFinishedListener = null; // Prevent re triggering game finish
+        if (serverEventListeners.size() == 0) {
+            onGameFinished();
         }
     }
 
+    /**
+     * Add a listener that will be notified when the game is finished
+     * @param gameFinishedListener listener
+     */
     public void setGameFinishedListener(OnGameFinishedListener gameFinishedListener) {
         this.gameFinishedListener = gameFinishedListener;
-        gameCycle.setGameFinishedListener(gameFinishedListener);
     }
 
     private void onGodsAvailable(List<God> gods) {
@@ -75,9 +87,9 @@ public class GameController implements OnClientEventListener, OnServerErrorListe
     }
 
     /**
-     * Adds the user to the lobby if the lobby isn't full
-     * @param user The user that is added to the lobby
-     * @return true if the user is successfully added to the lobby
+     * Add a new user
+     * @param user User to add
+     * @return true if the user is successfully added to the lobby, false otherwise
      */
     @Override
     public boolean onAddUser(User user) {
@@ -103,9 +115,8 @@ public class GameController implements OnClientEventListener, OnServerErrorListe
     }
 
     /**
-     * Give the selected god to a specific user and remove the selected god from the
-     * available gods
-     * @return true if the god is available for the user
+     * Assign a god to an already logged in user
+     * @return true if the god was successfully assigned, false otherwise
      */
     @Override
     public boolean onChooseGod(User user, GodIdentifier god) {
@@ -124,7 +135,7 @@ public class GameController implements OnClientEventListener, OnServerErrorListe
             if (g.isPresent() && lobby.chooseGod(user, g.get())) {
                 serverEventListeners.forEach(l -> l.onGodChosen(user, god));
 
-                if (lobby.getPlayerNumber() == lobby.getSize() - 1) {
+                if (lobby.getGame().getPlayerNumber() == lobby.getSize() - 1) {
                     God lastGod = lobby.getAvailableGods().get(0);
                     if (!lobby.chooseGod(challenger.get(), lastGod)) {
                         onServerError("Error assigning last god to challenger", "Could not assign the last god to the challenger");
@@ -140,9 +151,8 @@ public class GameController implements OnClientEventListener, OnServerErrorListe
     }
 
     /**
-     * Place the user's pawns on the selected coordinates if the coordinates are both
-     * free and on the board
-     * @return true if the pawns are placed correctly
+     * Place pawns for a user at the chosen coordinates
+     * @return true if the pawns are placed successfully, false otherwise
      */
     @Override
     public boolean onPlacePawns(User user, Coordinate c1, Coordinate c2) {
@@ -168,6 +178,13 @@ public class GameController implements OnClientEventListener, OnServerErrorListe
         }
     }
 
+    /**
+     * Check if an user can execute an action without violating the game rules
+     * @param user user that wants to execute the action
+     * @param actionIdentifier identifier for the action that should be checked
+     * @param coordinate target coordinate for the action
+     * @return true if the action is valid, false otherwise
+     */
     @Override
     public boolean onCheckAction(User user, int pawnId, ActionIdentifier actionIdentifier, Coordinate coordinate) {
         if (isGameReady()) {
@@ -177,6 +194,22 @@ public class GameController implements OnClientEventListener, OnServerErrorListe
         }
     }
 
+    /**
+     * Check if an action is allowed and execute it. The registered {@link OnServerEventListener} will be notified
+     * of changes to the model, winning and elimination. After executing an action successfully the current user will
+     * be notified of his next allowed actions if his turn isn't over, otherwise the turn will advance and the next
+     * user will receive his {@link ActionIdentifier} list.
+     * @param user user that wants to execute the action
+     * @param pawnId id of the pawn that should execute the action
+     * @param actionIdentifier The ActionIdentifier corresponding to the chosen action
+     * @param coordinate target coordinate for the action
+     * @return true if the action was executed successfully
+     * @see OnServerEventListener
+     * @see it.polimi.ingsw.controller.events.OnWinListener
+     * @see it.polimi.ingsw.controller.events.OnEliminationListener
+     * @see OnMoveListener
+     * @see OnBuildListener
+     */
     @Override
     public boolean onExecuteAction(User user, int pawnId, ActionIdentifier actionIdentifier, Coordinate coordinate) {
         if (isGameReady()) {
@@ -187,7 +220,8 @@ public class GameController implements OnClientEventListener, OnServerErrorListe
     }
 
     /**
-     * Select the number of players that will play the game
+     * Select the number of players for this game
+     * @return true if the size is valid and not already set
      */
     @Override
     public boolean onSelectPlayerNumber(int size) {
@@ -213,6 +247,11 @@ public class GameController implements OnClientEventListener, OnServerErrorListe
         return gods;
     }
 
+    /**
+     * Select which gods the other players will be able to pick from and assume the role of challenger
+     * @param selectedGods list of gods that will be available for this game
+     * @return true if successful, false otherwise
+     */
     @Override
     public boolean onSelectGods(User user, List<GodIdentifier> selectedGods) {
         synchronized (lobby) {
@@ -228,6 +267,11 @@ public class GameController implements OnClientEventListener, OnServerErrorListe
         }
     }
 
+    /**
+     * Select which of the other players will be the first to start.
+     * Only allowed if the user requesting is the challenger
+     * @return true if successful, false otherwise
+     */
     @Override
     public boolean onChooseFirstPlayer(User self, User firstPlayer) {
         synchronized (lobby) {
@@ -245,18 +289,20 @@ public class GameController implements OnClientEventListener, OnServerErrorListe
         }
     }
 
-    /**
-     * Broadcast a fatal error
-     * @param type Type of the error
-     * @param description Error description
-     */
-    @Override
-    public void onServerError(String type, String description) {
-        serverEventListeners.forEach(l -> l.onServerError(type, description));
+    protected void onGameFinished() {
         if (gameFinishedListener != null) {
             gameFinishedListener.onGameFinished(this);
             gameFinishedListener = null; // Prevent re triggering game finish
         }
+    }
+
+    /**
+     * Notify all listeners of a server error and signal the termination of the game
+     */
+    @Override
+    public void onServerError(String type, String description) {
+        serverEventListeners.forEach(l -> l.onServerError(type, description));
+        onGameFinished();
     }
 
 }

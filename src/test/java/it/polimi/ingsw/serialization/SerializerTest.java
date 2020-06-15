@@ -1,16 +1,8 @@
 package it.polimi.ingsw.serialization;
 
-import com.google.gson.Gson;
 import it.polimi.ingsw.Resources;
-import it.polimi.ingsw.controller.messages.User;
-import it.polimi.ingsw.model.Lobby;
 import it.polimi.ingsw.model.action.*;
-import it.polimi.ingsw.model.board.Board;
-import it.polimi.ingsw.model.board.Coordinate;
-import it.polimi.ingsw.model.board.InvalidActionException;
 import it.polimi.ingsw.model.player.God;
-import it.polimi.ingsw.model.player.Pawn;
-import it.polimi.ingsw.model.player.Player;
 import it.polimi.ingsw.model.player.turnsequence.LinearTurnSequence;
 import it.polimi.ingsw.model.player.turnsequence.StepSequence;
 import it.polimi.ingsw.model.player.turnsequence.StepSequenceBuilder;
@@ -71,25 +63,9 @@ public class SerializerTest {
         List<God> gods = Serializer.deserializeGodList(config);
         assertTrue(gods.size() > 0);
 
-        gods.stream()
-                //.peek(System.out::println)
-                .forEach(Assertions::assertNotNull);
-    }
-
-    @Test
-    public void testSerializeBoard() {
-        Board board = new Board();
-        String serializedBoard = Serializer.serializeBoard(board);
-        System.out.println(serializedBoard);
-    }
-
-    @Test
-    public void testSerializeLobby() {
-        Lobby lobby = new Lobby();
-        lobby.addUser(new User("user1"));
-        lobby.addUser(new User("user2"));
-        lobby.setSize(3);
-        String serializedLobby = Serializer.serializeLobby(lobby);
-        System.out.println(serializedLobby);
+        gods
+//            .stream()
+//            .peek(System.out::println)
+            .forEach(Assertions::assertNotNull);
     }
 }

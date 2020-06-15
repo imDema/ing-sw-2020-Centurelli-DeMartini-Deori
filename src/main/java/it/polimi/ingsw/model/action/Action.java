@@ -1,15 +1,17 @@
 package it.polimi.ingsw.model.action;
 
-import it.polimi.ingsw.model.board.*;
+import it.polimi.ingsw.model.board.Board;
+import it.polimi.ingsw.model.board.Coordinate;
+import it.polimi.ingsw.model.board.InvalidActionException;
 import it.polimi.ingsw.model.player.Pawn;
 
 import java.util.Arrays;
 
 /**
- * The Action class represents the abstraction of an Action in the game, each action
- * can have multiple effects and restrictions (the restrictions are represented with
- * the Check class), each action also have a unique description that synthesizes the
- * effects of the action
+ * Action that can be executed by a {@link Pawn} on the {@link Board}
+ * Composed of a combination of {@link Checks} and {@link Effects}
+ * @see Check
+ * @see Effect
  */
 public class Action {
     public static final Action start = new Action("Start turn", ActionFamily.NONE, new Effect[0], new Check[0]);
@@ -35,12 +37,12 @@ public class Action {
     }
 
     /**
-     * Execute the specified Action on a given Coordinate
-     * @param board The board on which the action is executed
-     * @param pawn The pawn selected by the player that executes this action
-     * @param coordinate The coordinate where the player wants to execute this action
-     * @return true if the player that executes this action wins by executing it
-     * @throws InvalidActionException if the chosen action can't be executed
+     * Execute the action and modify the board
+     * @param board Board
+     * @param pawn Acting pawn
+     * @param coordinate Target coordinate for the action
+     * @return true if the action results in a win for the player that executed it, false otherwise
+     * @throws InvalidActionException if executing the action results in illegal behaviour on the board
      */
     public boolean execute(Board board, Pawn pawn, Coordinate coordinate) throws InvalidActionException {
         boolean win = false;
@@ -53,7 +55,10 @@ public class Action {
     }
 
     /**
-     * Checks if the action matches all its checks on the given set of board,pawn,coordinate
+     * Checks if the action is valid and could be executed
+     * @param board Board
+     * @param pawn Acting pawn
+     * @param coordinate Target coordinate for the action
      * @return true if the action is valid, false otherwise
      */
     public boolean checkAllowed(Board board, Pawn pawn, Coordinate coordinate) {

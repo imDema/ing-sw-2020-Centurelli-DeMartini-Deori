@@ -7,8 +7,8 @@ import it.polimi.ingsw.view.client.cli.CLIBoardView;
 import it.polimi.ingsw.view.client.controls.LoginControl;
 
 public class LoginState implements InputHandlerState {
-    LoginControl loginControl;
-    CLIBoardView cliBoardView;
+    final LoginControl loginControl;
+    final CLIBoardView cliBoardView;
 
     public LoginState(ServerHandler serverHandler, CLIBoardView cliBoardView) {
         this.cliBoardView =cliBoardView;

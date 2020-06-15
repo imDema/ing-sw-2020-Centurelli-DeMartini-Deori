@@ -16,6 +16,11 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
+/**
+ * Handles client side communication with the server.
+ * It will launch events originating from the server through its {@link MessageDispatcher} and allows
+ * forwarding client events to the server
+ */
 public class ServerHandler implements Runnable, OnClientEventListener {
     private final Scanner socketIn;
     private final PrintWriter socketOut;
@@ -47,7 +52,8 @@ public class ServerHandler implements Runnable, OnClientEventListener {
                 message.visit(dispatcher);
             } catch (NoSuchElementException e) {
                 if (running) {
-                    dispatcher.onServerError("Connection error", "The connection to the server has been lost");
+                    new ServerErrorMessage("Connection error", "The connection to the server has been lost")
+                        .visit(dispatcher);
                 }
                 break;
             }

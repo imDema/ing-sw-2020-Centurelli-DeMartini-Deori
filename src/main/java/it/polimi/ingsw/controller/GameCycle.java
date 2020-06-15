@@ -1,6 +1,5 @@
 package it.polimi.ingsw.controller;
 
-import it.polimi.ingsw.controller.events.OnGameFinishedListener;
 import it.polimi.ingsw.controller.events.OnServerEventListener;
 import it.polimi.ingsw.controller.messages.ActionIdentifier;
 import it.polimi.ingsw.controller.messages.User;
@@ -25,9 +24,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * The GameCycle class implements the controller for the in-game events, such as the start of the turn,
- * the actions and all the other in-game events.
- * GameCycle forward the events from the view to the model and vice versa
+ * Controller for the main part of the game
  */
 public class GameCycle implements OnExecuteActionListener, OnCheckActionListener, OnMoveListener, OnBuildListener {
     private final Lobby lobby;
@@ -37,7 +34,6 @@ public class GameCycle implements OnExecuteActionListener, OnCheckActionListener
     private Action[] actions;
     private final GameController gameController;
     private final List<OnServerEventListener> serverEventListeners = new ArrayList<>();
-    private OnGameFinishedListener gameFinishedListener = null;
 
     public GameCycle(Lobby lobby, GameController gameController) {
         this.lobby = lobby;
@@ -48,10 +44,6 @@ public class GameCycle implements OnExecuteActionListener, OnCheckActionListener
         game.getBoard().setOnBuildListener(this);
     }
 
-    void setGameFinishedListener(OnGameFinishedListener gameFinishedListener) {
-        this.gameFinishedListener = gameFinishedListener;
-    }
-
     void addServerEventListener(OnServerEventListener onServerEventListener) {
         serverEventListeners.add(onServerEventListener);
     }
@@ -60,17 +52,11 @@ public class GameCycle implements OnExecuteActionListener, OnCheckActionListener
         serverEventListeners.remove(onServerEventListener);
     }
 
-    /**
-     * Forward model events to all listeners
-     */
     @Override
     public void onBuild(Building building, Coordinate coordinate) {
         serverEventListeners.forEach(l -> l.onBuild(building, coordinate));
     }
 
-    /**
-     * Forward model events to all listeners
-     */
     @Override
     public void onMove(Coordinate from, Coordinate to) {
         serverEventListeners.forEach(l -> l.onMove(from, to));
@@ -100,7 +86,7 @@ public class GameCycle implements OnExecuteActionListener, OnCheckActionListener
     }
 
     /**
-     * Checks if an action can be executed
+     * Checks if an action action is valid and can be executed
      * @param user The user that wants to execute the action
      * @param pawnId The pawn selected to execute the action
      * @param actionIdentifier The actionIdentifier that corresponds to the chosen action
@@ -123,16 +109,20 @@ public class GameCycle implements OnExecuteActionListener, OnCheckActionListener
     }
 
     /**
-     * When a user wants to execute an action the method checks if the action is allowed,
-     * then the action is executed while checking if it's a winning action or not, in case
-     * an event of Win is launched.
-     * If the action executed was the last of the turn the game goes on to the next turn, otherwise
-     * the user goes one with its next action
-     * @param user The user that wants to execute the action
-     * @param pawnId The pawn selected by the user that wants to execute the action
+     * Check if an action is allowed and execute it. The registered {@link OnServerEventListener} will be notified
+     * of changes to the model, winning and elimination. After executing an action successfully the current user will
+     * be notified of his next allowed actions if his turn isn't over, otherwise the turn will advance and the next
+     * user will receive his {@link ActionIdentifier} list.
+     * @param user user that wants to execute the action
+     * @param pawnId id of the pawn that should execute the action
      * @param actionIdentifier The ActionIdentifier corresponding to the chosen action
-     * @param coordinate The coordinate where the user wants to execute the action
-     * @return true if the action is executed correctly
+     * @param coordinate target coordinate for the action
+     * @return true if the action was executed successfully
+     * @see OnServerEventListener
+     * @see it.polimi.ingsw.controller.events.OnWinListener
+     * @see it.polimi.ingsw.controller.events.OnEliminationListener
+     * @see OnMoveListener
+     * @see OnBuildListener
      */
     @Override
     public boolean onExecuteAction(User user, int pawnId, ActionIdentifier actionIdentifier, Coordinate coordinate) {
@@ -156,11 +146,10 @@ public class GameCycle implements OnExecuteActionListener, OnCheckActionListener
 
                     try {
                         // Execute the action, call winListener if it was a winning move
-                        if (game.getBoard().executeAction(chosenAction, currentPawn, coordinate)) {
+                        if (chosenAction.execute(game.getBoard(), currentPawn, coordinate)) {
                             serverEventListeners.forEach(l -> l.onWin(new User(player)));
 
-                            if(gameFinishedListener != null)
-                                gameFinishedListener.onGameFinished(gameController);
+                            gameController.onGameFinished();
                         }
 
                         // Progress through the steps
@@ -190,9 +179,6 @@ public class GameCycle implements OnExecuteActionListener, OnCheckActionListener
         }
     }
 
-    /**
-     * The user's turn starts if it has not been eliminated
-     */
     void startTurn() {
         Player currentPlayer = game.getCurrentPlayer();
         actions = currentPlayer.nextStep(Action.start);
@@ -229,8 +215,7 @@ public class GameCycle implements OnExecuteActionListener, OnCheckActionListener
     }
 
     /**
-     * Eliminates the user from the game. If only one user remains in the game,
-     * that is the winner
+     * Eliminates the user from the game. If only one user remains it will win the game
      * @param user The user that is eliminated
      */
     private void elimination(User user) {

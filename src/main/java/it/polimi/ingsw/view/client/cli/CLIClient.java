@@ -21,6 +21,7 @@ import java.util.Scanner;
 public class CLIClient {
     private final ProxyController proxyController;
     private final CLIBoardView cliBoardView = new CLIBoardView();
+    private Scanner input;
     private GameControl gameControl;
     private InputHandlerContext inputHandler;
 
@@ -57,15 +58,25 @@ public class CLIClient {
             return;
         }
 
+        CLI.clientInfo("   _____             _             _       _ \n" +
+                "  / ____|           | |           (_)     (_)\n" +
+                " | (___   __ _ _ __ | |_ ___  _ __ _ _ __  _ \n" +
+                "  \\___ \\ / _` | '_ \\| __/ _ \\| '__| | '_ \\| |\n" +
+                "  ____) | (_| | | | | || (_) | |  | | | | | |\n" +
+                " |_____/ \\__,_|_| |_|\\__\\___/|_|  |_|_| |_|_|\n" +
+                "                                             \n" +
+                "                                             \n" +
+                "\n" +
+                "Welcome to Santorini,\nType size N to choose the game size\nType login USERNAME to log in");
+        System.out.flush();
+
         gameControl = new GameControl(serverHandler, cliBoardView.getBoardViewState());
         inputHandler = new InputHandlerContext(gameControl);
         inputHandler.setState(new LoginState(serverHandler, cliBoardView));
 
-
         Thread controllerThread = new Thread(serverHandler);
         controllerThread.start();
-        Scanner input = new Scanner(System.in);
-
+        input = new Scanner(System.in);
 
         serverHandler.dispatcher().setOnGodsAvailableListener(gods ->
                 inputHandler.setState(new ChooseGodState(serverHandler, cliBoardView.getBoardViewState(), gods))
@@ -139,7 +150,8 @@ public class CLIClient {
 
     private void onServerError(String type, String description) {
         CLI.error("Server error: " + type + "\n" + description + "\nterminating client");
-        System.exit(0);
+        running = false;
+        input.close();
     }
 
     private void onTurnChange(User currentUser, int turn) {
@@ -149,6 +161,7 @@ public class CLIClient {
     private void onWin(User user) {
         System.out.println(CLI.color("\n" + user.getUsername() + " won the game!\n\n", Colors.BG_YELLOW));
         System.out.flush();
-        System.exit(0);
+        running = false;
+        input.close();
     }
 }

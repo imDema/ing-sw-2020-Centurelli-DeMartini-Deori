@@ -7,6 +7,9 @@ import it.polimi.ingsw.view.server.Server;
 import java.util.Arrays;
 import java.util.Iterator;
 
+/**
+ * Main entry point
+ */
 public class Program {
     private boolean cliMode = false;
     private boolean serverMode = false;

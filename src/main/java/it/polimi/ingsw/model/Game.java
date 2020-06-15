@@ -8,8 +8,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The Game class represents the abstraction of a match with tha players that partecipate
- * and their game turns
+ * Model representation of a game of Santorini.
+ * Handles players and turns
+ * @see Board
+ * @see Player
  */
 public class Game {
     private final List<Player> players = new ArrayList<>();
@@ -26,6 +28,10 @@ public class Game {
         return board;
     }
 
+    /**
+     * Get the number of {@link Player} in this game
+     * @return Number of players in the game
+     */
     public int getPlayerNumber() {
         return players.size() ;
     }
@@ -39,20 +45,25 @@ public class Game {
     }
 
     /**
-     * Eliminates a player from the game
-     * @param player Is the player that is eliminated
-     * @throws IllegalStateException if the player doesn't exists or the number of players is
-     * less than 0
+     * Remove a player from the game
+     * @param player Player to remove
      */
-    public void elimination(Player player) throws IllegalStateException {
+    public void elimination(Player player) {
         if (players.size() > 0) {
-            players.remove(player);
-            removeFromTurnManager(player);
-            } else {
-                throw new IllegalStateException();
+            if (player.getPawn(0).getPosition() != null) {
+                board.removePawn(player.getPawn(0));
             }
+            if (player.getPawn(1).getPosition() != null) {
+                board.removePawn(player.getPawn(1));
+            }
+            playerTurnList.remove(player);
+            players.remove(player);
+        }
     }
 
+    /**
+     * Advance the game to the next turn
+     */
     public void nextTurn() {
         turn += 1;
         playerTurnList.next();
@@ -63,11 +74,10 @@ public class Game {
         return playerTurnList;
     }
 
+    /**
+     * @return Player that is supposed to make a move
+     */
     public Player getCurrentPlayer() {
         return playerTurnList.current();
-    }
-
-    public void removeFromTurnManager(Player player) {
-        playerTurnList.remove(player);
     }
 }

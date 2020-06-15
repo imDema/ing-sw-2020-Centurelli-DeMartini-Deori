@@ -3,10 +3,8 @@ package it.polimi.ingsw.serialization;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import it.polimi.ingsw.model.Lobby;
 import it.polimi.ingsw.model.action.Check;
 import it.polimi.ingsw.model.action.Effect;
-import it.polimi.ingsw.model.board.Board;
 import it.polimi.ingsw.model.player.God;
 import it.polimi.ingsw.model.player.turnsequence.TurnSequence;
 import it.polimi.ingsw.view.messages.Message;
@@ -14,6 +12,9 @@ import it.polimi.ingsw.view.messages.Message;
 import java.lang.reflect.Type;
 import java.util.List;
 
+/**
+ * Handles serialization for game specific objects
+ */
 public abstract class Serializer {
     private static Gson gson = null;
 
@@ -34,17 +35,6 @@ public abstract class Serializer {
         return getGson().fromJson(s, Message.class);
     }
 
-    public static String serializeBoard (Board board) {
-        return getGson().toJson(board, Board.class);
-    }
-
-    public static Board deserializeBoard (String s) {
-        return getGson().fromJson(s, Board.class);
-    }
-
-    public static String serializeLobby (Lobby lobby) {
-        return getGson().toJson(lobby, Lobby.class);
-    }
     // Lazy load
     private static Gson getGson() {
         if (gson == null) {

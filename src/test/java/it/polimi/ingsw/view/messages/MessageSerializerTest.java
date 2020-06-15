@@ -1,18 +1,10 @@
 package it.polimi.ingsw.view.messages;
 
-import it.polimi.ingsw.controller.messages.ActionIdentifier;
 import it.polimi.ingsw.controller.messages.GodIdentifier;
 import it.polimi.ingsw.controller.messages.User;
-import it.polimi.ingsw.model.action.*;
-import it.polimi.ingsw.model.board.Building;
-import it.polimi.ingsw.model.board.Coordinate;
 import it.polimi.ingsw.model.player.God;
 import it.polimi.ingsw.serialization.Serializer;
 import org.junit.jupiter.api.Test;
-
-import javax.sound.midi.SysexMessage;
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 

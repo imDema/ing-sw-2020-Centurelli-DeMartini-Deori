@@ -4,14 +4,19 @@ import it.polimi.ingsw.controller.messages.User;
 import it.polimi.ingsw.model.action.Action;
 
 /**
- * The Player class represents a player of the game, each player has a
- * username, a god card and two pawns
+ * Model representation of a player.
  */
 public class Player {
     private final String username;
     private final Pawn[] pawns = new Pawn[2];
     private final God god;
 
+    /**
+     * Advance through the phases of the turn.
+     * {@code Action.start} will start the turn.
+     * @param action action from the current phase that has been executed
+     * @return allowed actions for the next phase
+     */
     public Action[] nextStep(Action action) {
         if (action.equals(Action.start))
             god.getTurnSequence().start();
@@ -49,6 +54,7 @@ public class Player {
         this.pawns[1] = new Pawn(this, 1);
         this.god = god;
     }
+
     public Player(User user, God god){
         this(user.getUsername(), god);
     }

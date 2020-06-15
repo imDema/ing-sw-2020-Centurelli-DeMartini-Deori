@@ -5,3 +5,8 @@ target/
 *.class
 out/
 shade/
+*.aux
+*.fdb_latexmk
+*.fls
+*.log
+*.synctex.gz

@@ -1,6 +1,7 @@
 package it.polimi.ingsw.view.events;
 /**
- * This interface is meant to be used as a shortcut to implement all listeners for client events
+ * Listener for all client generated events.
+ * Intended to be used as a shortcut.
  */
 public interface OnClientEventListener extends OnAddUserListener, OnChooseGodListener, OnCheckActionListener,
         OnExecuteActionListener, OnPlacePawnsListener, OnSelectPlayerNumberListener, OnSelectGodsListener,

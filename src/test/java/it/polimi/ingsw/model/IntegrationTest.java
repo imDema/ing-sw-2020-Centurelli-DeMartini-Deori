@@ -72,7 +72,7 @@ public class IntegrationTest {
 
         // Check and execute action
         assertTrue(board.checkAction(chosenAction, pawn, coordinate));
-        board.executeAction(chosenAction, pawn, coordinate);
+        chosenAction.execute(board, pawn, coordinate);
         assertEquals(game.getPlayers().get(0).getPawn(0).getPosition(), coordinate);
 
         // Advance turn sequence and go on executing actions
@@ -81,7 +81,7 @@ public class IntegrationTest {
         coordinate = new Coordinate(2,1);
 
         assertTrue(board.checkAction(chosenAction, pawn, coordinate));
-        board.executeAction(chosenAction, pawn, coordinate);
+        chosenAction.execute(board, pawn, coordinate);
         assertEquals(BuildingLevel.LEVEL1, board.getBuildingAt(coordinate).getLevel());
 
         // Expect end turn
@@ -100,7 +100,7 @@ public class IntegrationTest {
         coordinate = new Coordinate(4,1);
 
         assertTrue(board.checkAction(chosenAction,pawn,coordinate));
-        board.executeAction(chosenAction, pawn, coordinate);
+        chosenAction.execute(board, pawn, coordinate);
         assertEquals(coordinate, player.getPawn(1).getPosition());
     }
 }

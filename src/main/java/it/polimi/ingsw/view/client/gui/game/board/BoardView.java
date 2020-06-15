@@ -38,7 +38,6 @@ public class BoardView extends StackPane {
     public BoardView(BoardViewState boardViewState) {
         this.boardViewState = boardViewState;
         initView();
-        bindViewState();
     }
 
     private ImageView renderPawn(PawnViewState pawn) {
@@ -108,9 +107,5 @@ public class BoardView extends StackPane {
         if (cellClickListener != null) {
             cellClickListener.accept(button, c);
         }
-    }
-
-    private void bindViewState() {
-
     }
 }

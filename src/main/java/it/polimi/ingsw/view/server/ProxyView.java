@@ -18,8 +18,8 @@ import java.util.concurrent.Executors;
 public class ProxyView implements OnGameFinishedListener {
     private final String ip;
     private final int port;
+    private final ExecutorService executor = Executors.newCachedThreadPool();
     private GameController controller;
-    ExecutorService executor = Executors.newCachedThreadPool();
 
 
     public ProxyView(String ip, int port) {

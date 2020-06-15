@@ -1,7 +1,6 @@
 \documentclass{article}
 \usepackage{graphicx}
-\usepackage{color}
-\usepackage{listings}
+\usepackage{listings,float,wrapfig}
 \usepackage[activate=true,final,tracking=true,kerning=true,spacing=true]{microtype}
 \microtypecontext{spacing=nonfrench}
 \usepackage[margin=2cm]{geometry}
@@ -33,7 +32,7 @@ The server only allows setting the lobby size once and logins with identical use
 On client connection the server will direct the client to the lobby that is being filled. When the current lobby is full a new one will be started and successive connections will be directed to the new lobby.
 A client disconnecting before logging in will be ignored, although after a client has logged in and has chosen a username its disconnection will notify the users that their lobby is being terminated.
 
-After finishing a game either because someone won or beacuse of an unrecoverable server error the server will notify the clients, close the lobby and clients may reconnect to play again.
+After finishing a game either because someone won or because of an unrecoverable server error the server will notify the clients, close the lobby and clients may reconnect to play again.
 
 After any unrecoverable error all clients are notified that the lobby will be terminated.
 
@@ -47,24 +46,29 @@ The fist client to send a SelectPlayerNumber message containing a valid size wil
 
 The users can login using an AddUser message receiving a Result specifying whether the operation completed successfully and in case it was all the users will be notified of the newly created user.
 
-When as many users as the lobby size are added the server will send a message to the users with the gods available to choose from and it will start accepting ChooseGod messages.
+When as many users as the lobby size are added the server will send a message to the users with the gods available to choose from and it will start accepting SelectGods messages and move to the next phase.
 
-ChooseGod messages behave in a similar way to AddUser messages, the client will receive a result and other clients will be notified on success. When the last successful ChooseGod is processed the server will advance to the next phase.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\linewidth]{communication_uml_1.pdf}
+\end{figure}
 
-\vspace{8pt}
-\includegraphics[width=0.85\linewidth]{communication_uml_1.pdf}
+\subsection*{Setup: choose divinity and place pawns}
 
-\subsection*{Setup: pawn placement}
-The server will now send a RequestPlacePawns message notifying users which user must now place their pawns.
+The server will now wait for a SelectGods message, containing the list of gods, picked from the list supplied by GodsAvailable, that will be available for this game. The first user to send a valid SelectGods message will be marked as the challenger and ChooseGod requests will now be accepted from other users.
 
-The user will send a PlacePawn message with the desired coordinates (as usual it will receive a Result and all users will be notified of successful changes).
+Any non-challenger user can now choose his god from the new list with a ChooseGod message, all the users will be notified of the choice with a GodChosen message and of the updated list of available gods.
 
-Trying to place pawns from another user will result in a negative Result.
+After all other users have chosen their divinity the challenger will now be able to choose which user should start first with a ChooseFirstPlayer message and after that the server will start asking players to choose a starting position for their pawns.
+
+The user will send a PlacePawn message with the desired coordinates (as with other messages the user will receive a Result and all users will be notified of successful changes).
 
 When pawns for all users are placed the server will advance to the next phase.
 
-\vspace{8pt}
-\includegraphics[width=0.85\linewidth]{communication_uml_2.pdf}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\linewidth]{communication_uml_2.pdf}
+\end{figure}
 \subsection*{Game cycle}
 
 During the main game cycle the server will send ActionReady messages notifying users which user should now execute an action and which actions he is allowed to choose from. 
@@ -75,9 +79,21 @@ The user can send an ExecuteAction message that, after checking if the action is
 
 When the end of a user's turn has been reached a TurnChange message is sent and the cycle will restart asking for the next user to execute an action.
 
-\vspace{8pt}
-\includegraphics[width=0.85\linewidth]{communication_uml_3.pdf}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\linewidth]{communication_uml_3.pdf}
+\end{figure}
 
+\begin{wrapfigure}[6]{r}{0.46\linewidth}
+    \centering
+    \includegraphics[width=\linewidth]{communication_uml_4.pdf}
+\end{wrapfigure}
+
+During all phases of the game the server will periodically send a PingMessage to all clients, every client must respond with a PingMessage.
+
+If a client stops responding to pings it will be interpreted as a loss of connection, the lobby will be terminated and all users will be notified
+
+\pagebreak
 \subsection*{Message serialization}
 
 Messages are serialized in JSON form.
@@ -124,6 +140,7 @@ Message reference
     AddUserMessage(User user)
     BuildMessage(Building building, Coordinate coordinate)
     CheckActionMessage(User user, int id, ActionIdentifier actionIdentifier, Coordinate coordinate)
+    ChooseFirstPlayerMessage(User self, User firstPlayer)
     ChooseGodMessage(User user, GodIdentifier god)
     EliminationMessage(User user)
     ExecuteActionMessage(User user, int id, ActionIdentifier actionIdentifier, Coordinate coordinate)
@@ -131,11 +148,14 @@ Message reference
     GodsAvailableMessage(List<GodIdentifier> gods)
     MoveMessage(Coordinate from, Coordinate to)
     PawnPlacedMessage(User owner, int pawnId, Coordinate coordinate)
+    PingMessage()
     PlacePawnsMessage(User user, Coordinate c1, Coordinate c2)
     RequestPlacePawnsMessage(User user)
     ResultMessage(boolean value)
+    SelectGodsMessage(User user, List<GodIdentifier> gods)
     SelectPlayerNumberMessage(int size)
     ServerErrorMessage(String type, String description)
+    SizeSelectedMessaege(int size)
     TurnChangeMessage(User user, int turn)
     UserJoinedMessage(User user)
     WinMessage(User user)

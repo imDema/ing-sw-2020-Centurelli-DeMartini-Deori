@@ -1,5 +1,8 @@
 package it.polimi.ingsw.view.cli;
 
+/**
+ * Utility class for CLI rendering
+ */
 public abstract class CLI {
     public static void info(String message) {
         System.out.println(color("INFO", Colors.GREEN) + ": " + message);

@@ -6,6 +6,10 @@ import it.polimi.ingsw.model.board.Coordinate;
 import it.polimi.ingsw.model.player.Pawn;
 
 public abstract class Effects {
+    /**
+     * Move the pawn to the target coordinate
+     * Winning effect if moving up to level 3
+     */
     public static final Effect move = (b, p, c) -> {
         BuildingLevel oldLevel = b.getBuildingAt(p.getPosition()).getLevel();
         BuildingLevel newLevel = b.getBuildingAt(c).getLevel();
@@ -15,6 +19,10 @@ public abstract class Effects {
         return oldLevel != BuildingLevel.LEVEL3 && newLevel == BuildingLevel.LEVEL3;
     };
 
+    /**
+     * Winning move if the building at the target coordinate is two or more levels lower than that at
+     * the pawn's coordinate
+     */
     public static final Effect winOnJumpDown = (b,p,c) -> {
         Building oldB = b.getBuildingAt(p.getPosition());
         Building newB = b.getBuildingAt(c);
@@ -22,16 +30,25 @@ public abstract class Effects {
         return oldB.getLevelDifference(newB) <= -2;
     };
 
+    /**
+     * Build a block at the target coordinate
+     */
     public static final Effect buildBlock = (b, p, c) -> {
         b.buildBlock(c);
         return false;
     };
 
+    /**
+     * Build a dome at the target coordinate
+     */
     public static final Effect buildDome = (b, p, c) -> {
         b.buildDome(c);
         return false;
     };
 
+    /**
+     * If there is a pawn at the target coordinate push it along the pawn position to target coordinate direction
+     */
     public static final Effect pushPawn = (b, p, c) -> {
         if (b.getPawnAt(c).isPresent())
         {
@@ -46,6 +63,11 @@ public abstract class Effects {
         return false;
     };
 
+    /**
+     * If there is another pawn at the target coordinate swap its position with the pawn, otherwise
+     * move the pawn to the target coordinate
+     * Winning effect if moving up to level 3
+     */
     public static final Effect swapPawns = (b, p, c) -> {
         BuildingLevel oldLevel = b.getBuildingAt(p.getPosition()).getLevel();
         BuildingLevel newLevel = b.getBuildingAt(c).getLevel();
@@ -60,7 +82,8 @@ public abstract class Effects {
     };
 
     /**
-     * Adds a persistent effect to the board, forbids other players to move up
+     * Adds a persistent effect that forbids executing ActionFamily.MOVE actions that target buildings
+     * at a higher level for a number of turns equal to the number of players
      */
     public static final Effect forbidMoveUp = (board, pawn, coordinate) -> {
         Building oldB = board.getBuildingAt(pawn.getPosition());
@@ -80,7 +103,8 @@ public abstract class Effects {
     };
 
     /**
-     * Adds a persistent effect to the board, forbids other players to move back on the pawn coordinate
+     * Adds a persistent effect to the board that forbids executing ActionFamily.MOVE actions targeting the coordinate
+     * where the pawn currently is for the current turn
      */
     public static final Effect forbidMoveBack = (board, pawn, coordinate) -> {
         final Coordinate playerPosition = pawn.getPosition();
@@ -90,7 +114,8 @@ public abstract class Effects {
     };
 
     /**
-     * Adds a persistent effect to the board, forbids other players to build on the specified coordinate
+     * Adds a persistent effect to the board that forbids executing ActionFamily.BUILD actions targeting the target
+     * coordinate for the current turn
      */
     public static final Effect forbidBuildAtCoordinate = (board, pawn, coordinate) -> {
         final Coordinate position = coordinate;
@@ -100,7 +125,8 @@ public abstract class Effects {
     };
 
     /**
-     * Adds a persistent effect to the board, force other players to build only on the given coordinate
+     * Adds a persistent effect to the board that forbids executing ActionFamily.BUILD actions targeting any
+     * coordinate other than the current target for the current turn
      */
     public static final Effect forbidBuildAtOtherCoordinates = (board, pawn, coordinate) -> {
         final Coordinate position = coordinate;

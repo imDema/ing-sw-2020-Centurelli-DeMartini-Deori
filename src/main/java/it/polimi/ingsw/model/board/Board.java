@@ -12,14 +12,16 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * The Board represents the game board, with pawns and buildings.
- * The board is a square of 5x5 Cells, each one represented by a unique coordinate.
+ * Model representation of the game board. Contains pawns and buildings and handles persistent effects
+ * @see Pawn
+ * @see Building
+ * @see ActiveEffect
  */
 public class Board {
     public static final int BOARD_SIZE = 5;
     private OnMoveListener onMoveListener;
     private OnBuildListener onBuildListener;
-    private Cell[][] cells;
+    private final Cell[][] cells;
     // Turn duration
     private List<ActiveEffect> activeCheckEffects = new ArrayList<>();
 
@@ -40,19 +42,29 @@ public class Board {
     }
 
     public Optional<Pawn> getPawnAt(Coordinate c) {
-        return cellAt(c).getPawn();
+        if (isOnBoard(c)) {
+            return cellAt(c).getPawn();
+        } else {
+            return Optional.empty();
+        }
     }
 
     public Building getBuildingAt(Coordinate c) {
-        return cellAt(c).getBuilding();
+        if (isOnBoard(c)) {
+            return cellAt(c).getBuilding();
+        } else {
+            return null;
+        }
     }
 
     /**
-     * @param pawn Is the pawn that will move to the specified coordinate
-     * @param c Is the coordinate where the pawn will move on
+     * Move a pawn to a cell
+     * @param pawn Moving pawn
+     * @param c Destination for the movement
      * @throws InvalidActionException if there is already a pawn in c or c is out of the Board
      */
     public void movePawn(Pawn pawn, Coordinate c) throws InvalidActionException {
+        if (!isOnBoard(c)) throw new InvalidActionException();
         if (getPawnAt(c).isEmpty()) {
             Coordinate oldC = pawn.getPosition();
 
@@ -67,6 +79,11 @@ public class Board {
         }
     }
 
+    /**
+     * Swap the position of two pawns on the board
+     * @param pawn1 first pawn
+     * @param pawn2 second pawn
+     */
     public void swapPawn(Pawn pawn1, Pawn pawn2) {
         Coordinate c1 = pawn1.getPosition();
         Coordinate c2 = pawn2.getPosition();
@@ -80,14 +97,28 @@ public class Board {
             onMoveListener.onMove(c1, c2);
     }
 
+    /**
+     * Build a block on the board at the specified coordinate
+     * @param c Coordinate where the block should be built
+     * @throws InvalidActionException if the building is already level 3
+     */
     public void buildBlock(Coordinate c) throws InvalidActionException {
+        if (!isOnBoard(c)) throw new InvalidActionException();
+
         Building b = cellAt(c).getBuilding();
         b.buildBlock();
         if(onBuildListener != null)
             onBuildListener.onBuild(b, c);
     }
 
+    /**
+     * Build a dome on the board at the specified coordinate
+     * @param c Coordinate where the dome should be built
+     * @throws InvalidActionException if a dome is already built in that cell
+     */
     public void buildDome(Coordinate c) throws InvalidActionException {
+        if (!isOnBoard(c)) throw new InvalidActionException();
+
         Building b = cellAt(c).getBuilding();
         b.buildDome();
         if(onBuildListener != null)
@@ -95,11 +126,15 @@ public class Board {
     }
 
     /**
-     * Add the specified {@link Pawn} on the Board in the {@link Coordinate} c
+     * Put a pawn on the board
+     * @param pawn pawn to place on the board
+     * @param c position for the pawn
      * @throws InvalidActionException if there is another {@link Pawn} in the specified
      * {@link Coordinate}
      */
     public void putPawn(Pawn pawn, Coordinate c) throws InvalidActionException {
+        if (!isOnBoard(c)) throw new InvalidActionException();
+
         if (getPawnAt(c).isEmpty()) {
             cellAt(c).putPawn(pawn);
             pawn.setPosition(c);
@@ -125,16 +160,6 @@ public class Board {
     }
 
     /**
-     * The method calls {@link Action}.execute, the action is supposed to be valid
-     * (a call to {@link Action}.checkAction() needs to be done before)
-     * @param action the action that is executed
-     * @throws InvalidActionException if {@link Action}.execute throws and InvalidActionException
-     */
-    public boolean executeAction(Action action, Pawn pawn, Coordinate c) throws InvalidActionException {
-        return action.execute(this, pawn, c);
-    }
-
-    /**
      * Ticks down one turn from all active check effects
      */
     public void tickCheckEffect() {
@@ -147,16 +172,24 @@ public class Board {
     /**
      * Adds a persistent CheckEffect to the board for the specified number of turns
      * @param duration is the duration of the persistent effect measured in turns
+     * @param check persistent effect to add
      */
     public void addCheckEffect(int duration, CheckEffect check) {
         activeCheckEffects.add(new ActiveEffect(duration, check));
     }
 
+    /**
+     * Remove a pawn from the board
+     * @param pawn pawn to remove
+     */
     public void removePawn(Pawn pawn) {
         Coordinate c = pawn.getPosition();
         cellAt(c).removePawn();
     }
 
+    /**
+     * @return number of pawns that are currently on the baord
+     */
     public int countPawns() {
         int count = 0;
         for(Cell[] r : cells) {
@@ -173,6 +206,11 @@ public class Board {
         return cells[c.getX()][c.getY()];
     }
 
+    /**
+     * Checks if a coordinate is within the bounds of the board
+     * @param c Coordinate to check
+     * @return true if it's on the board, false otherwise
+     */
     public boolean isOnBoard(Coordinate c) {
         return ((c.getX() >= 0) && (c.getX() < BOARD_SIZE)) && ((c.getY() >= 0) && (c.getY() < BOARD_SIZE));
     }

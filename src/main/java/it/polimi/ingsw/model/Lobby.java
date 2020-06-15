@@ -15,10 +15,9 @@ import it.polimi.ingsw.view.cli.CLI;
 import java.util.*;
 
 /**
- * The Lobby class represents the abstraction of a game lobby, is the place where
- * the users connect before the game starts.
- * The lobby has a size, which is the max number of users that will play the game
- * and starts the game when all the users are ready
+ * Lobby for a game of Santorini. Handles the joining of users and the setup of the game board.
+ * @see Board
+ * @see User
  */
 public class Lobby {
     public final int PAWN_N = 2;
@@ -39,6 +38,11 @@ public class Lobby {
         return game;
     }
 
+    /**
+     * Choose which of the users will be the challenger for this match.
+     * @param challenger User that should become the challenger
+     * @return true if the user was in the lobby and the challenger was successfully set, false otherwise
+     */
     public boolean setChallenger(User challenger) {
         if(users.contains(challenger)) {
             this.challenger = challenger;
@@ -48,10 +52,9 @@ public class Lobby {
     }
 
     /**
-     * Set the user that will start the game with the first turn and create
-     * the order between the other users
-     * @param user The user of the first turn
-     * @return true if the user is chosen correctly
+     * Set which user will be the first to place his pawns and start moving after the pawn placing phase.
+     * @param user user to set as starting player
+     * @return true if the first user was successfully set, false if it was not in the lobby
      */
     public boolean setFirstUser(User user) {
         CircularList<Player> playerTurnList = game.getPlayerTurnList();
@@ -66,30 +69,52 @@ public class Lobby {
         return false;
     }
 
+    /**
+     * @return true if the first user has been chosen
+     */
     public boolean choseFirstPlayer() {
         return choseFirstPlayer;
     }
 
+    /**
+     * @return The challenger if it was chosen, {@code Optional.empty()} otherwise
+     */
     public Optional<User> getChallenger() {
         return Optional.ofNullable(challenger);
     }
 
+    /**
+     * Get the list of users that joined the lobby
+     * @return List of users in the lobby
+     */
     public List<User> getUsers() {
         return users;
     }
 
+    /**
+     * Get the user corresponding to the supplied player
+     * @param player player
+     * @return The user if it exists, Optional.empty() if no matching user was found
+     */
     public Optional<User> getUser(Player player) {
         return Optional.ofNullable(playerUserMap.get(player));
     }
 
+    /**
+     * Get the player corresponding to the supplied user
+     * @param user user
+     * @return The player if it exists, Optional.empty() if no matching player was found
+     */
     public Optional<Player> getPlayer(User user) {
         return Optional.ofNullable(userPlayerMap.get(user));
     }
 
-    public int getPlayerNumber() {
-        return game.getPlayerNumber();
-    }
-
+    /**
+     * Add a {@link User} to the lobby. Does not allow duplicate usernames, empty usernames or usernames
+     * longer than {@code MAX_NAME_LENGTH}
+     * @param user user to add to the lobby
+     * @return true if the user was added successfully, false otherwise
+     */
     public boolean addUser(User user) {
         if (!users.contains(user) && users.size() < size &&
                 user.getUsername().length() > 0 && user.getUsername().length() < MAX_NAME_LENGTH) {
@@ -99,6 +124,10 @@ public class Lobby {
         return false;
     }
 
+    /**
+     * Get the user that should place his pawns at this moment.
+     * @return the user if a user has to be set up at this moment, Optional.empty() otherwise
+     */
     public Optional<User> getUserToSetUp() {
         if (readyUsers < size) {
             Player p = game.getPlayerTurnList().current();
@@ -113,8 +142,12 @@ public class Lobby {
     }
 
     /**
-     * Set the position of the pawns of the user on the board at the beginning of the game
-     * @return true if the pawns are placed correctly
+     * Set the starting position for a user's pawns. Note: this method will check {@code getUserToSetUp()} and
+     * only allow users to set up their pawn if it's the right moment
+     * @param user to set up
+     * @param c1 position of the first pawn
+     * @param c2 position of the second pawn
+     * @return true if the pawns are placed successfully
      */
     public boolean setUpUserPawns (User user, Coordinate c1, Coordinate c2) {
         if (!getUserToSetUp().map(user::equals).orElse(false))
@@ -140,6 +173,12 @@ public class Lobby {
         return true;
     }
 
+    /**
+     * Choose a god card for a user. The user must be in the lobby and it must not have already chosen a god
+     * @param user user that is choosing the {@link God}
+     * @param god god card for the {@link User}
+     * @return true if the god was chosen successfully, false otherwise
+     */
     public boolean chooseGod(User user, God god) {
         if (users.contains(user) && availableGods.contains(god)) {
             Player player = new Player(user, god);
@@ -152,12 +191,17 @@ public class Lobby {
         return false;
     }
 
+    /**
+     * Get the size of the {@link Lobby} (and the {@link Game}). The size is intended as number of players for the match
+     * @return Selected size of the lobby
+     */
     public int getSize() {
         return size;
     }
 
     /**
      * Sets the size of the lobby, allowed only once
+     * @param size Size of the lobby
      */
     public void setSize(int size) {
         if (this.size == 0) {
@@ -165,14 +209,26 @@ public class Lobby {
         }
     }
 
+    /**
+     * Set the list of {@link God} the players will be allowed to pick from
+     * @param availableGods list of allowed gods
+     */
     public void setAvailableGods(List<God> availableGods) {
         this.availableGods = availableGods;
     }
 
+    /**
+     * Get the list of {@link God} the players will be allowed to pick from
+     * @return list of allowed gods
+     */
     public List<God> getAvailableGods() {
         return availableGods;
     }
 
+    /**
+     * Get all configured gods
+     * @return list of all available gods
+     */
     public List<God> getAllGods() {
         if (allGods == null) {
             try {
@@ -190,14 +246,26 @@ public class Lobby {
         return allGods;
     }
 
+    /**
+     * Returns true if the lobby contains the maximum number of players
+     * @return true if the lobby contains the maximum number of players
+     */
     public boolean isLobbyFull() {
         return users.size() == size;
     }
 
+    /**
+     * Returns true if the game is full: all users have chosen their god
+     * @return true if the game is full
+     */
     public boolean isGameFull() {
         return game.getPlayerNumber() == size;
     }
 
+    /**
+     * Returns true if the game is full and all players have placed their pawns
+     * @return true if the game is full and all players have placed their pawns
+     */
     public boolean isGameReady() {
         return size > 0 && readyUsers == size;
     }

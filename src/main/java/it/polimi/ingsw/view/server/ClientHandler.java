@@ -16,6 +16,10 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.*;
 
+/**
+ * Handles server side communication with a single client.
+ * It will forward events coming from the client to the controller and allows sending server events to the client
+ */
 public class ClientHandler implements Runnable, OnServerEventListener {
     private final int MISSED_PING_THRESH = 3;
     private final long PING_PERIOD = 5000;

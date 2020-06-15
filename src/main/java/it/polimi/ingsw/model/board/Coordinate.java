@@ -3,10 +3,7 @@ package it.polimi.ingsw.model.board;
 import java.util.function.Function;
 
 /**
- * The Coordinate class is the abstraction used to map the cells of the game board, each cell on the board
- * correspond to a coordinate;
- * A coordinate is determined by two fields: the row and the column of the board, these two fields
- * are internally represented by two int  values (x-> row and y->column)
+ * Two dimensional coordinate with {@link Integer} coefficients.
  */
 public class Coordinate {
     private final int x, y;
@@ -20,6 +17,8 @@ public class Coordinate {
     }
 
     /**
+     * Check if a coordinate is neighbour
+     * @param c Coordinate to check
      * @return true if this coordinate and c are adjacent
      */
     public boolean isNeighbour(Coordinate c) {
@@ -29,9 +28,7 @@ public class Coordinate {
 
     /**
      * @param function is applied to all the adjacent coordinates of the coordinate on which this method is called
-     * @return a boolean flag that is true, if the function returns true on a adjacent coordinate of the one
-     * on which the method is called, or false if the function never returns true on any of the adjacent coordinates
-     * of the one on which it's called
+     * @return true if {@code function} evaluates to true for at least one neighbour coordinate
      */
     public boolean anyNeighbouring(Function<Coordinate, Boolean> function) {
         for (int i = Math.max(0, x-1); i < Math.min(Board.BOARD_SIZE, x+2); i++) {

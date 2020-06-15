@@ -6,14 +6,17 @@ import java.util.Arrays;
 import java.util.Optional;
 
 /**
- * The StepSequence class represent the abstraction of a sequence of Actions made by steps.
- * The sequence takes trace of the current step, it's the state of the sequence.
- * Given a state, the next step can be reached by calling the method next() if the state isn't the last step
+ * Iterator over an ordered list of steps.
+ * A step is an {@code Action[]}
  */
 public class StepSequence {
     private int state = 0;
     private final Action[][] steps;
 
+    /**
+     * Advance the iterator.
+     * @return the next step
+     */
     public Optional<Action[]> next() {
         if (state < steps.length) {
             state += 1;
@@ -24,8 +27,8 @@ public class StepSequence {
     }
 
     /**
-     *
-     * @return the Action that corresponds to the current state
+     * Observe the current step without advancing the iterator.
+     * @return Current step
      */
     public Optional<Action[]> peek() {
         if (state < steps.length) {
@@ -35,10 +38,16 @@ public class StepSequence {
         }
     }
 
+    /**
+     * Reset the iterator to its starting position.
+     */
     public void start() {
         state = 0;
     }
 
+    /**
+     * @param steps ordered array of steps.
+     */
     protected StepSequence(Action[][] steps) {
         this.steps = steps;
     }
