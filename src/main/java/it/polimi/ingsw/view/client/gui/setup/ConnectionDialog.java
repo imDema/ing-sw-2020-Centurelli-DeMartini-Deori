@@ -10,8 +10,8 @@ import java.io.IOException;
 
 
 public class ConnectionDialog extends Dialog<ServerHandler> {
-    private final TextField ipTextField = new TextField("127.0.0.1");
-    private final TextField portTextField = new TextField("5000");
+    private final TextField ipTextField = new TextField("ec2-34-224-16-61.compute-1.amazonaws.com");
+    private final TextField portTextField = new TextField("5656");
 
     public ConnectionDialog() {
         VBox vbox = new VBox(

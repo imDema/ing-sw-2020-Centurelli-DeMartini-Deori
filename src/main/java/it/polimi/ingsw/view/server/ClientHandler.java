@@ -205,7 +205,9 @@ public class ClientHandler implements Runnable, OnServerEventListener {
     }
 
     private void logMessageProcessed(Message msg, boolean result) {
-        CLI.log(CLI.mark(result) + " " + (user != null ? user.getUsername() : "") + "/" + msg.getSerializationId());
+        if(msg.getSerializationId() != MessageId.PING) { //Don't log PING messages
+            CLI.log(CLI.mark(result) + " " + socket.getRemoteSocketAddress() + (user != null ? "/" + user.getUsername() : "") + "/" + msg.getSerializationId());
+        }
     }
 
     private void sendMessage(Message message) {

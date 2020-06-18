@@ -24,14 +24,14 @@ public class Program {
             program.start();
         } else {
             System.out.println(
-                    "Usage: java -jar AM8-1.0-SNAPSHOT.jar [--cli|--server IP PORT] [--gods JSON]\n" +
+                    "Usage: java -jar AM8.jar [--cli|--server <IP> <PORT>] [--gods <JSON>]\n" +
                     "\n" +
-                    "Launching in server or cli mode requires specifying IP and PORT\n" +
-                    "By default the application is launched in graphical mode\n" +
+                    "Launching in server or cli mode requires specifying an ip and and a port\n" +
+                    "By default the application is started in graphical mode\n" +
                     "\n" +
-                    "-c, --cli:         Launch the application in client mode with a Command Line Interface\n" +
+                    "-c, --cli:         Launch the application in client mode with a Command Line Interface, connect to server at tcp://IP:PORT\n" +
                     "-s, --server:      Start in server mode binding on tcp://IP:PORT\n" +
-                    "-g, --gods JSON:   Load god configuration from JSON file (server side)" +
+                    "-g, --gods JSON:   Load god configuration from JSON file (server side)\n" +
                     "-h, --help:        Display this help message\n" +
                     "Example: java -jar AM8-1.0-SNAPSHOT.jar -c 127.0.0.1 5000");
         }

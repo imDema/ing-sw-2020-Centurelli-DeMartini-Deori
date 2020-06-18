@@ -139,7 +139,7 @@
             {
               "description": "Move",
               "family": "MOVE",
-              "effects": ["FORBID_MOVE_UP", "MOVE"],
+              "effects": ["MOVE"],
               "checks": ["NEIGHBOUR", "MAX_ONE_LEVEL_ABOVE", "NOT_OCCUPIED", "NO_DOME"]
             }
           ], [
@@ -183,7 +183,7 @@
             {
               "description": "Move",
               "family": "MOVE",
-              "effects": ["FORBID_MOVE_UP", "MOVE"],
+              "effects": ["MOVE"],
               "checks": ["NEIGHBOUR", "MAX_ONE_LEVEL_ABOVE", "NOT_OCCUPIED", "NO_DOME"]
             }
           ], [
