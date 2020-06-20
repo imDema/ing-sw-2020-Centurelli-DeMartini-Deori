@@ -19,11 +19,10 @@ public class Coordinate {
     /**
      * Check if a coordinate is neighbour
      * @param c Coordinate to check
-     * @return true if this coordinate and c are adjacent
+     * @return true if this coordinate and c are adjacent or they are the same
      */
     public boolean isNeighbour(Coordinate c) {
-        return !(x > c.getX() + 1 || x < c.getX() - 1 || y > c.getY() + 1 || y < c.getY() - 1)
-                && !(x == c.getX() && y == c.getY());
+        return !(x > c.getX() + 1 || x < c.getX() - 1 || y > c.getY() + 1 || y < c.getY() - 1);
     }
 
     /**

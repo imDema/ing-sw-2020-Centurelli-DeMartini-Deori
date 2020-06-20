@@ -43,6 +43,7 @@ public class ProxyView implements OnGameFinishedListener {
         }
         CLI.info("Listening on " + server.toString());
         controller = startLobby();
+        CLI.info("Started a new lobby " + this.controller.getUidShortString());
         while (true) {
             try {
                 Socket s = server.accept();
@@ -51,8 +52,8 @@ public class ProxyView implements OnGameFinishedListener {
                 PrintWriter socketOut = new PrintWriter(s.getOutputStream());
 
                 if(controller.isLobbyFull()) {
-                    CLI.info("Current lobby is full, starting a new one");
                     controller = startLobby();
+                    CLI.info("Current lobby is full. Started a new one " + controller.getUidShortString());
                 }
                 executor.submit(new ClientHandler(socketIn, socketOut, controller, s));
             } catch (IOException e){
@@ -71,12 +72,12 @@ public class ProxyView implements OnGameFinishedListener {
 
     @Override
     public void onGameFinished(GameController controller) {
-        CLI.info("A lobby has finished");
+        CLI.info("Lobby " + controller.getUidShortString() + " has finished");
 
         // Start a new controller to avoid giving new clients a stale controller
         if (controller.equals(this.controller)) {
-            CLI.info("Starting a new lobby");
             this.controller = startLobby();
+            CLI.info("Started a new lobby " + this.controller.getUidShortString());
         }
     }
 }

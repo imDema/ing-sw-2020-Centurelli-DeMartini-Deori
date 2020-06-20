@@ -8,7 +8,6 @@ import it.polimi.ingsw.model.board.Board;
 import it.polimi.ingsw.model.board.Building;
 import it.polimi.ingsw.model.board.Coordinate;
 import it.polimi.ingsw.model.board.InvalidActionException;
-import it.polimi.ingsw.model.player.God;
 import it.polimi.ingsw.view.messages.MessageDispatcher;
 import org.junit.jupiter.api.Test;
 
@@ -22,7 +21,6 @@ import static org.junit.jupiter.api.Assertions.*;
 public class GameControllerTest {
     List<GodIdentifier> availableGods = null;
     final List<Coordinate> coordinateList = new ArrayList<>();
-    List<God> gods = new ArrayList<>();
     final Map<User, GodIdentifier> usersGods = new HashMap<>();
     List<ActionIdentifier> availableActions = new ArrayList<>();
     boolean flag = false;
@@ -197,10 +195,7 @@ public class GameControllerTest {
         gameController.onExecuteAction(u3, 0, availableActions.get(0), new Coordinate(4, 0));
         gameController.onExecuteAction(u3, 0, availableActions.get(0), new Coordinate(4, 1));
 
-        dispatcher.setOnWinListener(u -> {
-            flag = true;
-            System.out.println(u.getUsername() + " has won the game!");
-        });
+        dispatcher.setOnWinListener(u -> flag = true);
 
         gameController.setGameFinishedListener(controller -> gameEnded = true);
 

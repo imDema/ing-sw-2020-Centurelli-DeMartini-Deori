@@ -20,26 +20,37 @@ public class PlacePawnState implements BoardClickHandlerState {
                 ctx.getGameControl().placePawns(coords.get(0), coords.get(1));
                 coords.clear();
             }
-            ctx.getGameView().getTestLabel().setText("Selected: " + coords.toString());
+            ctx.getGameView().getInfoLabel().setText("Select the next position!");
+            draw(ctx);
+        } else if(btn == MouseButton.SECONDARY) {
+            coords.clear();
+            ctx.getGameView().getInfoLabel().setText("It's your turn! Place your workers!");
+            draw(ctx);
         }
     }
 
     @Override
     public void initState(BoardClickHandlerContext ctx) {
-        Platform.runLater(()-> ctx.getGameView().getTestLabel().setText("It's your turn! Place your pawns!"));
+        Platform.runLater(()-> ctx.getGameView().getInfoLabel().setText("It's your turn! Place your workers!"));
     }
 
     private void onPlaceAttempt(Boolean result, BoardClickHandlerContext ctx) {
         if (result) {
-            if (ctx.getGameControl().getBoardViewState().getSize() > 1) { //TODO this may not be needed in final version
+            if (ctx.getGameControl().getBoardViewState().getSize() > 1) {
                 ctx.setState(new WaitingState());
             }
         } else {
             Platform.runLater(() -> {
+                ctx.getGameView().getInfoLabel().setText("It's your turn! Place your workers!");
                 Alert alert = new Alert(Alert.AlertType.INFORMATION, "Invalid position for workers!");
                 alert.showAndWait();
             });
         }
         ctx.getGameControl().requestRedraw();
+    }
+
+    private void draw(BoardClickHandlerContext ctx) {
+        ctx.getGameControl().requestRedraw();
+        Platform.runLater(() -> coords.forEach(c -> ctx.getGameView().highlight(c, true)));
     }
 }

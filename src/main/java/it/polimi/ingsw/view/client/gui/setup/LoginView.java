@@ -16,7 +16,7 @@ public class LoginView extends HBox {
 
     // Controls
     private final ComboBox<Integer> sizeComboBox = new ComboBox<>();
-    private final TextField usernameTextField = new TextField("Test"); //TODO change default
+    private final TextField usernameTextField = new TextField("username");
     private final Button loginButton = new Button("Login");
     private final ListView<String> usersListView = new ListView<>();
 

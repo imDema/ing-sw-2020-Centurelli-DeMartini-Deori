@@ -22,8 +22,11 @@ class CheckDeserializer implements JsonDeserializer<Check> {
         NO_DOME,
         MAX_LEVEL,
         NOT_MAX_LEVEL,
+        NOT_OCCUPIED_OR_SELF,
+        NOT_PERIMETER,
         MIN_LEVEL_ONE,
-        CAN_PUSH
+        CAN_PUSH,
+        CAN_FERRY,
     }
 
     private final Map<CheckId, Check> map = Map.ofEntries(
@@ -36,7 +39,10 @@ class CheckDeserializer implements JsonDeserializer<Check> {
             new SimpleImmutableEntry<>(CheckId.MAX_LEVEL, Checks.maxLevel),
             new SimpleImmutableEntry<>(CheckId.NOT_MAX_LEVEL, Checks.notMaxLevel),
             new SimpleImmutableEntry<>(CheckId.MIN_LEVEL_ONE, Checks.minLevelOne),
-            new SimpleImmutableEntry<>(CheckId.CAN_PUSH, Checks.canPush)
+            new SimpleImmutableEntry<>(CheckId.NOT_OCCUPIED_OR_SELF, Checks.notOccupiedOrSelf),
+            new SimpleImmutableEntry<>(CheckId.NOT_PERIMETER, Checks.notPerimeter),
+            new SimpleImmutableEntry<>(CheckId.CAN_PUSH, Checks.canPush),
+            new SimpleImmutableEntry<>(CheckId.CAN_FERRY, Checks.canFerry)
     );
 
     private Check getCheckAllowedFromId(CheckId id) {

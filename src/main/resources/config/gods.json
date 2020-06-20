@@ -388,5 +388,154 @@
       ]
     }
   }
+},{
+  "name": "Zeus",
+  "description": "Your Build: Your Worker may build a block under itself.",
+  "turnSequence": {
+    "type": "LINEAR",
+    "content": {
+      "sequence": {
+        "steps": [
+          [
+            {
+              "description": "Move",
+              "family": "MOVE",
+              "effects": ["MOVE"],
+              "checks": ["NEIGHBOUR", "MAX_ONE_LEVEL_ABOVE", "NO_DOME", "NOT_OCCUPIED"]
+            }
+          ], [
+            {
+              "description": "Build_Block",
+              "family": "BUILD",
+              "effects": ["BUILD_BLOCK"],
+              "checks": ["NEIGHBOUR", "NO_DOME", "NOT_OCCUPIED_OR_SELF", "NOT_MAX_LEVEL"]
+            }, {
+              "description": "Build_Dome",
+              "family": "BUILD",
+              "effects": ["BUILD_DOME"],
+              "checks": ["NEIGHBOUR", "NO_DOME", "NOT_OCCUPIED", "MAX_LEVEL"]
+            }
+          ]
+        ]
+      }
+    }
+  }
+},{
+  "name": "Charon",
+  "description": "Your Move: Before your Worker moves, you may force a neighboring opponent Worker to the space directly on the other side of your Worker, if that space is unoccupied.",
+  "turnSequence": {
+    "type": "BRANCHING",
+    "content": {
+      "commonSteps": {
+        "steps": []
+      },
+      "branches": [
+        {
+          "steps": [
+            [
+              {
+                "description": "Move",
+                "family": "MOVE",
+                "effects": ["MOVE"],
+                "checks": ["NEIGHBOUR", "MAX_ONE_LEVEL_ABOVE", "NO_DOME", "NOT_OCCUPIED"]
+              }
+            ], [
+              {
+                "description": "Build_Block",
+                "family": "BUILD",
+                "effects": ["BUILD_BLOCK"],
+                "checks": ["NEIGHBOUR", "NO_DOME", "NOT_OCCUPIED", "NOT_MAX_LEVEL"]
+              }, {
+                "description": "Build_Dome",
+                "family": "BUILD",
+                "effects": ["BUILD_DOME"],
+                "checks": ["NEIGHBOUR", "NO_DOME", "NOT_OCCUPIED", "MAX_LEVEL"]
+              }
+            ]
+          ]
+        },
+        {
+          "steps": [
+            [
+              {
+                "description": "Ferry",
+                "family": "NONE",
+                "effects": ["FERRY"],
+                "checks": ["NEIGHBOUR", "CAN_FERRY", "NO_ALLY"]
+              }
+            ], [
+              {
+                "description": "Move",
+                "family": "MOVE",
+                "effects": ["MOVE"],
+                "checks": ["NEIGHBOUR", "MAX_ONE_LEVEL_ABOVE", "NO_DOME", "NOT_OCCUPIED"]
+              }
+            ], [
+              {
+                "description": "Build_Block",
+                "family": "BUILD",
+                "effects": ["BUILD_BLOCK"],
+                "checks": ["NEIGHBOUR", "NO_DOME", "NOT_OCCUPIED", "NOT_MAX_LEVEL"]
+              }, {
+                "description": "Build_Dome",
+                "family": "BUILD",
+                "effects": ["BUILD_DOME"],
+                "checks": ["NEIGHBOUR", "NO_DOME", "NOT_OCCUPIED", "MAX_LEVEL"]
+              }
+            ]
+          ]
+        }
+      ]
+    }
+  }
+}, {
+  "name": "Hestia",
+  "description": "Your Build: Your Worker may build one additional time, but this cannot be on a perimeter space.",
+  "turnSequence": {
+    "type": "LINEAR",
+    "content": {
+      "sequence": {
+        "steps": [
+          [
+            {
+              "description": "Move",
+              "family": "MOVE",
+              "effects": ["MOVE"],
+              "checks": ["NEIGHBOUR", "MAX_ONE_LEVEL_ABOVE", "NOT_OCCUPIED", "NO_DOME"]
+            }
+          ], [
+            {
+              "description": "Build_Block",
+              "family": "BUILD",
+              "effects": ["BUILD_BLOCK"],
+              "checks": ["NEIGHBOUR", "NO_DOME", "NOT_OCCUPIED", "NOT_MAX_LEVEL"]
+            }, {
+              "description": "Build_Dome",
+              "family": "BUILD",
+              "effects": ["BUILD_DOME"],
+              "checks": ["NEIGHBOUR", "NO_DOME", "NOT_OCCUPIED", "MAX_LEVEL"]
+            }
+          ], [
+            {
+              "description": "Build_Block",
+              "family": "BUILD",
+              "effects": ["BUILD_BLOCK"],
+              "checks": ["NEIGHBOUR", "NO_DOME", "NOT_OCCUPIED", "NOT_MAX_LEVEL", "NOT_PERIMETER"]
+            }, {
+              "description": "Build_Dome",
+              "family": "BUILD",
+              "effects": ["BUILD_DOME"],
+              "checks": ["NEIGHBOUR", "NO_DOME", "NOT_OCCUPIED", "MAX_LEVEL", "NOT_PERIMETER"]
+            }, {
+              "description": "Pass_turn",
+              "family": "NONE",
+              "effects": [],
+              "checks": []
+            }
+          ]
+        ]
+      }
+    }
+  }
 }
 ]

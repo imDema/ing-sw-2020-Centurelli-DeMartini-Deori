@@ -206,7 +206,12 @@ public class ClientHandler implements Runnable, OnServerEventListener {
 
     private void logMessageProcessed(Message msg, boolean result) {
         if(msg.getSerializationId() != MessageId.PING) { //Don't log PING messages
-            CLI.log(CLI.mark(result) + " " + socket.getRemoteSocketAddress() + (user != null ? "/" + user.getUsername() : "") + "/" + msg.getSerializationId());
+            CLI.log(controller.getUidShortString() + " " +
+                    CLI.mark(result) + " " +
+                    socket.getRemoteSocketAddress() +
+                    (user != null ? "/" + user.getUsername() : "") +
+                    "/" + msg.getSerializationId()
+            );
         }
     }
 

@@ -5,7 +5,6 @@ import it.polimi.ingsw.model.board.Coordinate;
 import it.polimi.ingsw.view.client.controls.BoardViewState;
 import it.polimi.ingsw.view.client.controls.PawnViewState;
 import it.polimi.ingsw.view.client.controls.PlayerViewState;
-import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -102,7 +101,7 @@ public class BoardView extends StackPane {
     private void onBoardClick(MouseButton button, int i, int j) {
         Coordinate c = new Coordinate(i, j);
 
-        Platform.runLater(cells[i][j]::updateView);
+        cells[i][j].updateView();
 
         if (cellClickListener != null) {
             cellClickListener.accept(button, c);

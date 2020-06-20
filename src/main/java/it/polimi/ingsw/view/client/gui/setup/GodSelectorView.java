@@ -109,6 +109,7 @@ public class GodSelectorView extends FlowPane {
 
         // Load image
         Resources.loadGodCard(this, god.getName())
+                .or(() -> Optional.of(Resources.loadGodCard(this)))
                 .map(img -> {
                     img.setPreserveRatio(true);
                     img.setFitHeight(baseHeight);
@@ -116,7 +117,7 @@ public class GodSelectorView extends FlowPane {
                 })
                 .ifPresentOrElse(b::setGraphic, () -> b.setText(god.getName()));
 
-        b.setTooltip(new Tooltip(god.getDescription()));
+        b.setTooltip(new Tooltip(god.getName() + "\n" + god.getDescription()));
         return b;
     }
 }

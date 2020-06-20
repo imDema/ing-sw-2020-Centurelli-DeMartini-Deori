@@ -19,11 +19,11 @@ public class GameView extends AnchorPane {
 
     private final BoardView boardView;
     private final PlayerListView playerListView;
-    private final Label testLabel = new Label();
+    private final Label infoLabel = new Label();
     private final HBox buttonBar = new HBox();
 
-    public Label getTestLabel() {
-        return testLabel;
+    public Label getInfoLabel() {
+        return infoLabel;
     }
 
     public HBox getButtonBar() {
@@ -65,11 +65,11 @@ public class GameView extends AnchorPane {
     private void initView() {
         buttonBar.setSpacing(10.0);
 
-        setTopAnchor(testLabel, 8.0);
-        setLeftAnchor(testLabel, 8.0);
-        setRightAnchor(testLabel, 8.0);
-        testLabel.setAlignment(Pos.CENTER);
-        testLabel.setStyle("-fx-font-size: 16pt;");
+        setTopAnchor(infoLabel, 8.0);
+        setLeftAnchor(infoLabel, 8.0);
+        setRightAnchor(infoLabel, 8.0);
+        infoLabel.setAlignment(Pos.CENTER);
+        infoLabel.setStyle("-fx-font-size: 16pt;");
 
         setTopAnchor(boardView, 0.0);
         setBottomAnchor(boardView, 0.0);
@@ -86,6 +86,10 @@ public class GameView extends AnchorPane {
         playerListView.prefHeightProperty().bind(heightProperty());
         playerListView.prefWidthProperty().bind(widthProperty().multiply(0.125));
 
-        this.getChildren().addAll(boardView,testLabel,buttonBar,playerListView);
+        Label instructionsLabel = new Label("Left click: select\nRight click: deselect");
+        setRightAnchor(instructionsLabel, 8.0);
+        setBottomAnchor(instructionsLabel, 8.0);
+
+        this.getChildren().addAll(boardView, playerListView, infoLabel, instructionsLabel, buttonBar);
     }
 }

@@ -1,5 +1,6 @@
 package it.polimi.ingsw.model.action;
 
+import it.polimi.ingsw.model.board.Board;
 import it.polimi.ingsw.model.board.BuildingLevel;
 import it.polimi.ingsw.model.board.Coordinate;
 
@@ -8,6 +9,11 @@ public abstract class Checks {
      * Target coordinate is not occupied by any pawn
      */
     public static final Check notOccupied = (b, p, c) -> b.getPawnAt(c).isEmpty();
+
+    /**
+     * Target coordinate is not occupied by any pawn or is the coordinate the pawn is standing on
+     */
+    public static final Check notOccupiedOrSelf = (b, p, c) -> b.getPawnAt(c).map(p::equals).orElse(true);
 
     /**
      * Target coordinate is not occupied by an ally pawn
@@ -57,6 +63,10 @@ public abstract class Checks {
      */
     public static final Check minLevelOne = (b, p, c) -> b.getBuildingAt(c).getLevel() != BuildingLevel.LEVEL0;
 
+    public static final Check notPerimeter = (b, p, c) ->
+            c.getX() != 0 && c.getX() != Board.BOARD_SIZE - 1 &&
+            c.getY() != 0 && c.getY() != Board.BOARD_SIZE - 1;
+
     /**
      * If there is a pawn at the target coordinate check if it could be pushed one tile along the pawn to target
      * coordinate direction
@@ -71,4 +81,20 @@ public abstract class Checks {
                 notOccupied.isAllowed(b, null, destination) &&
                 noDome.isAllowed(b, null, destination);
     }).orElse(true);
+
+    /**
+     * There is a pawn on the target coordinate and it can be forced on the opposing coordinate relative to the
+     * acting pawn
+     */
+    public static final Check canFerry = (b, p, c) -> {
+        Coordinate selfCoordinate = p.getPosition();
+        int x1 = selfCoordinate.getX() + (selfCoordinate.getX() - c.getX());
+        int y1 = selfCoordinate.getY() + (selfCoordinate.getY() - c.getY());
+        Coordinate destination = new Coordinate(x1, y1);
+
+        return b.isOnBoard(destination) &&
+                notOccupied.isAllowed(b, null, destination) &&
+                !notOccupied.isAllowed(b, null, c) &&
+                noDome.isAllowed(b, null, destination);
+    };
 }

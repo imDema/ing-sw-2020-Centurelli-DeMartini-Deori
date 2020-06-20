@@ -7,11 +7,12 @@ import javafx.scene.input.MouseButton;
 public class WaitingState implements BoardClickHandlerState {
     @Override
     public void handleClick(BoardClickHandlerContext ctx, MouseButton btn, Coordinate c) {
-        ctx.getGameView().getTestLabel().setText("Wait for your turn!");
+        ctx.getGameView().getInfoLabel().setText("Wait for your turn!");
     }
 
     @Override
     public void initState(BoardClickHandlerContext ctx) {
-        Platform.runLater(()-> ctx.getGameView().getTestLabel().setText("Wait for your turn!"));
+        Platform.runLater(()-> ctx.getGameView().getInfoLabel().setText("Wait for your turn!"));
+        ctx.getGameControl().requestRedraw();
     }
 }

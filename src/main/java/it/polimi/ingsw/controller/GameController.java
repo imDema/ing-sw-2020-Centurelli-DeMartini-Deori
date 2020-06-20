@@ -17,12 +17,15 @@ import it.polimi.ingsw.view.events.OnClientEventListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 /**
  * Main controller class, handles the lobby and game setup, then forwards to a {@link GameCycle}
  */
 public class GameController implements OnClientEventListener, OnServerErrorListener {
+    private final Long uid = new Random().nextLong();
+
     private final Lobby lobby = new Lobby();
     private final GameCycle gameCycle = new GameCycle(lobby, this);
     private final List<OnServerEventListener> serverEventListeners = new ArrayList<>();
@@ -31,6 +34,25 @@ public class GameController implements OnClientEventListener, OnServerErrorListe
     // For testing
     protected Board getBoard() {
         return lobby.getGame().getBoard();
+    }
+
+    /**
+     * Get a (statistically) unique id. Random long generated on creation.
+     * Used for logging
+     * @return id for this controller
+     */
+    public long getUid() {
+        return uid;
+    }
+
+    /**
+     * Get a short string representation of part of the uid.
+     * Used for logging
+     * Example: "[a3b4c5]".
+     * @return hexadecimal representation of the last bits of the uid
+     */
+    public String getUidShortString() {
+        return "[" + Long.toHexString(uid & 0xFFFFFF) + "]";
     }
 
     /**

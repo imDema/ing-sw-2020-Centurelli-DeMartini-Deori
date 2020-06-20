@@ -6,7 +6,8 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import java.util.function.Supplier;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class BranchingTurnSequenceTest {
     final Action move = new Action("Move", ActionFamily.MOVE,
@@ -78,5 +79,22 @@ public class BranchingTurnSequenceTest {
         assertArrayEquals(testBranchOne.peek().orElseThrow(), t.getStep());
         t.nextStep(testBranchOne.next().orElseThrow()[0]);
         assertArrayEquals(new Action[] {Action.endTurn}, t.getStep());
+
+        // Empty common branch
+        t = new BranchingTurnSequence(new StepSequenceBuilder().build(), branchOne.get(), branchTwo.get());
+        t.start();
+        testBranchOne.start();
+        testBranchTwo.start();
+
+        step = t.getStep();
+        for(Action a : testBranchOne.peek().orElseThrow()) {
+            assertTrue(Arrays.asList(step).contains(a));
+        }
+        for(Action a : testBranchTwo.peek().orElseThrow()) {
+            assertTrue(Arrays.asList(step).contains(a));
+        }
+
+        t.nextStep(testBranchOne.next().orElseThrow()[0]);
+        assertArrayEquals(testBranchOne.next().orElseThrow(), t.getStep());
     }
 }

@@ -9,6 +9,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 
@@ -57,6 +58,7 @@ public class PlayerListView extends VBox {
                     .multiply(0.70)
         );
         godView.fitWidthProperty().bind(prefWidthProperty());
+        Tooltip.install(godView, new Tooltip(god.getName() + "\n" + god.getDescription()));
 
         Label playerName = new Label(user.getUsername());
         playerName.setStyle("-fx-font-size: 16pt;");

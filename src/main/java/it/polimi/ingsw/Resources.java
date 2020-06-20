@@ -95,7 +95,7 @@ public abstract class Resources {
      * @return ImageView for a generic god
      */
     public static ImageView loadGodCard(Object context) {
-        return loadImage(context, "drawable/card_" + "apollo" + ".png"); //TODO add custom generic graphic
+        return loadImage(context, "drawable/card_default.png");
     }
 
     /**

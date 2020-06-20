@@ -81,6 +81,18 @@ public abstract class Effects {
         return oldLevel != BuildingLevel.LEVEL3 && newLevel == BuildingLevel.LEVEL3;
     };
 
+    public static final Effect ferry = (b, p, c) -> {
+        Coordinate selfCoordinate = p.getPosition();
+        int x1 = selfCoordinate.getX() + (selfCoordinate.getX() - c.getX());
+        int y1 = selfCoordinate.getY() + (selfCoordinate.getY() - c.getY());
+        Coordinate destination = new Coordinate(x1, y1);
+        if (b.getPawnAt(c).isPresent()) {
+            Pawn p2 = b.getPawnAt(c).get();
+            b.movePawn(p2, destination);
+        }
+        return false;
+    };
+
     /**
      * Adds a persistent effect that forbids executing ActionFamily.MOVE actions that target buildings
      * at a higher level for a number of turns equal to the number of players
