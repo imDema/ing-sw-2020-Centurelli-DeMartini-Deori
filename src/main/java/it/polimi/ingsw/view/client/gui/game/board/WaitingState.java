@@ -4,6 +4,9 @@ import it.polimi.ingsw.model.board.Coordinate;
 import javafx.application.Platform;
 import javafx.scene.input.MouseButton;
 
+/**
+ * {@link BoardClickHandlerState} in which a player must wait for another player's actions
+ */
 public class WaitingState implements BoardClickHandlerState {
     @Override
     public void handleClick(BoardClickHandlerContext ctx, MouseButton btn, Coordinate c) {

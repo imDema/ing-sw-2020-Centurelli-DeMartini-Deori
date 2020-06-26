@@ -16,7 +16,9 @@ import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-
+/**
+ * Main client class for the graphic client
+ */
 public class App extends Application {
     protected static final ExecutorService executor = Executors.newCachedThreadPool();
 

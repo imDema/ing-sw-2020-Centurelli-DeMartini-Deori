@@ -12,6 +12,9 @@ import javafx.scene.input.MouseEvent;
 
 import java.util.List;
 
+/**
+ * {@link BoardClickHandlerState} that handles clicks when a player must make a move during its turn
+ */
 public class ExecuteActionState implements BoardClickHandlerState {
     private List<ActionIdentifier> actions;
     private PawnViewState selectedPawn = null;

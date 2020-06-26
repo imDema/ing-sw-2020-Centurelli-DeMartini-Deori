@@ -2,6 +2,9 @@ package it.polimi.ingsw.view.client.controls;
 
 import it.polimi.ingsw.model.board.Coordinate;
 
+/**
+ * Client side pawn state representation
+ */
 public class PawnViewState {
     private final PlayerViewState owner;
     private final int id;

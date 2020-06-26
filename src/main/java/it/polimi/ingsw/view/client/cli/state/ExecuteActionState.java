@@ -8,6 +8,9 @@ import it.polimi.ingsw.view.client.cli.CLIClient;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * {@link InputHandlerState} that handles action execution during a player's turn
+ */
 public class ExecuteActionState implements InputHandlerState {
     private final List<ActionIdentifier> availableActions;
 

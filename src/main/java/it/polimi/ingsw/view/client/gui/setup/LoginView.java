@@ -11,6 +11,9 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 
+/**
+ * View used to log in and select the game size
+ */
 public class LoginView extends HBox {
     private final LoginControl loginControl;
 

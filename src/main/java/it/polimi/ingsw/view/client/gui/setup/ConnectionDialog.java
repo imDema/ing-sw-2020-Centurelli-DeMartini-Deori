@@ -8,7 +8,9 @@ import javafx.scene.layout.VBox;
 
 import java.io.IOException;
 
-
+/**
+ * Dialog used to connect to a server and supply a {@link ServerHandler} that will be used to communicate
+ */
 public class ConnectionDialog extends Dialog<ServerHandler> {
     private final TextField ipTextField = new TextField("ec2-34-224-16-61.compute-1.amazonaws.com");
     private final TextField portTextField = new TextField("5656");

@@ -6,6 +6,9 @@ import it.polimi.ingsw.view.client.cli.CLIClient;
 
 import java.util.Optional;
 
+/**
+ * {@link InputHandlerState} that handles the phase in which a player chooses the starting position for its pawns
+ */
 public class PlacePawnState implements InputHandlerState {
     @Override
     public void handle(InputHandlerContext ctx, String line) {

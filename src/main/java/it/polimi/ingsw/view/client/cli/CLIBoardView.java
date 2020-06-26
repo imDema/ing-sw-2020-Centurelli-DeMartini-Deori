@@ -13,6 +13,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
 
+/**
+ * Unicode representation of a {@link BoardViewState}
+ */
 public class CLIBoardView {
     private final int BOARD_SIZE = 5;
     private final int DIM_ROW = 8;

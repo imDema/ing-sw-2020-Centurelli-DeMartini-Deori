@@ -16,6 +16,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiConsumer;
 
+/**
+ * View for the board and the pieces that are placed on it
+ */
 public class BoardView extends StackPane {
     private final int SIZE = 5;
 
@@ -49,6 +52,9 @@ public class BoardView extends StackPane {
         return new ImageView(img);
     }
 
+    /**
+     * Update the Views for all the cells on the board
+     */
     public void updateView() {
         for(CellView[] ar : cells) {
             for (CellView c : ar) {
@@ -61,6 +67,11 @@ public class BoardView extends StackPane {
         cells[c.getX()][c.getY()].updateView();
     }
 
+    /**
+     * Highlight a cell
+     * @param c Coordinate of the cell to highlight
+     * @param on true if the cell should be highlighted, false otherwise
+     */
     public void highlightCell(Coordinate c, boolean on) {
         cells[c.getX()][c.getY()].highlight(on);
     }
@@ -70,17 +81,13 @@ public class BoardView extends StackPane {
 
         backgroundImage.setPreserveRatio(true);
         backgroundImage.fitHeightProperty().bind(this.heightProperty());
-//        backgroundImage.fitWidthProperty().bind(widthProperty());
 
         foregroundImage.setPreserveRatio(true);
         foregroundImage.fitHeightProperty().bind(this.heightProperty());
-//        foregroundImage.fitWidthProperty().bind(widthProperty().multiply(0.5625));
 
         grid.prefHeightProperty().bind(this.heightProperty().multiply(0.6));
         grid.prefWidthProperty().bind(grid.prefHeightProperty());
         grid.setAlignment(Pos.CENTER);
-
-        // grid.setGridLinesVisible(true); //DEBUG
 
         for (int i = 0; i < SIZE ; i++) {
             for (int j = 0; j < SIZE; j++) {

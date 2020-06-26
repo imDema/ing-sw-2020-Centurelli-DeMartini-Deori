@@ -8,8 +8,9 @@ import it.polimi.ingsw.model.board.Coordinate;
  */
 public interface OnBuildListener {
     /**
+     * The state of a building on the game board has changed
      * @param building updated state of the building
-     * @param coordinate coordinate of the build
+     * @param coordinate coordinate of the building
      */
     void onBuild(Building building, Coordinate coordinate);
 }

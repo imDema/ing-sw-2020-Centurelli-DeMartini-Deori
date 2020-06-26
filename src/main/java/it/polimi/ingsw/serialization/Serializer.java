@@ -18,19 +18,39 @@ import java.util.List;
 public abstract class Serializer {
     private static Gson gson = null;
 
+    /**
+     * Serialize a {@link Message} type object
+     * @param message message to serialize
+     * @return serialized string representation of the object
+     */
     public static String serializeMessage (Message message) {
         return getGson().toJson(message, Message.class);
     }
 
+    /**
+     * Deserialize a string containing a serialized {@link God} object
+     * @param s string to deserialize
+     * @return corresponding god object
+     */
     public static God deserializeGod(String s) {
         return getGson().fromJson(s, God.class);
     }
 
+    /**
+     * Deserialize a string containing a serialized list of {@link God} objects
+     * @param s string to deserialize
+     * @return corresponding list of gods
+     */
     public static List<God> deserializeGodList(String s) {
         Type godListType = new TypeToken<List<God>>() {}.getType();
         return getGson().fromJson(s, godListType);
     }
 
+    /**
+     * Deserialize a string containing a serialized {@link Message} object
+     * @param s string to deserialize
+     * @return corresponding message object
+     */
     public static Message deserializeMessage(String s) {
         return getGson().fromJson(s, Message.class);
     }

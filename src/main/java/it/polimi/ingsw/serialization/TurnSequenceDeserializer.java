@@ -7,6 +7,9 @@ import it.polimi.ingsw.model.player.turnsequence.TurnSequence;
 
 import java.lang.reflect.Type;
 
+/**
+ * Json deserialization adapter for {@link TurnSequence}
+ */
 class TurnSequenceDeserializer implements JsonDeserializer<TurnSequence>{
     private static final String TYPE = "type";
     private static final String CONTENT = "content";

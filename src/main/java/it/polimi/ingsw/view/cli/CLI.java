@@ -27,6 +27,11 @@ public abstract class CLI {
         return color.escape + string + Colors.RESET.escape;
     }
 
+    /**
+     * Get a colored string representation of a boolean value
+     * @param value boolean value
+     * @return a different string for true and false
+     */
     public static String mark(boolean value) {
         return value ? color("@", Colors.GREEN) : color("#", Colors.RED);
     }

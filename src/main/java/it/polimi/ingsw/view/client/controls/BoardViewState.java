@@ -6,6 +6,9 @@ import it.polimi.ingsw.model.board.Coordinate;
 
 import java.util.*;
 
+/**
+ * Client side board state representation
+ */
 public class BoardViewState {
     private final int BOARD_SIZE = 5;
     private final CellViewState[][] cells;
@@ -80,7 +83,12 @@ public class BoardViewState {
         cellAt(c).setBuilding(building);
     }
 
-    public CellViewState cellAt(Coordinate c) {
+    /**
+     * Get the cell at the specified position
+     * @param c coordinate
+     * @return Cell in that position
+     */
+    public CellViewState cellAt(Coordinate c) { //TODO make optional
         return cells[c.getX()][c.getY()];
     }
 

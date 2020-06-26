@@ -7,6 +7,9 @@ import javafx.scene.layout.VBox;
 
 import java.util.List;
 
+/**
+ * Dialog that asks the user which user should start first
+ */
 public class ChooseFirstDialog extends Dialog<User> {
     private final ComboBox<User> comboBox = new ComboBox<>();
 

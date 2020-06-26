@@ -6,11 +6,13 @@ import it.polimi.ingsw.controller.messages.User;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Client side player state representation
+ */
 public class PlayerViewState {
     private final User user;
     private final List<PawnViewState> pawns = new ArrayList<>();
     private GodIdentifier god;
-
 
     public PlayerViewState(User user) {
         this.user = user;

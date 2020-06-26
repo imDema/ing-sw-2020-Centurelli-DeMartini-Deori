@@ -9,4 +9,4 @@ COPY ./pom.xml .
 
 RUN mvn package
 
-CMD ["java", "-jar", "target/AM8-1.0-SNAPSHOT-jar-with-dependencies.jar", "-s", "0.0.0.0", "5000"]
+CMD ["java", "-jar", "target/AM8-1.0-jar-with-dependencies.jar", "-s", "0.0.0.0", "5656"]

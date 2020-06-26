@@ -11,6 +11,9 @@ import java.lang.reflect.Type;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.Map;
 
+/**
+ * Json deserialization adapter for {@link Effect}
+ */
 class EffectDeserializer implements JsonDeserializer<Effect> {
 
     enum EffectId {

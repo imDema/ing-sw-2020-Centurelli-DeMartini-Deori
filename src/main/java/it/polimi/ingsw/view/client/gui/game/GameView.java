@@ -12,6 +12,11 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 
+/**
+ * Main game window, contains board, list of players and controls
+ * @see BoardView
+ * @see PlayerListView
+ */
 public class GameView extends AnchorPane {
     private final GameControl gameControl;
 
@@ -30,6 +35,11 @@ public class GameView extends AnchorPane {
         return buttonBar;
     }
 
+    /**
+     * Highlight a cell on the board
+     * @param c Coordinate of the cell to highlight
+     * @param on true if the cell should be highlighted, false otherwise
+     */
     public void highlight(Coordinate c, boolean on) {
         boardView.highlightCell(c, on);
     }

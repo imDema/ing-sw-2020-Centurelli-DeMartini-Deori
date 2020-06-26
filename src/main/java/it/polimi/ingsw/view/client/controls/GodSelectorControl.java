@@ -9,7 +9,9 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-
+/**
+ * Client side controller for the god selection phase of the game
+ */
 public class GodSelectorControl {
     private final ServerHandler server;
     private final BoardViewState boardViewState;
@@ -68,6 +70,11 @@ public class GodSelectorControl {
         boardViewState.getPlayer(user).ifPresent(u -> u.setGod(godIdentifier));
     }
 
+    /**
+     * Request the selection of available gods
+     * @param selectedGods list of gods to select
+     * @return true if the request was sent, false otherwise (if the client is not logged in)
+     */
     public boolean selectGods(List<GodIdentifier> selectedGods) {
         Optional<User> user = boardViewState.getMyUser();
         if (user.isPresent()) {
@@ -83,6 +90,11 @@ public class GodSelectorControl {
         }
     }
 
+    /**
+     * Request the choice of a god for this user
+     * @param godId god to choose
+     * @return true if the request was sent, false otherwise (if the client is not logged in)
+     */
     public boolean chooseGod(GodIdentifier godId) {
         Optional<User> user = boardViewState.getMyUser();
         if (user.isPresent()) {
@@ -93,6 +105,11 @@ public class GodSelectorControl {
         }
     }
 
+    /**
+     * Request the choice of the first player to start placing pawns and moving
+     * @param user user that should start first
+     * @return true if the request was sent, false otherwise (if the client is not logged in)
+     */
     public boolean chooseFirstPlayer(User user) {
         Optional<User> self = boardViewState.getMyUser();
         if (self.isPresent()) {

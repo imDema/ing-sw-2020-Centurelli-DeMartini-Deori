@@ -11,6 +11,9 @@ import java.lang.reflect.Type;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.Map;
 
+/**
+ * Json deserialization adapter for {@link Check}
+ */
 class CheckDeserializer implements JsonDeserializer<Check> {
 
     enum CheckId {

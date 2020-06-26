@@ -4,6 +4,9 @@ import it.polimi.ingsw.model.board.Building;
 
 import java.util.Optional;
 
+/**
+ * Client side representation of a cell on the board
+ */
 public class CellViewState {
     private boolean hasPawn = false;
     private PawnViewState pawn = null;

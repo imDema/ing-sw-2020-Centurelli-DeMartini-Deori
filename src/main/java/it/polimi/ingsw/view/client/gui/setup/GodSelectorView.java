@@ -18,6 +18,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * View used to select the list of available gods and then choose a god
+ */
 public class GodSelectorView extends FlowPane {
     private final double baseHeight = 270.0;
     private final List<GodIdentifier> selectedGods = new ArrayList<>();

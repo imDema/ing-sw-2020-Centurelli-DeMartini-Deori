@@ -11,7 +11,9 @@ import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-
+/**
+ * Client side controller that handles the main part of the game cycle
+ */
 public class GameControl {
     private final ServerHandler server;
     private final BoardViewState boardViewState;
@@ -72,6 +74,11 @@ public class GameControl {
         return boardViewState;
     }
 
+    /**
+     * Request pawn placement
+     * @param c1 coordinate of the first pawn
+     * @param c2 coordinate of the second pawn
+     */
     public void placePawns(Coordinate c1, Coordinate c2) {
         server.dispatcher().setOnResultListener(r -> {
             if (onPlaceAttemptListener != null) onPlaceAttemptListener.accept(r);
@@ -80,6 +87,12 @@ public class GameControl {
         server.onPlacePawns(boardViewState.getMyUser().orElseThrow(), c1, c2);
     }
 
+    /**
+     * Request action execution
+     * @param action action to execute
+     * @param pawnId pawn to execute the action with
+     * @param target target coordinate for the action
+     */
     public void executeAction(ActionIdentifier action, int pawnId, Coordinate target) {
         server.dispatcher().setOnResultListener(this::onExecuteResult);
         User myUser = boardViewState.getMyUser().orElseThrow();

@@ -10,6 +10,9 @@ import javafx.scene.layout.StackPane;
 
 import java.util.function.Function;
 
+/**
+ * View for a single board cell and the pieces on it
+ */
 public class CellView extends StackPane {
     private final DoubleProperty cellWidthProperty = new SimpleDoubleProperty();
     private final Function<PawnViewState, ImageView> pawnRenderer;
@@ -47,6 +50,12 @@ public class CellView extends StackPane {
         return pawnView;
     }
 
+    /**
+     * Update the view to match the ViewState.
+     * If highlighted reset the highlight to false.
+     * @see CellViewState
+     * @see it.polimi.ingsw.view.client.controls.BoardViewState
+     */
     public void updateView() {
         this.getChildren().clear();
         ImageView building = Resources.loadBuilding(this, viewState.getBuilding());
@@ -64,6 +73,10 @@ public class CellView extends StackPane {
                 .ifPresent(this.getChildren()::add);
     }
 
+    /**
+     * Set the highlight visibility
+     * @param on true if the cell should be highlighted, false otherwise
+     */
     public void highlight(boolean on) {
         highlight.setVisible(on);
     }

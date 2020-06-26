@@ -8,6 +8,9 @@ import javafx.scene.input.MouseButton;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * {@link BoardClickHandlerState} that handles the phase in which a player chooses the starting position for its pawns
+ */
 public class PlacePawnState implements BoardClickHandlerState {
     private final List<Coordinate> coords = new ArrayList<>();
 

@@ -7,6 +7,9 @@ import it.polimi.ingsw.view.client.ServerHandler;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
+/**
+ * Client side controller that handles the login phase
+ */
 public class LoginControl {
     private final ServerHandler server;
     private final BoardViewState boardViewState;
@@ -15,7 +18,6 @@ public class LoginControl {
     private BiConsumer<Boolean, String> onSetSizeAttemptListener = null;
     private Consumer<Integer> onSizeSetListener = null;
     private OnUserJoinedListener onUserJoinedListener = null;
-
 
     public void setOnUserJoinedListener(OnUserJoinedListener onUserJoinedListener) {
         this.onUserJoinedListener = onUserJoinedListener;
@@ -49,6 +51,10 @@ public class LoginControl {
         });
     }
 
+    /**
+     * Request logging in with a username
+     * @param username username to log in with
+     */
     public void login(String username) {
         if (boardViewState.getMyUser().isEmpty()) {
             final User user = new User(username);
@@ -66,6 +72,10 @@ public class LoginControl {
         }
     }
 
+    /**
+     * Request selecting the size of the game
+     * @param size size of the game
+     */
     public void setSize(int size) {
         server.dispatcher().setOnResultListener(r -> {
             if (r) {

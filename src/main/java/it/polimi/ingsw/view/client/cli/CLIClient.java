@@ -18,11 +18,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
 
+/**
+ * Main class for the command line interface client
+ */
 public class CLIClient {
     private final ProxyController proxyController;
     private final CLIBoardView cliBoardView = new CLIBoardView();
     private Scanner input;
-    private GameControl gameControl;
     private InputHandlerContext inputHandler;
 
     private boolean running = true;
@@ -31,6 +33,11 @@ public class CLIClient {
         this.proxyController = new ProxyController(ip, port);
     }
 
+    /**
+     * Decode a coordinate from the letter number format. Example: A3, C4, D1, B2
+     * @param string string to decode
+     * @return corresponding coordinate if the format was valid, an empty optional otherwise
+     */
     public static Optional<Coordinate> decodeCoordinate(String string) {
         if (string.length() == 2) {
             String s = string.toLowerCase();
@@ -48,6 +55,9 @@ public class CLIClient {
         return Optional.empty();
     }
 
+    /**
+     * Start the command line interface
+     */
     public void startClient() {
         ServerHandler serverHandler;
         try {
@@ -70,7 +80,7 @@ public class CLIClient {
                 "Welcome to Santorini,\nType size N to choose the game size\nType login USERNAME to log in");
         System.out.flush();
 
-        gameControl = new GameControl(serverHandler, cliBoardView.getBoardViewState());
+        GameControl gameControl = new GameControl(serverHandler, cliBoardView.getBoardViewState());
         inputHandler = new InputHandlerContext(gameControl);
         inputHandler.setState(new LoginState(serverHandler, cliBoardView));
 
@@ -112,7 +122,7 @@ public class CLIClient {
         }
     }
 
-    public void print() {
+    private void print() {
         System.out.println("\n\n\n\n" + cliBoardView.renderBoard());
         System.out.flush();
     }

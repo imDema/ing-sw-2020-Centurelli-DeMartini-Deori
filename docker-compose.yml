@@ -3,4 +3,4 @@ services:
   main:
     build: .
     ports:
-      - "5656:5000"
+      - "5656:5656"

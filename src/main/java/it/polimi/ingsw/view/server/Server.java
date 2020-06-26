@@ -1,5 +1,8 @@
 package it.polimi.ingsw.view.server;
 
+/**
+ * Santorini game server
+ */
 public class Server {
     private final String ip;
     private final int port;

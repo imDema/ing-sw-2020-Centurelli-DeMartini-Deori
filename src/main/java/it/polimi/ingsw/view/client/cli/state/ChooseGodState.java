@@ -11,6 +11,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
+/**
+ * {@link InputHandlerState} that handles the selection of available gods and choosing a god
+ */
 public class ChooseGodState implements InputHandlerState {
     private final GodSelectorControl godSelectorControl;
     private List<GodIdentifier> availableGods;

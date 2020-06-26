@@ -14,7 +14,9 @@ import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-
+/**
+ * Virtual view used by the server
+ */
 public class ProxyView implements OnGameFinishedListener {
     private final String ip;
     private final int port;
@@ -27,6 +29,13 @@ public class ProxyView implements OnGameFinishedListener {
         this.port = port;
     }
 
+    /**
+     * Bind the socket and start accepting connections.
+     * The {@link ProxyView} will assign each client to a new {@link ClientHandler} and each ClientHandler will
+     * be assigned to an existing controller, new controllers will be instantiated if the lobby for one is full
+     * @see GameController
+     * @see ClientHandler
+     */
     public void start() {
         // Set up Tcp socket and spawn threads for connections
         ServerSocket server;

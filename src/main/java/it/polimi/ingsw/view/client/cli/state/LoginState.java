@@ -6,6 +6,9 @@ import it.polimi.ingsw.view.client.ServerHandler;
 import it.polimi.ingsw.view.client.cli.CLIBoardView;
 import it.polimi.ingsw.view.client.controls.LoginControl;
 
+/**
+ * {@link InputHandlerState} that handles logging in and choosing the size of the game
+ */
 public class LoginState implements InputHandlerState {
     final LoginControl loginControl;
     final CLIBoardView cliBoardView;

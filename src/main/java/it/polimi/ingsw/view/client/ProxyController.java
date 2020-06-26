@@ -8,6 +8,9 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.util.Scanner;
 
+/**
+ * Virtual controller used by clients.
+ */
 public class ProxyController {
     private final String ip;
     private final int port;
@@ -17,6 +20,11 @@ public class ProxyController {
         this.port = port;
     }
 
+    /**
+     * Try connecting to the server
+     * @return ServerHandler used to communicate with the server
+     * @throws IOException If there was an error connecting to the socket
+     */
     public ServerHandler start() throws IOException {
         CLI.info("Connecting to server at ip: " + ip + " port: " + port);
         InetAddress address = InetAddress.getByName(ip);

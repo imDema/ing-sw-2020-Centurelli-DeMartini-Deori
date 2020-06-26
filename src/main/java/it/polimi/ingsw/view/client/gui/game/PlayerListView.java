@@ -16,7 +16,9 @@ import javafx.scene.layout.VBox;
 import java.util.ArrayList;
 import java.util.List;
 
-
+/**
+ * {@link VBox} containing god cards and player names
+ */
 public class PlayerListView extends VBox {
     private final GameControl gameControl;
     private final List<Label> labels = new ArrayList<>();
