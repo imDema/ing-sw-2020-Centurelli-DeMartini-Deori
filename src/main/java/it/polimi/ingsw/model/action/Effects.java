@@ -4,6 +4,7 @@ import it.polimi.ingsw.model.board.Building;
 import it.polimi.ingsw.model.board.BuildingLevel;
 import it.polimi.ingsw.model.board.Coordinate;
 import it.polimi.ingsw.model.player.Pawn;
+import it.polimi.ingsw.model.player.Player;
 
 public abstract class Effects {
     /**
@@ -103,7 +104,7 @@ public abstract class Effects {
         int levelDifference = oldB.getLevelDifference(newB);
 
         if (levelDifference == 1){
-            CheckEffect checkEffect = (b, p, c, a) ->
+            final CheckEffect checkEffect = (b, p, c, a) ->
                     !(a.getFamily() == ActionFamily.MOVE &&
                             b.getBuildingAt(p.getPosition()).getLevelDifference(b.getBuildingAt(c)) > 0);
 
@@ -111,6 +112,42 @@ public abstract class Effects {
             board.addCheckEffect(duration, checkEffect);
         }
 
+        return false;
+    };
+
+    /**
+     * Adds a persistent effect that forbids executing ActionFamily.MOVE actions that target buildings
+     * at a lower level for a number of turns equal to the number of players
+     */
+    public static final Effect forbidMoveDown = (board, pawn, coordinate) -> {
+        final CheckEffect checkEffect = (b, p, c, a) ->
+            !(a.getFamily() == ActionFamily.MOVE &&
+                    b.getBuildingAt(p.getPosition()).getLevelDifference(b.getBuildingAt(c)) < 0);
+
+        int duration = board.countPawns() / 2;
+        board.addCheckEffect(duration, checkEffect);
+
+        return false;
+    };
+
+    /**
+     * Adds a persistent effect that forbids executing ActionFamily.BUILD actions that target buildings
+     * close to this player's pawns. Allow finishing a dome on a LEVEL3 building.
+     */
+    public static final Effect forbidBuildClose = (board, pawn, coordinate) -> {
+        final Player owner = pawn.getOwner();
+        final CheckEffect checkEffect = (b, p, c, a) -> {
+            if (a.getFamily() == ActionFamily.BUILD) {
+                return !c.anyNeighbouring(c2 -> b.getPawnAt(c2)
+                            .map(p2 -> p2.getOwner().equals(owner))
+                            .orElse(false)) ||
+                        board.getBuildingAt(c).getLevel() == BuildingLevel.LEVEL3;
+            }
+            return true;
+        };
+
+        int duration = board.countPawns() / 2;
+        board.addCheckEffect(duration, checkEffect);
         return false;
     };
 

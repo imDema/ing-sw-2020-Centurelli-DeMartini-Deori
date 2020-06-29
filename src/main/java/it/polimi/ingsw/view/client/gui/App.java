@@ -10,6 +10,7 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ScrollPane;
 import javafx.stage.Stage;
 
 import java.util.Optional;
@@ -55,14 +56,21 @@ public class App extends Application {
         server.dispatcher().setOnGodsAvailableListener(gods -> {
             GodSelectorView godSelector = new GodSelectorView(server, boardViewState, gods);
             Platform.runLater(() -> {
+                ScrollPane scrollPane = new ScrollPane();
+                scrollPane.setFitToHeight(true);
+                scrollPane.setFitToWidth(true);
+                scrollPane.setContent(godSelector);
+
                 stage.setTitle("Choose the gods if you are worthy to be the challenger!");
-                stage.setScene(new Scene(godSelector, 1200, 600));
+                stage.setScene(new Scene(scrollPane, 820, 540));
+                stage.setMinWidth(828);
+                stage.setMinHeight(580);
             });
         });
 
         server.dispatcher().setOnRequestPlacePawnsListener(firstUser -> {
             GameView gameView = new GameView(server, boardViewState, firstUser);
-            Scene scene = new Scene(gameView, 1280, 720);
+            Scene scene = new Scene(gameView, 960, 540);
 
             Platform.runLater(() -> {
                 stage.setTitle("Santorini");

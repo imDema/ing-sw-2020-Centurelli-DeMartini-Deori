@@ -27,6 +27,17 @@ public abstract class Checks {
     public static final Check neighbour = (b, p, c) -> c.isNeighbour(p.getPosition());
 
     /**
+     * Target coordinate is neighbouring the pawn position considering opposing edges and corners adjacent
+     */
+    public static final Check neighbourLooping = (b, p, c) -> {
+        Coordinate c1 = p.getPosition();
+        int dx = Math.abs(c1.getX() - c.getX());
+        int dy = Math.abs(c1.getY() - c.getY());
+        return (dx <= 1 || dx == Board.BOARD_SIZE - 1) &&
+                (dy <= 1 || dy == Board.BOARD_SIZE - 1);
+    };
+
+    /**
      * The building at the target coordinate is at most one level higher than that
      * at the pawn's coordinate
      */

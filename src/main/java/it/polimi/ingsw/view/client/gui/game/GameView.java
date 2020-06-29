@@ -8,6 +8,7 @@ import it.polimi.ingsw.view.client.controls.GameControl;
 import it.polimi.ingsw.view.client.gui.game.board.*;
 import javafx.application.Platform;
 import javafx.geometry.Pos;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
@@ -70,6 +71,7 @@ public class GameView extends AnchorPane {
                 boardClickHandler.setState(new WaitingState()));
         gameControl.setOnActionsReadyListener(actions ->
                 boardClickHandler.setState(new ExecuteActionState(actions)));
+        gameControl.setOnUserEliminatedListener(this::eliminationMessage);
     }
 
     private void initView() {
@@ -101,5 +103,12 @@ public class GameView extends AnchorPane {
         setBottomAnchor(instructionsLabel, 8.0);
 
         this.getChildren().addAll(boardView, playerListView, infoLabel, instructionsLabel, buttonBar);
+    }
+
+    private void eliminationMessage(User user) {
+        Platform.runLater(() -> {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION, user.getUsername() + " cannot execute any action and is eliminated!");
+            alert.showAndWait();
+        });
     }
 }

@@ -22,6 +22,7 @@ public class GameControl {
     private Runnable onRequestPlaceListener = null;
     private Runnable onRequestWaitListener = null;
     private Consumer<List<ActionIdentifier>> onActionsReadyListener = null;
+    private Consumer<User> onUserEliminatedListener = null;
     private BiConsumer<Integer, User> onTurnChangeListener = null;
     private final List<Runnable> redrawListeners = new ArrayList<>();
 
@@ -40,6 +41,10 @@ public class GameControl {
 
     public void setOnActionsReadyListener(Consumer<List<ActionIdentifier>> actionsReadyListener) {
         this.onActionsReadyListener = actionsReadyListener;
+    }
+
+    public void setOnUserEliminatedListener(Consumer<User> onUserEliminatedListener) {
+        this.onUserEliminatedListener = onUserEliminatedListener;
     }
 
     public void setOnActionAttemptListener(Consumer<Boolean> onActionAttemptListener) {
@@ -128,6 +133,9 @@ public class GameControl {
                 .map(PlayerViewState::getPawns)
                 .ifPresent(l -> l.forEach(boardViewState::removePawn));
         requestRedraw();
+        if (onUserEliminatedListener != null) {
+            onUserEliminatedListener.accept(user);
+        }
     }
 
     private void onBuild(Building building, Coordinate coordinate) {

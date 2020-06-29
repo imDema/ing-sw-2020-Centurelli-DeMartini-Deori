@@ -537,5 +537,101 @@
       }
     }
   }
+},{
+  "name": "Urania",
+  "description": "Your Turn: When your Worker moves or builds, treat opposite edges and corners as if they are adjacent so that every space has 8 neighbors.",
+  "turnSequence": {
+    "type": "LINEAR",
+    "content": {
+      "sequence": {
+        "steps": [
+          [
+            {
+              "description": "Move",
+              "family": "MOVE",
+              "effects": ["MOVE"],
+              "checks": ["NEIGHBOUR_LOOPING", "MAX_ONE_LEVEL_ABOVE", "NO_DOME", "NOT_OCCUPIED"]
+            }
+          ], [
+            {
+              "description": "Build_Block",
+              "family": "BUILD",
+              "effects": ["BUILD_BLOCK"],
+              "checks": ["NEIGHBOUR_LOOPING", "NO_DOME", "NOT_OCCUPIED", "NOT_MAX_LEVEL"]
+            }, {
+              "description": "Build_Dome",
+              "family": "BUILD",
+              "effects": ["BUILD_DOME"],
+              "checks": ["NEIGHBOUR_LOOPING", "NO_DOME", "NOT_OCCUPIED", "MAX_LEVEL"]
+            }
+          ]
+        ]
+      }
+    }
+  }
+},{
+  "name": "Limus",
+  "description": "Opponent’s Turn: Opponent Workers cannot build on spaces neighboring your Workers, unless building a dome to create a Complete Tower.",
+  "turnSequence": {
+    "type": "LINEAR",
+    "content": {
+      "sequence": {
+        "steps": [
+          [
+            {
+              "description": "Move",
+              "family": "MOVE",
+              "effects": ["MOVE"],
+              "checks": ["NEIGHBOUR", "MAX_ONE_LEVEL_ABOVE", "NO_DOME", "NOT_OCCUPIED"]
+            }
+          ], [
+            {
+              "description": "Build_Block",
+              "family": "BUILD",
+              "effects": ["BUILD_BLOCK", "FORBID_BUILD_CLOSE"],
+              "checks": ["NEIGHBOUR", "NO_DOME", "NOT_OCCUPIED", "NOT_MAX_LEVEL"]
+            }, {
+              "description": "Build_Dome",
+              "family": "BUILD",
+              "effects": ["BUILD_DOME", "FORBID_BUILD_CLOSE"],
+              "checks": ["NEIGHBOUR", "NO_DOME", "NOT_OCCUPIED", "MAX_LEVEL"]
+            }
+          ]
+        ]
+      }
+    }
+  }
+},{
+  "name": "Hades",
+  "description": "Opponent’s Turn: Opponent Workers cannot move down.",
+  "turnSequence": {
+    "type": "LINEAR",
+    "content": {
+      "sequence": {
+        "steps": [
+          [
+            {
+              "description": "Move",
+              "family": "MOVE",
+              "effects": ["MOVE", "FORBID_MOVE_DOWN"],
+              "checks": ["NEIGHBOUR", "MAX_ONE_LEVEL_ABOVE", "NO_DOME", "NOT_OCCUPIED"]
+            }
+          ], [
+            {
+              "description": "Build_Block",
+              "family": "BUILD",
+              "effects": ["BUILD_BLOCK"],
+              "checks": ["NEIGHBOUR", "NO_DOME", "NOT_OCCUPIED", "NOT_MAX_LEVEL"]
+            }, {
+              "description": "Build_Dome",
+              "family": "BUILD",
+              "effects": ["BUILD_DOME"],
+              "checks": ["NEIGHBOUR", "NO_DOME", "NOT_OCCUPIED", "MAX_LEVEL"]
+            }
+          ]
+        ]
+      }
+    }
+  }
 }
 ]

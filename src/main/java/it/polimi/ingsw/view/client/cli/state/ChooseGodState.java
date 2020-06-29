@@ -23,7 +23,7 @@ public class ChooseGodState implements InputHandlerState {
     public ChooseGodState(ServerHandler serverHandler, BoardViewState boardViewState, List<GodIdentifier> availableGods) {
         godSelectorControl = new GodSelectorControl(serverHandler, boardViewState);
         this.availableGods = availableGods;
-        CLI.clientInfo("Gods: " +
+        CLI.clientInfo("If you are worthy to be the challenger select " + godSelectorControl.getLobbySize() + " gods:\n" +
                 availableGods.stream().map(GodIdentifier::getName)
                         .reduce("", (res, s) -> res + s + ", ")
                         .replace(",$","")
@@ -60,6 +60,8 @@ public class ChooseGodState implements InputHandlerState {
             if(selectedGods.size() == size) {
                 godSelectorControl.selectGods(selectedGods);
             }
+        } else {
+            CLI.clientInfo("Please select " + godSelectorControl.getLobbySize() + " gods");
         }
     }
 
@@ -89,7 +91,7 @@ public class ChooseGodState implements InputHandlerState {
 
     private void onGodsAvailable(List<GodIdentifier> godIdentifiers) {
         availableGods = godIdentifiers;
-        CLI.clientInfo("Gods: " +
+        CLI.clientInfo("Choose your god: " +
                 availableGods.stream().map(GodIdentifier::getName)
                         .reduce("", (res, s) -> res + s + ", ")
                         .replace(",$","")
@@ -98,8 +100,7 @@ public class ChooseGodState implements InputHandlerState {
     }
 
     private void printUsage() {
-        System.out.println("Choose the gods in the list");
-        System.out.flush();
+        CLI.clientInfo("Choose one of the gods in the list");
     }
 
     private void userError() {

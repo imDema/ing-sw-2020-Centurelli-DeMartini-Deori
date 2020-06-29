@@ -162,6 +162,7 @@ public class CLIClient {
         CLI.error("Server error: " + type + "\n" + description + "\nterminating client");
         running = false;
         input.close();
+        System.exit(0);
     }
 
     private void onTurnChange(User currentUser, int turn) {
@@ -173,5 +174,6 @@ public class CLIClient {
         System.out.flush();
         running = false;
         input.close();
+        System.exit(0);
     }
 }

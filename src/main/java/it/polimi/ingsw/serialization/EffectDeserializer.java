@@ -23,6 +23,8 @@ class EffectDeserializer implements JsonDeserializer<Effect> {
         SWAP_PAWNS,
         FERRY,
         PUSH_PAWN,
+        FORBID_BUILD_CLOSE,
+        FORBID_MOVE_DOWN,
         FORBID_MOVE_UP,
         FORBID_MOVE_BACK,
         FORBID_BUILD_AT_COORDINATE,
@@ -32,11 +34,13 @@ class EffectDeserializer implements JsonDeserializer<Effect> {
 
     private final Map<EffectId, Effect> map = Map.ofEntries(
         new SimpleImmutableEntry<>(EffectId.MOVE, Effects.move),
+        new SimpleImmutableEntry<>(EffectId.FORBID_BUILD_CLOSE, Effects.forbidBuildClose),
         new SimpleImmutableEntry<>(EffectId.BUILD_BLOCK, Effects.buildBlock),
         new SimpleImmutableEntry<>(EffectId.BUILD_DOME, Effects.buildDome),
         new SimpleImmutableEntry<>(EffectId.SWAP_PAWNS, Effects.swapPawns),
         new SimpleImmutableEntry<>(EffectId.FERRY, Effects.ferry),
         new SimpleImmutableEntry<>(EffectId.PUSH_PAWN, Effects.pushPawn),
+        new SimpleImmutableEntry<>(EffectId.FORBID_MOVE_DOWN, Effects.forbidMoveDown),
         new SimpleImmutableEntry<>(EffectId.FORBID_MOVE_UP, Effects.forbidMoveUp),
         new SimpleImmutableEntry<>(EffectId.FORBID_MOVE_BACK, Effects.forbidMoveBack),
         new SimpleImmutableEntry<>(EffectId.FORBID_BUILD_AT_COORDINATE, Effects.forbidBuildAtCoordinate),

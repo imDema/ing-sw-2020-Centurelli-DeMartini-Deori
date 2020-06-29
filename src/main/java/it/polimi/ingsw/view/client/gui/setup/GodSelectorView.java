@@ -22,7 +22,7 @@ import java.util.Optional;
  * View used to select the list of available gods and then choose a god
  */
 public class GodSelectorView extends FlowPane {
-    private final double baseHeight = 270.0;
+    private final double baseHeight = 240.0;
     private final List<GodIdentifier> selectedGods = new ArrayList<>();
 
     private final GodSelectorControl godSelectorControl;
@@ -33,7 +33,6 @@ public class GodSelectorView extends FlowPane {
         godSelectorControl = new GodSelectorControl(server, boardViewState);
         generateSelectButtons(gods);
         bindEvents();
-        this.setPrefSize(600,300);
     }
 
     private void bindEvents() {
