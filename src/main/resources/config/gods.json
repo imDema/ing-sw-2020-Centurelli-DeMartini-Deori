@@ -88,7 +88,7 @@
               "description": "Build_Dome",
               "family": "BUILD",
               "effects": ["BUILD_DOME"],
-              "checks": ["NEIGHBOUR", "NO_DOME", "NOT_OCCUPIED", "MIN_LEVEL_ONE"]
+              "checks": ["NEIGHBOUR", "NO_DOME", "NOT_OCCUPIED"]
             }
           ]
         ]
