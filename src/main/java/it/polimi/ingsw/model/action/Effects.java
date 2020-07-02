@@ -1,5 +1,6 @@
 package it.polimi.ingsw.model.action;
 
+import it.polimi.ingsw.model.board.Board;
 import it.polimi.ingsw.model.board.Building;
 import it.polimi.ingsw.model.board.BuildingLevel;
 import it.polimi.ingsw.model.board.Coordinate;
@@ -29,6 +30,22 @@ public abstract class Effects {
         Building newB = b.getBuildingAt(c);
 
         return oldB.getLevelDifference(newB) <= -2;
+    };
+
+    /**
+     * Winning move if there are at least 5 complete towers on the board
+     */
+    public static final Effect winOn5Towers = (b,p,c) -> {
+        int cnt = 0;
+        for(int i = 0; i < Board.BOARD_SIZE; i++) {
+            for(int j = 0; j < Board.BOARD_SIZE; j++) {
+                Building building = b.getBuildingAt(new Coordinate(i, j));
+                if (building.hasDome() && building.getLevel() == BuildingLevel.LEVEL3) {
+                    cnt += 1;
+                }
+            }
+        }
+        return cnt >= 5;
     };
 
     /**
@@ -159,6 +176,28 @@ public abstract class Effects {
         final Coordinate playerPosition = pawn.getPosition();
         CheckEffect checkEffect = (b, p, c, a) -> !(c.equals(playerPosition) && a.getFamily() == ActionFamily.MOVE);
         board.addCheckEffect(1, checkEffect);
+        return false;
+    };
+
+    /**
+     * Forbid building a fifth complete tower when it would result in an instant loss
+     */
+    public static final Effect forbid5TowersLoss = (board, pawn, coordinate) -> {
+        CheckEffect checkEffect = (b, p, c, a) -> {
+            int cnt = 0;
+            for(int i = 0; i < Board.BOARD_SIZE; i++) {
+                for(int j = 0; j < Board.BOARD_SIZE; j++) {
+                    Building building = board.getBuildingAt(new Coordinate(i, j));
+                    if (building.hasDome() && building.getLevel() == BuildingLevel.LEVEL3) {
+                        cnt += 1;
+                    }
+                }
+            }
+            Building building = b.getBuildingAt(c);
+            return !(a.getFamily() == ActionFamily.BUILD && building.getLevel() == BuildingLevel.LEVEL3 && cnt == 4);
+        };
+        int duration = board.countPawns() / 2;
+        board.addCheckEffect(duration, checkEffect);
         return false;
     };
 

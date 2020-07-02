@@ -34,7 +34,7 @@
 
 The graphical interface can be launched with
 
-```shell script
+```
 java -jar AM8.jar
 ```
 
@@ -44,7 +44,7 @@ The command line client can be started by launching the jar with the `-c`
 flag and specifying the ip and port of the server to connect to. Example 
 (Connecting to a server hosted locally on loopback and port 5656):
 
-```shell script
+```
 java -jar AM8.jar -c 127.0.0.1 5656
 ```
 
@@ -54,7 +54,7 @@ The server can be started by launching the jar with the `-s` flag and
 specifying the ip and port to bind and listen for connection from. Example
  (Binding on all interfaces and port 5656):
  
- ```shell script
+ ```
 java -jar AM8.jar -s 0.0.0.0 5656
 ```
 
@@ -63,7 +63,7 @@ java -jar AM8.jar -s 0.0.0.0 5656
 The server can be built and started in a docker container with a single 
 command using `docker-compose` from the main repository directory
 
-```shell script
+```
 docker-compose up
 ```
 
@@ -72,7 +72,7 @@ interfaces and port 5656
 
 ### Command line reference
 
-```shell script
+```
 Usage: java -jar AM8.jar [--cli|--server <IP> <PORT>] [--gods <JSON>]
 
 Launching in server or cli mode requires specifying an ip and and a port
@@ -82,14 +82,14 @@ By default the application is started in graphical mode
 -s, --server:      Start in server mode binding on tcp://IP:PORT
 -g, --gods JSON:   Load god configuration from JSON file (server side)
 -h, --help:        Display this help message
-Example: java -jar AM8-1.0-SNAPSHOT.jar -c 127.0.0.1 5656
+Example: java -jar AM8.jar -c 127.0.0.1 5656
 ```
 
 # Building
 
 The project can be built using [maven](https://maven.apache.org/)
 
-```shell script
+```
 mvn package
 ```
 

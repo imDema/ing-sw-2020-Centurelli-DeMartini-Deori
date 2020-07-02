@@ -18,6 +18,9 @@ import java.util.stream.Collectors;
  * @see ActiveEffect
  */
 public class Board {
+    /**
+     * Side length of the board grid
+     */
     public static final int BOARD_SIZE = 5;
     private OnMoveListener onMoveListener;
     private OnBuildListener onBuildListener;
@@ -143,10 +146,13 @@ public class Board {
     }
 
     /**
+     * Check if an action is allowed. Checks both the inner action conditions and active effects
      * @param action The action that needs to be checked
      * @param pawn the pawn that executes the action
      * @param c the coordinate where the action is executed
      * @return true if the specified pawn is allowed to execute the action on the specified coordinate
+     * @see Action
+     * @see ActiveEffect
      */
     public boolean checkAction(Action action, Pawn pawn, Coordinate c) {
         if (!isOnBoard(c))
@@ -188,6 +194,7 @@ public class Board {
     }
 
     /**
+     * Get the number of pawns currently on the board
      * @return number of pawns that are currently on the baord
      */
     public int countPawns() {

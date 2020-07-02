@@ -10,6 +10,7 @@ public interface BoardClickHandlerState {
     /**
      * Handle a mouse click
      * @param btn Button clicked
+     * @param ctx context
      * @param c Coordinate of the clicked cell
      */
     void handleClick(BoardClickHandlerContext ctx, MouseButton btn, Coordinate c);

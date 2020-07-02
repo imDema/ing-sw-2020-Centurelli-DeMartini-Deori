@@ -53,6 +53,7 @@ public class ExecuteActionState implements BoardClickHandlerState {
             } else if (btn == MouseButton.SECONDARY) {
                 target = null;
                 selectedPawn = null;
+                resetButtons(ctx);
                 setLabel(ctx, "It's your turn! Click on a Worker, then on a cell and choose your move!");
             }
         }

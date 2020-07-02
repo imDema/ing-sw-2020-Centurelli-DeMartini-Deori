@@ -85,8 +85,8 @@ public class App extends Application {
             Platform.runLater(() -> {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setContentText(user.getUsername() + " won! Congratulations!");
-                stage.hide();
                 alert.showAndWait();
+                stage.hide();
                 start(stage);
             });
         });

@@ -36,7 +36,7 @@ public class ExecuteActionState implements InputHandlerState {
             if (target.isPresent()) {
                 findAction(actionId)
                     .ifPresentOrElse(
-                            a -> { //TODO move elsewhere
+                            a -> {
                                 ctx.getGameControl().setOnActionAttemptListener(this::onActionAttempt);
                                 ctx.getGameControl().executeAction(a, pawnId, target.get());
                             },
@@ -58,8 +58,9 @@ public class ExecuteActionState implements InputHandlerState {
     }
 
     private Optional<ActionIdentifier> findAction(String actionId) {
+        if (actionId.length() == 0) return Optional.empty();
         return availableActions.stream()
-                .filter(a -> a.getDescription().toLowerCase().equals(actionId))
+                .filter(a -> a.getDescription().toLowerCase().contains(actionId))
                 .findFirst();
     }
 

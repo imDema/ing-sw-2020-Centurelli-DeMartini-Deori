@@ -27,9 +27,11 @@ class EffectDeserializer implements JsonDeserializer<Effect> {
         FORBID_MOVE_DOWN,
         FORBID_MOVE_UP,
         FORBID_MOVE_BACK,
+        FORBID_5_TOWERS_LOSS,
         FORBID_BUILD_AT_COORDINATE,
         FORBID_BUILD_AT_OTHER_COORDINATES,
-        WIN_ON_JUMP_DOWN
+        WIN_ON_JUMP_DOWN,
+        WIN_ON_5_TOWERS
     }
 
     private final Map<EffectId, Effect> map = Map.ofEntries(
@@ -43,9 +45,11 @@ class EffectDeserializer implements JsonDeserializer<Effect> {
         new SimpleImmutableEntry<>(EffectId.FORBID_MOVE_DOWN, Effects.forbidMoveDown),
         new SimpleImmutableEntry<>(EffectId.FORBID_MOVE_UP, Effects.forbidMoveUp),
         new SimpleImmutableEntry<>(EffectId.FORBID_MOVE_BACK, Effects.forbidMoveBack),
+        new SimpleImmutableEntry<>(EffectId.FORBID_5_TOWERS_LOSS, Effects.forbid5TowersLoss),
         new SimpleImmutableEntry<>(EffectId.FORBID_BUILD_AT_COORDINATE, Effects.forbidBuildAtCoordinate),
         new SimpleImmutableEntry<>(EffectId.FORBID_BUILD_AT_OTHER_COORDINATES, Effects.forbidBuildAtOtherCoordinates),
-        new SimpleImmutableEntry<>(EffectId.WIN_ON_JUMP_DOWN, Effects.winOnJumpDown)
+        new SimpleImmutableEntry<>(EffectId.WIN_ON_JUMP_DOWN, Effects.winOnJumpDown),
+        new SimpleImmutableEntry<>(EffectId.WIN_ON_5_TOWERS, Effects.winOn5Towers)
     );
 
     private Effect getEffectFromId(EffectId id) {

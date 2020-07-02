@@ -63,7 +63,11 @@ public class LoginControl {
                     boardViewState.setMyUser(user);
                     onLoginAttemptListener.accept(true, "Successfully logged in");
                 } else {
-                    onLoginAttemptListener.accept(false, "");
+                    if(boardViewState.getSize() != 0) {
+                        onLoginAttemptListener.accept(false, "Try choosing a different name");
+                    } else {
+                        onLoginAttemptListener.accept(false, "The size of the game must be chosen firstl");
+                    }
                 }
             });
             server.onAddUser(user);

@@ -1,10 +1,11 @@
 target/
+out/
+shade/
+uml/*.svg
 .DS_Store
 .idea
 *.iml
 *.class
-out/
-shade/
 *.aux
 *.fdb_latexmk
 *.fls

@@ -26,6 +26,7 @@ public class Coordinate {
     }
 
     /**
+     * Returns true if at least one neighbouring coordinate satisfies a boolean function
      * @param function is applied to all the adjacent coordinates of the coordinate on which this method is called
      * @return true if {@code function} evaluates to true for at least one neighbour coordinate
      */

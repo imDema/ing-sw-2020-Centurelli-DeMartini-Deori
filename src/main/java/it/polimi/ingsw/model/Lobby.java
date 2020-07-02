@@ -20,7 +20,14 @@ import java.util.*;
  * @see User
  */
 public class Lobby {
+    /**
+     * Number of pawns for each player
+     */
     public final int PAWN_N = 2;
+
+    /**
+     * Maximum username length
+     */
     public final int MAX_NAME_LENGTH = 16;
 
     private final Game game = new Game();

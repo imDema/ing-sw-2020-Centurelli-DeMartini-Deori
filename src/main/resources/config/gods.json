@@ -570,6 +570,38 @@
     }
   }
 },{
+  "name": "Chronus",
+  "description": "Win Condition: You also win when there are at least five Complete Towers on the board.",
+  "turnSequence": {
+    "type": "LINEAR",
+    "content": {
+      "sequence": {
+        "steps": [
+          [
+            {
+              "description": "Move",
+              "family": "MOVE",
+              "effects": ["MOVE", "WIN_ON_5_TOWERS"],
+              "checks": ["NEIGHBOUR", "MAX_ONE_LEVEL_ABOVE", "NO_DOME", "NOT_OCCUPIED"]
+            }
+          ], [
+            {
+              "description": "Build_Block",
+              "family": "BUILD",
+              "effects": ["BUILD_BLOCK", "WIN_ON_5_TOWERS", "FORBID_5_TOWERS_LOSS"],
+              "checks": ["NEIGHBOUR", "NO_DOME", "NOT_OCCUPIED", "NOT_MAX_LEVEL"]
+            }, {
+              "description": "Build_Dome",
+              "family": "BUILD",
+              "effects": ["BUILD_DOME", "WIN_ON_5_TOWERS", "FORBID_5_TOWERS_LOSS"],
+              "checks": ["NEIGHBOUR", "NO_DOME", "NOT_OCCUPIED", "MAX_LEVEL"]
+            }
+          ]
+        ]
+      }
+    }
+  }
+},{
   "name": "Limus",
   "description": "Opponent’s Turn: Opponent Workers cannot build on spaces neighboring your Workers, unless building a dome to create a Complete Tower.",
   "turnSequence": {

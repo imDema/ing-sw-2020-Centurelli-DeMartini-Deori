@@ -29,6 +29,7 @@ public class ProxyController {
         CLI.info("Connecting to server at ip: " + ip + " port: " + port);
         InetAddress address = InetAddress.getByName(ip);
         Socket socket = new Socket(address, port);
+        socket.setSoTimeout(10000);
         Scanner socketIn = new Scanner(socket.getInputStream());
         PrintWriter socketOut = new PrintWriter(socket.getOutputStream());
         return new ServerHandler(socketIn, socketOut, socket);

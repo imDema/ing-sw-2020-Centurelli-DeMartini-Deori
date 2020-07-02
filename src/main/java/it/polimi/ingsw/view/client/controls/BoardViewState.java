@@ -88,7 +88,7 @@ public class BoardViewState {
      * @param c coordinate
      * @return Cell in that position
      */
-    public CellViewState cellAt(Coordinate c) { //TODO make optional
+    public CellViewState cellAt(Coordinate c) {
         return cells[c.getX()][c.getY()];
     }
 

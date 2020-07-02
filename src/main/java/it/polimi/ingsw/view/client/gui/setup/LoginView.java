@@ -56,7 +56,7 @@ public class LoginView extends HBox {
         }));
 
         sizeComboBox.getItems().addAll(1,2,3);
-        sizeComboBox.setValue(1); //TODO change default
+        sizeComboBox.setValue(2);
 
         GridPane gp = new GridPane();
         gp.add(new Label("Username"), 0, 0); gp.add(usernameTextField, 1, 0);

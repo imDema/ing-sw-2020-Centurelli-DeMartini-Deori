@@ -464,4 +464,77 @@ public class GodsTest {
         actions = player.nextStep(Action.start);
         checkExec(board, actions[0], player.getPawn(1), new Coordinate(2, 1), false );
     }
+
+    @Test
+    public void testChronus() throws InvalidActionException{
+        Lobby lobby = initLobby("Chronus", "Atlas", "Pan");
+
+        // Place pawns at starting positions
+        lobby.setUpUserPawns(lobby.getUserToSetUp().orElseThrow(), new Coordinate(4, 4), new Coordinate(3, 3));
+        lobby.setUpUserPawns(lobby.getUserToSetUp().orElseThrow(), new Coordinate(0, 1), new Coordinate(0, 2));
+        lobby.setUpUserPawns(lobby.getUserToSetUp().orElseThrow(), new Coordinate(0, 0), new Coordinate(4, 1));
+
+        assertTrue(lobby.isGameReady());
+
+        Game game = lobby.getGame();
+        Board board = game.getBoard();
+
+        // Setup
+        board.buildBlock(new Coordinate(0,4));
+        board.buildBlock(new Coordinate(0,4));
+        board.buildBlock(new Coordinate(0,4));
+        board.buildDome(new Coordinate(0,4));
+        board.buildBlock(new Coordinate(1,4));
+        board.buildBlock(new Coordinate(1,4));
+        board.buildBlock(new Coordinate(1,4));
+        board.buildDome(new Coordinate(1,4));
+        board.buildBlock(new Coordinate(2,4));
+        board.buildBlock(new Coordinate(2,4));
+        board.buildBlock(new Coordinate(2,4));
+        board.buildDome(new Coordinate(2,4));
+        board.buildBlock(new Coordinate(3,4));
+        board.buildBlock(new Coordinate(3,4));
+        board.buildBlock(new Coordinate(3,4));
+        board.buildDome(new Coordinate(3,4));
+        board.buildBlock(new Coordinate(4,3));
+        board.buildBlock(new Coordinate(4,3));
+
+        // Turn 1 Chronus
+        Player player = game.getCurrentPlayer();
+        Action[] actions = player.nextStep(Action.start);
+        checkExec(board, actions[0], player.getPawn(1), new Coordinate(3, 2), true );
+
+        actions = player.nextStep(actions[0]);
+        checkExec(board, actions[0], player.getPawn(1), new Coordinate(4, 3), true );
+        game.nextTurn();
+
+        // Turn 1 Atlas
+        player = game.getCurrentPlayer();
+        actions = player.nextStep(Action.start);
+        checkExec(board, actions[0], player.getPawn(0), new Coordinate(1, 1), true );
+
+        actions = player.nextStep(actions[0]);
+        assertTrue(board.checkAction(actions[1], player.getPawn(0), new Coordinate(2, 2)));
+        assertFalse(actions[1].execute(board, player.getPawn(0), new Coordinate(2, 2)));
+        game.nextTurn();
+
+        // Turn 1 Pan
+        player = game.getCurrentPlayer();
+        actions = player.nextStep(Action.start);
+        checkExec(board, actions[0], player.getPawn(1), new Coordinate(4, 2), true );
+
+        actions = player.nextStep(actions[0]);
+        checkExec(board, actions[1], player.getPawn(1), new Coordinate(4, 3), false );
+        checkExec(board, actions[0], player.getPawn(1), new Coordinate(4, 1), true );
+        game.nextTurn();
+
+        // Turn 2 Chronus
+        player = game.getCurrentPlayer();
+        actions = player.nextStep(Action.start);
+        checkExec(board, actions[0], player.getPawn(1), new Coordinate(3, 3), true );
+
+        actions = player.nextStep(actions[0]);
+        assertTrue(board.checkAction(actions[1], player.getPawn(1), new Coordinate(4, 3)));
+        assertTrue(actions[1].execute(board, player.getPawn(1), new Coordinate(4, 3)));         //Chronus wins
+    }
 }
