@@ -2,7 +2,7 @@
 # Santorini - Game
 
 ## Gruppo AM08
-
+###### Final mark: 30 cum laude
 
 - ###   10576649    Emilio Centurelli ([@emiliocenturelli](https://github.com/emiliocenturelli))<br>emilio.centurelli@mail.polimi.it
 - ###   10565376    Luca De Martini ([@luca-de-martini](https://github.com/luca-de-martini))<br>luca.demartini@mail.polimi.it
